@@ -33,7 +33,7 @@
 	}
 	%>
 	<!-- Add Book Form  -->
-	<form class="mt-3">
+	<form class="mt-3" action="/CA1-assignment/BooksServlet" method="post">
 		<!-- title -->
 		<div class="relative z-0 w-full mb-8 group">
 			<input type="text" name="title" id="title"
@@ -101,7 +101,8 @@
 			</div>
 			<div class="relative z-0 w-full mb-8 group">
 				<select
-					class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" required>
+					class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+					name="genre" required>
 					<%
 					for (Object[] genre : genres) {
 						int genreId = (int) genre[0];
@@ -119,5 +120,13 @@
 			class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Add
 			Book!</button>
 	</form>
+
+	<%
+	String errCode = request.getParameter("errCode");
+	
+	if (errCode != null) {
+		out.print("error adding book!");
+	}
+	%>
 </body>
 </html>
