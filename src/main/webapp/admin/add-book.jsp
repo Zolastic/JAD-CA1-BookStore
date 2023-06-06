@@ -13,21 +13,49 @@
 	<%@ page import="utils.DBConnection"%>
 	<%
 	List<Object[]> genres = new ArrayList<>();
+	List<Object[]> authors = new ArrayList<>();
+	List<Object[]> publishers = new ArrayList<>();
 
 	try {
 		Connection connection = DBConnection.getConnection();
-		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("SELECT genre_id as genreId, genre_name as genreName FROM genre;");
+		Statement genreStatement = connection.createStatement();
+		Statement authorStatement = connection.createStatement();
+		Statement publisherStatement = connection.createStatement();
 
-		while (resultSet.next()) {
-			int genreId = resultSet.getInt("genreId");
-			String genreName = resultSet.getString("genreName");
+		ResultSet genreResultSet = genreStatement
+		.executeQuery("SELECT genre_id as genreId, genre_name as genreName FROM genre;");
+		ResultSet authorResultSet = authorStatement.executeQuery("SELECT * FROM author;");
+		ResultSet publisherResultSet = publisherStatement.executeQuery("SELECT * FROM publisher;");
+
+		while (genreResultSet.next()) {
+			int genreId = genreResultSet.getInt("genreId");
+			String genreName = genreResultSet.getString("genreName");
 			Object[] genre = { genreId, genreName };
 			genres.add(genre);
 		}
 
-		resultSet.close();
-		statement.close();
+		while (authorResultSet.next()) {
+			int authorId = authorResultSet.getInt("authorID");
+			String authorName = authorResultSet.getString("authorName");
+			Object[] author = { authorId, authorName };
+			authors.add(author);
+		}
+
+		while (publisherResultSet.next()) {
+			int publisherID = publisherResultSet.getInt("publisherID");
+			String publisherName = publisherResultSet.getString("publisherName");
+			Object[] publisher = { publisherID, publisherName };
+			publishers.add(publisher);
+		}
+
+		genreResultSet.close();
+		genreStatement.close();
+
+		authorResultSet.close();
+		authorStatement.close();
+
+		publisherResultSet.close();
+		publisherStatement.close();
 	} catch (SQLException e) {
 		e.printStackTrace();
 	}
@@ -68,17 +96,38 @@
 
 		<!-- author -->
 		<div class="relative z-0 w-full mb-8 group">
-			<input type="text" name="author" id="author"
+			<select
 				class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-				placeholder=" " required /> <label for="author"
+				name="author" required>
+				<%
+				for (Object[] author : authors) {
+					int authorId = (int) author[0];
+					String authorName = (String) author[1];
+				%>
+				<option value="<%=authorId%>"><%=authorName%></option>
+				<%
+				}
+				%>
+			</select> <label for="author"
 				class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Author</label>
 		</div>
 
+
 		<!-- publisher -->
 		<div class="relative z-0 w-full mb-8 group">
-			<input type="text" name="publisher" id="publisher"
+			<select
 				class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-				placeholder=" " required /> <label for="publisher"
+				name="publisher" required>
+				<%
+				for (Object[] publisher : publishers) {
+					int publisherId = (int) publisher[0];
+					String publisherName = (String) publisher[1];
+				%>
+				<option value="<%=publisherId%>"><%=publisherName%></option>
+				<%
+				}
+				%>
+			</select> <label for="publisher"
 				class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Publisher</label>
 		</div>
 
@@ -123,7 +172,7 @@
 
 	<%
 	String errCode = request.getParameter("errCode");
-	
+
 	if (errCode != null) {
 		out.print("error adding book!");
 	}
