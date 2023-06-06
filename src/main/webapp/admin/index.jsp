@@ -5,8 +5,9 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Insert title here</title>
+<%@include file="../tailwind-css.jsp"%>
 </head>
 <body>
-<h3>Hello World098</h3>
+	<div class="flex justify-center items-center"><h1>Test</h1></div>
 </body>
 </html>

@@ -4,9 +4,12 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>Admin: Homepage</title>
+<%@include file="../tailwind-css.jsp"%>
 </head>
 <body>
-<h3>Hello World098</h3>
+	<main class="flex justify-center items-center">
+		<h1 class="text-2xl font-bold">Admin Centre</h1>
+	</main>
 </body>
 </html>
