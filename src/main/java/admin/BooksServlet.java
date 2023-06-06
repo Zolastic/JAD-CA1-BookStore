@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
 
 /**
  * Servlet implementation class BooksServlet
@@ -45,8 +46,8 @@ public class BooksServlet extends HttpServlet {
 		
 		String title = request.getParameter("title");
 		int price = Integer.parseInt(request.getParameter("price"));
-		String author = request.getParameter("author");
-		String publisher = request.getParameter("publisher");
+		int author = Integer.parseInt(request.getParameter("author"));
+		int publisher = Integer.parseInt(request.getParameter("publisher"));
 		int quantity = Integer.parseInt(request.getParameter("quantity"));
 		String pubDate = request.getParameter("date");
 		String isbn = request.getParameter("isbn");
@@ -55,18 +56,19 @@ public class BooksServlet extends HttpServlet {
 		
 		try {
 			Connection conn = DBConnection.getConnection();
-			String sqlStr = "INSERT INTO BOOK (title, price, author, publisher, Qty, publication_date, ISBN, description, genre_id)\r\n"
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			String sqlStr = "INSERT INTO BOOK (title, price, authorID, publisherID, Qty, publication_date, ISBN, description, genre_id, book_id)\r\n"
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			PreparedStatement ps = conn.prepareStatement(sqlStr);
 			ps.setString(1, title);
 			ps.setInt(2, price);
-			ps.setString(3, author);
-			ps.setString(4, publisher);
+			ps.setInt(3, author);
+			ps.setInt(4, publisher);
 			ps.setInt(5, quantity);
 			ps.setString(6, pubDate);
 			ps.setString(7, isbn);
 			ps.setString(8, description);
 			ps.setInt(9, genreId);
+			ps.setString(10, (UUID.randomUUID()).toString());
 			
 			int affectedRows = ps.executeUpdate();
 			
