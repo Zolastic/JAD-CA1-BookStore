@@ -1,40 +1,23 @@
 package model;
 
 public class Book {
-	private int BookID;
+	private String BookID;
 	private String ISBN;
 	private String Title;
 	private String Author;
 	private String Publisher;
 	private String Publication_date; 
 	private String Description;
-	private int GenreID;
+	private String GenreName;
 	private String Img;
 	private int Sold;
 	private int Inventory;
 	private double Price;
+	private double Rating;
 	private int Quantity;
 	
-	public Book(int bookID, String iSBN, String title, String author, String publisher, String publication_date,
-			String description, int genreID, String img, int sold, int inventory, double price, int quantity) {
-		super();
-		BookID = bookID;
-		ISBN = iSBN;
-		Title = title;
-		Author = author;
-		Publisher = publisher;
-		Publication_date = publication_date;
-		Description = description;
-		GenreID = genreID;
-		Img = img;
-		Sold = sold;
-		Inventory = inventory;
-		Price = price;
-		Quantity = quantity;
-	}
-
-	public Book(int bookID, String iSBN, String title, String author, String publisher, String publication_date, String description,
-			int genreID, String img, int sold, int inventory, double price) {
+	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date, String description,
+			String genreName, String img, int sold, int inventory, double price, double rating) {
 		super();
 		ISBN = iSBN;
 		Title = title;
@@ -42,22 +25,35 @@ public class Book {
 		Publisher = publisher;
 		Publication_date = publication_date;
 		Description = description;
-		GenreID = genreID;
+		GenreName = genreName;
 		Img = img;
 		Sold = sold;
 		Inventory = inventory;
 		Price = price;
 		BookID=bookID;
 		Quantity=0;
+		Rating=rating;
 	}
-
-	public int getBookID() {
-		return BookID;
-	}
-
-	public void setBookID(int bookID) {
+	
+	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
+			String description, String genreName, String img, int sold, int inventory, double price, int quantity, double rating) {
+		super();
 		BookID = bookID;
+		ISBN = iSBN;
+		Title = title;
+		Author = author;
+		Publisher = publisher;
+		Publication_date = publication_date;
+		Description = description;
+		GenreName = genreName;
+		Img = img;
+		Sold = sold;
+		Inventory = inventory;
+		Price = price;
+		Quantity = quantity;
+		Rating=rating;
 	}
+
 
 	public String getISBN() {
 		return ISBN;
@@ -107,13 +103,6 @@ public class Book {
 		Description = description;
 	}
 
-	public int getGenreID() {
-		return GenreID;
-	}
-
-	public void setGenreID(int genreID) {
-		GenreID = genreID;
-	}
 
 	public String getImg() {
 		return Img;
@@ -153,6 +142,30 @@ public class Book {
 
 	public void setQuantity(int quantity) {
 		Quantity = quantity;
+	}
+
+	public String getBookID() {
+		return BookID;
+	}
+
+	public void setBookID(String bookID) {
+		BookID = bookID;
+	}
+
+	public void setGenreName(String genreName) {
+		GenreName = genreName;
+	}
+
+	public double getRating() {
+		return Rating;
+	}
+
+	public void setRating(double rating) {
+		Rating = rating;
+	}
+
+	public String getGenreName() {
+		return GenreName;
 	}
 
 	

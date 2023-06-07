@@ -49,8 +49,7 @@ TO DO:
 			int inventory = resultSet.getInt("inventory");
 			double price = resultSet.getDouble("price");
 			double rating = resultSet.getDouble("average_rating");
-			model.Book popularBook = new model.Book(bookID, iSBN, title, author, publisher, publication_date, description,
-			genre_name, img, sold, inventory, price, rating);
+			Book popularBook = new Book(bookID, iSBN, title, author, publisher, publication_date, description, genre_name, img, sold, inventory, price, rating);
 			popularBooks.add(popularBook);
 		}
 		resultSet.close();
