@@ -13,6 +13,10 @@ TO DO:
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>
+<%@ page import="java.text.DecimalFormat"%>
+<%@ page import="java.io.*,java.net.*,java.util.*,java.sql.*"%>
+<%@ page import="utils.DBConnection"%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,8 +28,6 @@ TO DO:
 <%@include file="../../tailwind-css.jsp"%>
 </head>
 <body>
-	<%@ page import="java.io.*,java.net.*,java.util.*,java.sql.*"%>
-	<%@ page import="utils.DBConnection"%>
 	<%
 	ArrayList<model.Book> popularBooks = new ArrayList<>();
 	try {
@@ -49,12 +51,13 @@ TO DO:
 			int inventory = resultSet.getInt("inventory");
 			double price = resultSet.getDouble("price");
 			double rating = resultSet.getDouble("average_rating");
-			Book popularBook = new Book(bookID, iSBN, title, author, publisher, publication_date, description, genre_name, img, sold, inventory, price, rating);
+			Book popularBook = new Book(bookID, iSBN, title, author, publisher, publication_date, description, genre_name,
+			img, sold, inventory, price, rating);
 			popularBooks.add(popularBook);
 		}
-		resultSet.close();
-		statement.close();
-	} catch (SQLException e) {
+		connection.close();
+	} 
+	catch (SQLException e) {
 		System.err.println("Error :" + e);
 	}
 	%>
@@ -62,11 +65,11 @@ TO DO:
 	String userID = (String) session.getAttribute("userID");
 	if (userID == null) {
 	%>
-	<%@include file="../navBar/headerNavPublic.html"%>
+	<%@include file="navBar/headerNavPublic.html"%>
 	<%
 	} else {
 	%>
-	<%@include file="../navBar/headerNavCustomer.html"%>
+	<%@include file="navBar/headerNavCustomer.html"%>
 	<%
 	}
 	%>
@@ -78,7 +81,7 @@ TO DO:
 					<p class="text-slate-500 text-3xl italic">Searching for a book?
 						Browse & Buy Now!</p>
 					<button
-						class="bg-slate-600 text-white hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5">Explore
+						class="bg-slate-600 text-white hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110">Explore
 						All Books</button>
 				</div>
 			</div>
@@ -110,12 +113,13 @@ TO DO:
 				}
 				%>
 				<div
-					class="m-4 p-6 bg-white border border-black rounded-lg w-80 transform hover:scale-110">
+					class="m-4 p-6 bg-white border border-black rounded-lg w-80 transform hover:scale-110"
+					onclick="window.location.href = 'bookDetailsPage.jsp?bookID=<%=book.getBookID()%>';">
 					<div class="h-48 w-48 flex items-center justify-center mx-auto">
 						<%
 						if (book.getImg() != null) {
 						%>
-						<img class="h-48 w-48 src="<%= book.getImg() %>">
+						<img class="h-48 w-48 src="<%=book.getImg()%>">
 						<%
 						} else {
 						%>
@@ -126,12 +130,16 @@ TO DO:
 					</div>
 
 					<p class="text-xl font-semibold text-gray-800 text-center mt-4"><%=book.getTitle()%></p>
-					<p class="text-gray-600 text-center mt-2">
-						Sold:
-						<%=book.getSold()%></p>
-					<p class="text-gray-600 text-center">
-						Inventory:
-						<%=book.getInventory()%></p>
+					<%
+					double price = book.getPrice();
+					DecimalFormat df = new DecimalFormat("#.00");
+					String formattedPrice = df.format(price);
+					%>
+					<p class="text-red-600 text-center font-bold mt-2">
+						$<%=formattedPrice%></p>
+
+
+
 					<div class="flex items-center justify-center mt-2">
 						<%
 						for (int i = 0; i < filledStars; i++) {
@@ -150,8 +158,40 @@ TO DO:
 						<%
 						}
 						%>
+						<p class="text-gray-600 ml-2">
+							<%=book.getSold()%>
+							Sold
+						</p>
 					</div>
+					<div class="flex items-center justify-center mt-2">
+						<%
+						if (book.getInventory() <= 10) {
+						%>
+
+						<p class="text-red-500">
+							<%=book.getInventory()%>
+							Left!
+						</p>
+						<%
+						} else {
+						%>
+						<p class="text-gray-600">
+							<%=book.getInventory()%>
+							Left!
+						</p>
+						<%
+						}
+						%>
+					</div>
+					<div class="flex items-center justify-center mt-2">
+						<p
+							class="text-white text-sm bg-rose-900 text-center rounded-lg mt-2 p-1">
+							<%=book.getGenreName()%>
+						</p>
+					</div>
+
 				</div>
+
 				<%
 				if ((bookCount + 1) % 3 == 0 || bookCount == popularBooks.size() - 1) {
 				%>
@@ -162,6 +202,12 @@ TO DO:
 			}
 			%>
 		</div>
+
+	</div>
+	<div class="flex items-center justify-center m-10">
+		<button
+			class="bg-slate-600 text-white text-md hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110">
+			EXPLORE ALL</button>
 	</div>
 
 
