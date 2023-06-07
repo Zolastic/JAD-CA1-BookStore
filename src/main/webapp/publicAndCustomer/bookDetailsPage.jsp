@@ -1,17 +1,3 @@
-<%--
-  - Author(s): Soh Jian Min
-  - Date:27/4/2023
-  - Copyright Notice:-
-  - @(#)
-  - Description: JAD Practical 5
-  --%>
-<%--
-TO DO:
-- Add to cart
-- try to find other way to edit the quantity instead of using javascript
-- display the reviews
-- start with category page
- --%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>
@@ -44,9 +30,15 @@ TO DO:
     }
 
     function updateQuantity(bookID, newQuantity, inventory) {
-        if (newQuantity < 1 || newQuantity > inventory) {
-            alert("Invalid input! Please enter a quantity between 1 and " + inventory);
-        } else {
+        if (newQuantity < 1 ) {
+        	window.location.href = "?bookID=" + bookID + "&quantity=" + 1;
+            alert("Invalid input!");
+            
+        }else if(newQuantity > inventory) {
+        	window.location.href = "?bookID=" + bookID + "&quantity=" + inventory;
+            alert("Invalid input!");
+        }
+        else {
             window.location.href = "?bookID=" + bookID + "&quantity=" + newQuantity;
         }
     }
@@ -179,9 +171,15 @@ TO DO:
 				</div>
 
 				<div class="mr-4">
-					<button class="bg-slate-500 text-white px-4 py-2 rounded w-full">Add
-						to Cart</button>
+					<form action="/addToCart" method="post">
+						<input type="hidden" name="bookID" value="<%=bookID%>"> 
+						<input type="hidden" name="quantity" value="<%=bookDetails.getQuantity()%>">
+						<button type="submit"
+							class="bg-slate-500 hover:bg-slate-700 transform hover:scale-110 text-white px-4 py-2 rounded w-full">Add
+							to Cart</button>
+					</form>
 				</div>
+
 
 				<h2 class="text-2xl">Description:</h2>
 				<p class="mb-4"><%=bookDetails.getDescription()%></p>
