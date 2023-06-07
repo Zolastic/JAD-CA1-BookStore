@@ -13,7 +13,26 @@ public class Book {
 	private int Sold;
 	private int Inventory;
 	private double Price;
+	private int Quantity;
 	
+	public Book(int bookID, String iSBN, String title, String author, String publisher, String publication_date,
+			String description, int genreID, String img, int sold, int inventory, double price, int quantity) {
+		super();
+		BookID = bookID;
+		ISBN = iSBN;
+		Title = title;
+		Author = author;
+		Publisher = publisher;
+		Publication_date = publication_date;
+		Description = description;
+		GenreID = genreID;
+		Img = img;
+		Sold = sold;
+		Inventory = inventory;
+		Price = price;
+		Quantity = quantity;
+	}
+
 	public Book(int bookID, String iSBN, String title, String author, String publisher, String publication_date, String description,
 			int genreID, String img, int sold, int inventory, double price) {
 		super();
@@ -29,6 +48,7 @@ public class Book {
 		Inventory = inventory;
 		Price = price;
 		BookID=bookID;
+		Quantity=0;
 	}
 
 	public int getBookID() {
@@ -127,6 +147,14 @@ public class Book {
 		Price = price;
 	}
 	
+	public int getQuantity() {
+		return Quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		Quantity = quantity;
+	}
+
 	
 	
 
