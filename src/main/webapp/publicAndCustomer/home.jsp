@@ -5,11 +5,6 @@
   - @(#)
   - Description: JAD Practical 5
   --%>
-<%--
-TO DO:
-- GET ALL BOOKS DISPLAYED
-- CHECK IF USERID VALID with select to db
- --%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>

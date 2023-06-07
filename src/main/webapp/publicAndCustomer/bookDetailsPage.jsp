@@ -1,3 +1,17 @@
+<%--
+  - Author(s): Soh Jian Min
+  - Date:27/4/2023
+  - Copyright Notice:-
+  - @(#)
+  - Description: JAD Practical 5
+  --%>
+<%--
+TO DO:
+- Add to cart
+- try to find other way to edit the quantity instead of using javascript
+- display the reviews
+- start with category page
+ --%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>
