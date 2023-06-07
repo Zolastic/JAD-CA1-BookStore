@@ -55,25 +55,36 @@ public class ViewBooks extends HttpServlet {
 	}
 
 	private List<Book> getBooks(Connection connection) throws SQLException {
-		try (Statement genreStatement = connection.createStatement();
-				ResultSet genreResultSet = genreStatement.executeQuery("SELECT * FROM book;");) {
+		try (Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery(
+						"SELECT book.book_id as bookID, book.img, book.title, book.price, book.description, \r\n"
+								+ "book.publication_date as publicationDate, book.ISBN, book.inventory, genre.genre_name as genreName, book.sold, \r\n"
+								+ "ROUND(AVG(IFNULL(rating, 0)), 1) as rating , author.authorName, publisher.publisherName \r\n"
+								+ "FROM book \r\n" + "JOIN genre ON genre.genre_id = book.genre_id \r\n"
+								+ "LEFT JOIN review ON review.bookID = book.book_id \r\n"
+								+ "JOIN author ON book.authorID = author.authorID \r\n"
+								+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n"
+								+ "GROUP BY book.book_id, book.img, book.title, book.price, \r\n"
+								+ "genre.genre_name, book.sold, book.inventory, author.authorName, \r\n"
+								+ "publisher.publisherName;");) {
 
 			List<Book> books = new ArrayList<>();
-			while (genreResultSet.next()) {
-				int bookID = genreResultSet.getInt("book_id");
-				String isbn = genreResultSet.getString("isbn");
-				String title = genreResultSet.getString("title");
-				String author = genreResultSet.getString("authorID");
-				String publisher = genreResultSet.getString("publisherID");
-				String publication_date = genreResultSet.getString("publication_date");
-				String description = genreResultSet.getString("description");
-				String img = genreResultSet.getString("img");
-				int genreID = genreResultSet.getInt("genre_id");
-				int sold = genreResultSet.getInt("sold");
-				int inventory = genreResultSet.getInt("inventory");
-				double price = genreResultSet.getInt("price");
-				books.add(new Book(bookID, isbn, title, author, publisher, publication_date, description, genreID, img,
-						sold, inventory, price));
+			while (resultSet.next()) {
+				int bookID = resultSet.getInt("bookID");
+				String isbn = resultSet.getString("isbn");
+				String title = resultSet.getString("title");
+				String author = resultSet.getString("authorName");
+				String publisher = resultSet.getString("publisherName");
+				String publication_date = resultSet.getString("publicationDate");
+				String description = resultSet.getString("description");
+				String img = resultSet.getString("img");
+				String genreName = resultSet.getString("genreName");
+				int sold = resultSet.getInt("sold");
+				int inventory = resultSet.getInt("inventory");
+				double price = resultSet.getDouble("price");
+				double rating = resultSet.getDouble("rating");
+				books.add(new Book(bookID, isbn, title, author, publisher, publication_date, description, genreName,
+						img, sold, inventory, price, rating));
 			}
 
 			return books;

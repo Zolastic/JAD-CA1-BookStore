@@ -8,10 +8,6 @@
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/admin/css/viewBooks.css">
-<link rel="stylesheet"
-	href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"
-	integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V"
-	crossorigin="anonymous" />
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 </head>
@@ -33,7 +29,10 @@
 				class="viewBooksImg rounded-lg mx-10">
 			<div class="flex flex-col ml-10">
 				<h1 class="text-3xl font-bold"><%=book.getTitle()%></h1>
-				<p class="mt-5"><%=book.getDescription()%></p>
+				<p class="mt-5 text-lg"><%=book.getDescription()%></p>
+				<p class="mt-5 text-sm">Author: <%=book.getAuthor()%></p>
+				<p class="mt-5 text-sm">Rating: <%=book.getRating()%></p>
+				
 			</div>
 			<div class="flex-grow"></div>
 			<div class="flex">
