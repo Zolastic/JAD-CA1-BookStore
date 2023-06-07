@@ -1,4 +1,4 @@
-package Book;
+package model;
 
 public class Book {
 	private String BookID;
@@ -136,5 +136,6 @@ public class Book {
 	public void setRating(double rating) {
 		Rating = rating;
 	}
+	
 
 }

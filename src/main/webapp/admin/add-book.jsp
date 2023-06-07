@@ -6,62 +6,14 @@
 <meta charset="ISO-8859-1">
 <title>Admin: Add Book</title>
 <%@include file="../tailwind-css.jsp"%>
-<link rel="stylesheet" href="./css/add-book.css">
+<link rel="stylesheet" href="<%= request.getContextPath()%>/admin/css/add-book.css">
 </head>
 <body class="addBookBody">
 	<%@ page import="java.io.*, java.net.*, java.util.*, java.sql.*"%>
-	<%@ page import="utils.DBConnection"%>
-	<%
-	List<Object[]> genres = new ArrayList<>();
-	List<Object[]> authors = new ArrayList<>();
-	List<Object[]> publishers = new ArrayList<>();
+	<%@ page import="utils.DBConnection, model.*"%>
 
-	try {
-		Connection connection = DBConnection.getConnection();
-		Statement genreStatement = connection.createStatement();
-		Statement authorStatement = connection.createStatement();
-		Statement publisherStatement = connection.createStatement();
-
-		ResultSet genreResultSet = genreStatement
-		.executeQuery("SELECT genre_id as genreId, genre_name as genreName FROM genre;");
-		ResultSet authorResultSet = authorStatement.executeQuery("SELECT * FROM author;");
-		ResultSet publisherResultSet = publisherStatement.executeQuery("SELECT * FROM publisher;");
-
-		while (genreResultSet.next()) {
-			int genreId = genreResultSet.getInt("genreId");
-			String genreName = genreResultSet.getString("genreName");
-			Object[] genre = { genreId, genreName };
-			genres.add(genre);
-		}
-
-		while (authorResultSet.next()) {
-			int authorId = authorResultSet.getInt("authorID");
-			String authorName = authorResultSet.getString("authorName");
-			Object[] author = { authorId, authorName };
-			authors.add(author);
-		}
-
-		while (publisherResultSet.next()) {
-			int publisherID = publisherResultSet.getInt("publisherID");
-			String publisherName = publisherResultSet.getString("publisherName");
-			Object[] publisher = { publisherID, publisherName };
-			publishers.add(publisher);
-		}
-
-		genreResultSet.close();
-		genreStatement.close();
-
-		authorResultSet.close();
-		authorStatement.close();
-
-		publisherResultSet.close();
-		publisherStatement.close();
-	} catch (SQLException e) {
-		e.printStackTrace();
-	}
-	%>
 	<!-- Add Book Form  -->
-	<form class="mt-3" action="/CA1-assignment/BooksServlet" method="post">
+	<form class="mt-3" action="<%= request.getContextPath()%>/AddBook" method="post">
 		<!-- title -->
 		<div class="relative z-0 w-full mb-8 group">
 			<input type="text" name="title" id="title"
@@ -100,11 +52,10 @@
 				class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
 				name="author" required>
 				<%
-				for (Object[] author : authors) {
-					int authorId = (int) author[0];
-					String authorName = (String) author[1];
+				List<Author> authors = (List<Author>) request.getAttribute("authors");
+				for (Author author : authors) {
 				%>
-				<option value="<%=authorId%>"><%=authorName%></option>
+				<option value="<%=author.getId()%>"><%=author.getName()%></option>
 				<%
 				}
 				%>
@@ -119,11 +70,10 @@
 				class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
 				name="publisher" required>
 				<%
-				for (Object[] publisher : publishers) {
-					int publisherId = (int) publisher[0];
-					String publisherName = (String) publisher[1];
+				List<Publisher> publishers = (List<Publisher>) request.getAttribute("publishers");
+				for (Publisher publisher : publishers) {
 				%>
-				<option value="<%=publisherId%>"><%=publisherName%></option>
+				<option value="<%=publisher.getId()%>"><%=publisher.getName()%></option>
 				<%
 				}
 				%>
@@ -153,11 +103,10 @@
 					class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
 					name="genre" required>
 					<%
-					for (Object[] genre : genres) {
-						int genreId = (int) genre[0];
-						String genreName = (String) genre[1];
+					List<Genre> genres = (List<Genre>) request.getAttribute("genres");
+					for (Genre genre : genres) {
 					%>
-					<option value="<%=genreId%>"><%=genreName%></option>
+					<option value="<%= genre.getId()%>"><%=genre.getName()%></option>
 					<%
 					}
 					%>

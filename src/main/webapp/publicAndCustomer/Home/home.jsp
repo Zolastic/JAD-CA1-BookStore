@@ -12,7 +12,7 @@ TO DO:
  --%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-<%@ page import="Book.Book"%>
+<%@ page import="model.Book"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,44 +24,44 @@ TO DO:
 <%@include file="../../tailwind-css.jsp"%>
 </head>
 <body>
-	<%@ page import="java.io.*, java.net.*, java.util.*, java.sql.*"%>
+	<%@ page import="java.io.*,java.net.*,java.util.*,java.sql.*"%>
 	<%@ page import="utils.DBConnection"%>
 	<%
-	ArrayList<Book> popularBooks = new ArrayList<>();
-	try {
-		Connection connection = DBConnection.getConnection();
-		Statement statement = connection.createStatement();
+	ArrayList<model.Book> popularBooks = new ArrayList<>();
+		try {
+			Connection connection = DBConnection.getConnection();
+			Statement statement = connection.createStatement();
 
-		ResultSet resultSet = statement.executeQuery(
-		"SELECT book.book_id, book.img,book.title,book.price, book.description,book.publication_date,book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(review.rating) AS DECIMAL(2,1)) AS average_rating, author.authorName,publisher.publisherName FROM book JOIN genre ON genre.genre_id = book.genre_id LEFT JOIN review ON review.bookID = book.book_id JOIN author ON book.authorID = author.authorID JOIN publisher ON book.publisherID = publisher.publisherID GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName ORDER BY book.sold DESC LIMIT 6;");
+			ResultSet resultSet = statement.executeQuery(
+			"SELECT book.book_id, book.img,book.title,book.price, book.description,book.publication_date,book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(review.rating) AS DECIMAL(2,1)) AS average_rating, author.authorName,publisher.publisherName FROM book JOIN genre ON genre.genre_id = book.genre_id LEFT JOIN review ON review.bookID = book.book_id JOIN author ON book.authorID = author.authorID JOIN publisher ON book.publisherID = publisher.publisherID GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName ORDER BY book.sold DESC LIMIT 6;");
 
-		while (resultSet.next()) {
-			String bookID = resultSet.getString("book_id");
-			String iSBN = resultSet.getString("ISBN");
-			String title = resultSet.getString("title");
-			String author = resultSet.getString("authorName");
-			String publisher = resultSet.getString("publisherName");
-			String publication_date = resultSet.getString("publication_date");
-			String description = resultSet.getString("description");
-			String genre_name = resultSet.getString("genre_name");
-			String img = resultSet.getString("img");
-			int sold = resultSet.getInt("sold");
-			int inventory = resultSet.getInt("inventory");
-			double price = resultSet.getDouble("price");
-			double rating = resultSet.getDouble("average_rating");
-			Book popularBook = new Book(bookID, iSBN, title, author, publisher, publication_date, description, genre_name,
-			img, sold, inventory, price, rating);
-			popularBooks.add(popularBook);
+			while (resultSet.next()) {
+		String bookID = resultSet.getString("book_id");
+		String iSBN = resultSet.getString("ISBN");
+		String title = resultSet.getString("title");
+		String author = resultSet.getString("authorName");
+		String publisher = resultSet.getString("publisherName");
+		String publication_date = resultSet.getString("publication_date");
+		String description = resultSet.getString("description");
+		String genre_name = resultSet.getString("genre_name");
+		String img = resultSet.getString("img");
+		int sold = resultSet.getInt("sold");
+		int inventory = resultSet.getInt("inventory");
+		double price = resultSet.getDouble("price");
+		double rating = resultSet.getDouble("average_rating");
+		model.Book popularBook = new model.Book(bookID, iSBN, title, author, publisher, publication_date, description, genre_name,
+		img, sold, inventory, price, rating);
+		popularBooks.add(popularBook);
+			}
+			resultSet.close();
+			statement.close();
+		} catch (SQLException e) {
+			System.err.println("Error :" + e);
 		}
-		resultSet.close();
-		statement.close();
-	} catch (SQLException e) {
-		System.err.println("Error :" + e);
-	}
 	%>
 	<%
 	String userID = (String) session.getAttribute("userID");
-	if (userID == null) {
+		if (userID == null) {
 	%>
 	<%@include file="../navBar/headerNavPublic.html"%>
 	<%
@@ -99,12 +99,12 @@ TO DO:
 		<div class="flex flex-wrap mx-10 px-10 w-full">
 			<%
 			int bookCount = 0;
-			for (Book book : popularBooks) {
-				double rating = book.getRating();
-				int filledStars = (int) rating;
-				boolean hasHalfStar = (rating - filledStars) >= 0.5;
-				int emptyStars = 5 - filledStars - (hasHalfStar ? 1 : 0);
-				if (bookCount % 3 == 0) {
+				for (model.Book book : popularBooks) {
+					double rating = book.getRating();
+					int filledStars = (int) rating;
+					boolean hasHalfStar = (rating - filledStars) >= 0.5;
+					int emptyStars = 5 - filledStars - (hasHalfStar ? 1 : 0);
+					if (bookCount % 3 == 0) {
 			%><div class="flex justify-between w-full mt-4">
 				<%
 				}
