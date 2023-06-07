@@ -1,22 +1,21 @@
 package model;
 
 public class Book {
-	private String BookID;
+	private int BookID;
 	private String ISBN;
 	private String Title;
 	private String Author;
 	private String Publisher;
 	private String Publication_date; 
 	private String Description;
-	private String Genre_name;
+	private int GenreID;
 	private String Img;
 	private int Sold;
 	private int Inventory;
 	private double Price;
-	private double Rating;
 	
-	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date, String description,
-			String genre_name, String img, int sold, int inventory, double price, double rating) {
+	public Book(int bookID, String iSBN, String title, String author, String publisher, String publication_date, String description,
+			int genreID, String img, int sold, int inventory, double price) {
 		super();
 		ISBN = iSBN;
 		Title = title;
@@ -24,13 +23,20 @@ public class Book {
 		Publisher = publisher;
 		Publication_date = publication_date;
 		Description = description;
-		Genre_name = genre_name;
+		GenreID = genreID;
 		Img = img;
 		Sold = sold;
 		Inventory = inventory;
 		Price = price;
 		BookID=bookID;
-		Rating =rating;
+	}
+
+	public int getBookID() {
+		return BookID;
+	}
+
+	public void setBookID(int bookID) {
+		BookID = bookID;
 	}
 
 	public String getISBN() {
@@ -81,12 +87,12 @@ public class Book {
 		Description = description;
 	}
 
-	public String getGenre_name() {
-		return Genre_name;
+	public int getGenreID() {
+		return GenreID;
 	}
 
-	public void setGenre_name(String genre_name) {
-		Genre_name = genre_name;
+	public void setGenreID(int genreID) {
+		GenreID = genreID;
 	}
 
 	public String getImg() {
@@ -120,22 +126,8 @@ public class Book {
 	public void setPrice(double price) {
 		Price = price;
 	}
-
-	public String getBookID() {
-		return BookID;
-	}
-
-	public void setBookID(String bookID) {
-		BookID = bookID;
-	}
-
-	public double getRating() {
-		return Rating;
-	}
-
-	public void setRating(double rating) {
-		Rating = rating;
-	}
+	
+	
 	
 
 }
