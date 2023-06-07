@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+.viewBooksHeader {
+	background: linear-gradient(#57687C, #2C3E50);
+}
+
+.viewBooksHeader h1 {
+	color: #B4C7DD;
+}
+
+.viewBooksImg {
+	width: 180px;
+	height: 320px;
+}
