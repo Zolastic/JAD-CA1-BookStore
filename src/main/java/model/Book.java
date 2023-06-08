@@ -15,6 +15,7 @@ public class Book {
 	private double Price;
 	private double Rating;
 	private int Quantity;
+	private int Selected;
 	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
 			String description, String genreName, String img, int sold, int inventory, double price, double rating) {
 		super();
@@ -31,6 +32,7 @@ public class Book {
 		Inventory = inventory;
 		Price = price;
 		Rating = rating;
+		Selected=0;
 	}
 	
 	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
@@ -50,6 +52,37 @@ public class Book {
 		Price = price;
 		Quantity = quantity;
 		Rating=rating;
+		Selected=0;
+	}
+
+
+	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
+			String description, String genreName, String img, int sold, int inventory, double price, double rating,
+			int quantity, int selected) {
+		super();
+		BookID = bookID;
+		ISBN = iSBN;
+		Title = title;
+		Author = author;
+		Publisher = publisher;
+		Publication_date = publication_date;
+		Description = description;
+		GenreName = genreName;
+		Img = img;
+		Sold = sold;
+		Inventory = inventory;
+		Price = price;
+		Rating = rating;
+		Quantity = quantity;
+		Selected = selected;
+	}
+
+	public int getSelected() {
+		return Selected;
+	}
+
+	public void setSelected(int selected) {
+		Selected = selected;
 	}
 
 	public String getBookID() {
