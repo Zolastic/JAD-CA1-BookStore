@@ -15,10 +15,10 @@ public class Book {
 	private double Price;
 	private double Rating;
 	private int Quantity;
-	
-	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date, String description,
-			String genreName, String img, int sold, int inventory, double price, double rating) {
+	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
+			String description, String genreName, String img, int sold, int inventory, double price, double rating) {
 		super();
+		BookID = bookID;
 		ISBN = iSBN;
 		Title = title;
 		Author = author;
@@ -30,9 +30,7 @@ public class Book {
 		Sold = sold;
 		Inventory = inventory;
 		Price = price;
-		BookID=bookID;
-		Quantity=0;
-		Rating=rating;
+		Rating = rating;
 	}
 	
 	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
@@ -54,6 +52,13 @@ public class Book {
 		Rating=rating;
 	}
 
+	public String getBookID() {
+		return BookID;
+	}
+
+	public void setBookID(String bookID) {
+		BookID = bookID;
+	}
 
 	public String getISBN() {
 		return ISBN;
@@ -103,6 +108,13 @@ public class Book {
 		Description = description;
 	}
 
+	public String getGenreName() {
+		return GenreName;
+	}
+
+	public void setGenreName(String genreName) {
+		GenreName = genreName;
+	}
 
 	public String getImg() {
 		return Img;
@@ -135,26 +147,6 @@ public class Book {
 	public void setPrice(double price) {
 		Price = price;
 	}
-	
-	public int getQuantity() {
-		return Quantity;
-	}
-
-	public void setQuantity(int quantity) {
-		Quantity = quantity;
-	}
-
-	public String getBookID() {
-		return BookID;
-	}
-
-	public void setBookID(String bookID) {
-		BookID = bookID;
-	}
-
-	public void setGenreName(String genreName) {
-		GenreName = genreName;
-	}
 
 	public double getRating() {
 		return Rating;
@@ -164,11 +156,14 @@ public class Book {
 		Rating = rating;
 	}
 
-	public String getGenreName() {
-		return GenreName;
+	public int getQuantity() {
+		return Quantity;
 	}
 
-
+	public void setQuantity(int quantity) {
+		Quantity = quantity;
+	}
 	
-
+	
+	
 }
