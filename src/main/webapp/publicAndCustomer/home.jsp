@@ -109,7 +109,7 @@
 				%>
 				<div
 					class="m-4 p-6 bg-white border border-black rounded-lg w-80 transform hover:scale-110"
-					onclick="window.location.href = 'bookDetailsPage.jsp?bookID=<%=book.getBookID()%>';">
+					onclick="window.location.href = '/CA1-assignment/bookDetailsPage?bookID=<%=book.getBookID()%>';">
 					<div class="h-48 w-48 flex items-center justify-center mx-auto">
 						<%
 						if (book.getImg() != null) {
