@@ -2,8 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>
 <%@ page import="java.text.DecimalFormat"%>
-<%@ page import="java.io.*,java.net.*,java.util.*,java.sql.*"%>
-<%@ page import="utils.DBConnection"%>
+<%@ page import="java.util.*"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -44,14 +43,32 @@
     }
 </script>
 	<%
-	String bookID = request.getParameter("bookID");
-	Book bookDetails = null;
+	Book bookDetails = (Book) request.getAttribute("bookDetails");
+	String bookID = null;
 	boolean err = false;
-	List<Map<String, Object>> reviews = new ArrayList<>();
+	List<Map<String, Object>> reviews = (List<Map<String, Object>>)request.getAttribute("reviews");
+	String validatedUserID=(String) request.getAttribute("validatedUserID");
+	String addToCartAction = request.getParameter("addToCart");
 
-	if (bookID == null) {
-		err = true;
+	if (addToCartAction != null) {
+	    if (addToCartAction.equals("success")) {
 	%>
+	    <script>
+	        alert("Item added to cart successfully");
+	    </script>
+	<%
+	    } else {
+	%>
+	    <script>
+	        alert("Error adding to cart");
+	    </script>
+	<%
+	    }
+	}
+
+
+	if (bookDetails == null) { 
+	err = true; %>
 	<div class="fixed inset-0 flex items-center justify-center">
 		<div class="bg-yellow-200 px-4 py-2 rounded-lg">
 			<i class="fas fa-exclamation-triangle mr-2"></i> Error, No books
@@ -60,45 +77,7 @@
 	</div>
 	<%
 	} else {
-	try {
-		Connection connection = DBConnection.getConnection();
-		String simpleProc = "{call getBookDetails(?)}";
-		CallableStatement cs = connection.prepareCall(simpleProc);
-		cs.setString(1, bookID);
-		cs.execute();
-		ResultSet resultSet = cs.getResultSet();
-
-		if (resultSet != null && resultSet.next()) {
-			String iSBN = resultSet.getString("ISBN");
-			String title = resultSet.getString("title");
-			String author = resultSet.getString("authorName");
-			String publisher = resultSet.getString("publisherName");
-			String publication_date = resultSet.getString("publication_date");
-			String description = resultSet.getString("description");
-			String genre_name = resultSet.getString("genre_name");
-			String img = resultSet.getString("img");
-			int sold = resultSet.getInt("sold");
-			int inventory = resultSet.getInt("inventory");
-			double price = resultSet.getDouble("price");
-			double rating = resultSet.getDouble("average_rating");
-			bookDetails = new Book(bookID, iSBN, title, author, publisher, publication_date, description, genre_name, img,
-			sold, inventory, price, 1, rating);
-			String sqlStr = "SELECT review.*, users.name FROM review, users WHERE review.custID=users.userID AND bookID=?;";
-			PreparedStatement ps = connection.prepareStatement(sqlStr);
-			ps.setString(1, bookID);
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-
-		Map<String, Object> review = new HashMap<>();
-		review.put("userName", rs.getString("name"));
-		review.put("review_text", rs.getString("review_text"));
-		review.put("ratingByEachCust", rs.getDouble("rating"));
-		review.put("ratingDate", rs.getString("ratingDate"));
-		reviews.add(review);
-
-			}
-			System.out.println(reviews);
+		bookID=bookDetails.getBookID();
 			String sQty = request.getParameter("quantity");
 			if (sQty != null) {
 		int iQty = Integer.parseInt(sQty);
@@ -108,25 +87,12 @@
 
 			}
 
-		} else {
-			err = true;
-	%>
-	<div class="fixed inset-0 flex items-center justify-center">
-		<div class="bg-yellow-200 px-4 py-2 rounded-lg">
-			<i class="fas fa-exclamation-triangle mr-2"></i> Error, No books
-			found
-		</div>
-	</div>
-	<%
-	}
-	connection.close();
-	} catch (Exception e) {
-	System.err.println("Error: " + e);
-	}
-	}
+		} 
+	
+	
+	
 
-	String userID = (String) session.getAttribute("userID");
-	if (userID == null) {
+	if (validatedUserID == null) {
 	%>
 	<%@ include file="navBar/headerNavPublic.html"%>
 	<%
@@ -218,16 +184,18 @@
 				</div>
 
 				<div class="mr-4">
-					<form action="/CA1-assignment/bookDetailsPage?userID=<%=userID%>"
-						method="post">
+					<form action="/CA1-assignment/bookDetailsPage" method="post">
 						<input type="hidden" name="bookID" value="<%=bookID%>"> <input
 							type="hidden" name="quantity"
 							value="<%=bookDetails.getQuantity()%>"> <input
-							type="hidden" name="userID"value-"<%=userID%>"> <input
-							type="hidden" name="action" value="addToCart">
+							type="hidden" name="userID" value="<%=validatedUserID%>">
+						<input type="hidden" name="action" value="addToCart">
 						<button type="submit"
-							class="bg-slate-500 hover:bg-slate-700 transform hover:scale-110 text-white px-4 py-2 rounded w-full">Add
-							to Cart</button>
+							class="bg-slate-500 hover:bg-slate-700 transform hover:scale-110 text-white px-4 py-2 rounded w-full">
+							<i class="fas fa-shopping-cart text-white-500 mr-2"></i>
+							Add to Cart
+							<i class="fas fa-shopping-cart text-white-500 ml-2"></i>
+							</button>
 					</form>
 
 				</div>
@@ -264,7 +232,11 @@
 				%>
 				<p class="text-4xl text-bold ml-5 mr-2"><%=bookDetails.getRating()%>/5.0
 				</p>
-				<p class="m1-3 text-gray-500">(Total <%=reviews.size() %> Reviews)</p>
+				<p class="m1-3 text-gray-500">
+					(Total
+					<%=reviews.size() %>
+					Reviews)
+				</p>
 			</div>
 		</div>
 		<div class="flex items-center mx-5 border border-gray-100 p-5 mb-20">
