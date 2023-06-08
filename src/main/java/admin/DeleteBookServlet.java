@@ -2,10 +2,10 @@ package admin;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,20 +14,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import model.*;
+import model.Author;
+import model.Book;
+import model.Genre;
+import model.Publisher;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class viewBooks
+ * Servlet implementation class DeleteBookServlet
  */
-@WebServlet("/ViewBooks")
-public class ViewBooksServlet extends HttpServlet {
+@WebServlet("/DeleteBook")
+public class DeleteBookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public ViewBooksServlet() {
+	public DeleteBookServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -40,37 +43,35 @@ public class ViewBooksServlet extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		try (Connection connection = DBConnection.getConnection()) {
-
-			loadData(request, connection);
-			request.getRequestDispatcher("admin/viewBooks.jsp").forward(request, response);
+			String bookID = request.getParameter("bookID");
+			loadData(request, connection, bookID);
+			request.getRequestDispatcher("admin/editBook.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
 		}
 	}
-
-	private void loadData(HttpServletRequest request, Connection connection) throws SQLException {
-		List<Book> books = getBooks(connection);
-		request.setAttribute("books", books);
+	
+	private void loadData(HttpServletRequest request, Connection connection, String bookID) throws SQLException {
+		Book book = getBook(connection, bookID);
+		request.setAttribute("book", book);
 	}
-
-	private List<Book> getBooks(Connection connection) throws SQLException {
+	
+	private Book getBook(Connection connection, String bookID) throws SQLException {
+		String sqlStr = "SELECT book.book_id as bookId, book.img, book.title, book.price, book.description, \r\n"
+				+ "book.publication_date as publicationDate, book.ISBN, book.inventory, genre.genre_name as genreName, book.sold, \r\n"
+				+ "ROUND(AVG(IFNULL(rating, 0)), 1) as rating , author.authorName, publisher.publisherName \r\n"
+				+ "FROM book \r\n" + "JOIN genre ON genre.genre_id = book.genre_id \r\n"
+				+ "LEFT JOIN review ON review.bookID = book.book_id \r\n"
+				+ "JOIN author ON book.authorID = author.authorID \r\n"
+				+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n" + "WHERE book.book_id = ?;";
 		try (Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery(
-						"SELECT book.book_id as bookID, book.img, book.title, book.price, book.description, \r\n"
-								+ "book.publication_date as publicationDate, book.ISBN, book.inventory, genre.genre_name as genreName, book.sold, \r\n"
-								+ "ROUND(AVG(IFNULL(rating, 0)), 1) as rating , author.authorName, publisher.publisherName \r\n"
-								+ "FROM book \r\n" + "JOIN genre ON genre.genre_id = book.genre_id \r\n"
-								+ "LEFT JOIN review ON review.bookID = book.book_id \r\n"
-								+ "JOIN author ON book.authorID = author.authorID \r\n"
-								+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n"
-								+ "GROUP BY book.book_id, book.img, book.title, book.price, \r\n"
-								+ "genre.genre_name, book.sold, book.inventory, author.authorName, \r\n"
-								+ "publisher.publisherName;");) {
+				PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, bookID);
 
-			List<Book> books = new ArrayList<>();
-			while (resultSet.next()) {
-				String bookID = resultSet.getString("bookID");
+			ResultSet resultSet = ps.executeQuery();
+
+			if (resultSet.next()) {
 				String isbn = resultSet.getString("isbn");
 				String title = resultSet.getString("title");
 				String author = resultSet.getString("authorName");
@@ -83,12 +84,14 @@ public class ViewBooksServlet extends HttpServlet {
 				int inventory = resultSet.getInt("inventory");
 				double price = resultSet.getDouble("price");
 				double rating = resultSet.getDouble("rating");
-				books.add(new Book(bookID, isbn, title, author, publisher, publication_date, description, genreName,
-						img, sold, inventory, price, rating));
+				Book book = new Book(bookID, isbn, title, author, publisher, publication_date, description, genreName,
+						img, sold, inventory, price, rating);
+				return book;
 			}
 
-			return books;
+			throw new RuntimeException("Book not found!!! bookID: " + bookID);
 		}
+
 	}
 
 	/**

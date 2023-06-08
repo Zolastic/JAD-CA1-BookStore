@@ -24,7 +24,7 @@ import utils.DBConnection;
  * Servlet implementation class AddBook
  */
 @WebServlet("/AddBook")
-public class AddBook extends HttpServlet {
+public class AddBookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	/**

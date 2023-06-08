@@ -30,20 +30,48 @@
 			<div class="flex flex-col ml-10">
 				<h1 class="text-3xl font-bold"><%=book.getTitle()%></h1>
 				<p class="mt-5 text-lg"><%=book.getDescription()%></p>
-				<p class="mt-5 text-sm">Author: <%=book.getAuthor()%></p>
-				<p class="mt-5 text-sm">Rating: <%=book.getRating()%></p>
-				
+				<p class="mt-5 text-sm">
+					Author:
+					<%=book.getAuthor()%></p>
+				<p class="mt-5 text-sm">
+					Rating:
+					<%=book.getRating()%></p>
+
 			</div>
 			<div class="flex-grow"></div>
 			<div class="flex">
-				<a href="#"><i class="fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer" style="color: #926b6a;"></i></a>
-				<a href="#"><i class="fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer" style="color: #926b6a;"></i></a>
+				<a
+					href="<%=request.getContextPath()%>/EditBook?bookID=<%=book.getBookID()%>"><i
+					class="viewBooksIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
+				<a id="toggleButton" class="m-0 p-0 toggleButton"><i
+					class="viewBooksIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i></a>
 			</div>
 		</div>
 		<%
 		}
 		%>
-	</div>
+		<!-- Modal for confirm delete -->
+	<div id="modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-8 rounded shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Modal Content</h2>
+            <p>This is an example of a modal created using JSP and Tailwind CSS.</p>
+            <button id="closeButton" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4">Close</button>
+        </div>
+    </div>
 
+    <script>
+    	const items = document.getElementsByClassName('toggleButton');
+    	for (let i = 0 ; i < items.length; i++) {
+    		items[i].addEventListener('click', () => {
+            	document.getElementById('modal').classList.toggle('hidden');
+        	});
+    	}
+    	document.getElementById('closeButton').addEventListener('click', function() {
+            document.getElementById('modal').classList.add('hidden');
+        });
+    	
+    </script>
+	</div>
+	
 </body>
 </html>

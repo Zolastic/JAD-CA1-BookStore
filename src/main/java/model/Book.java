@@ -1,7 +1,7 @@
 package model;
 
 public class Book {
-	private int BookID;
+	private String BookID;
 	private String ISBN;
 	private String Title;
 	private String Author;
@@ -14,7 +14,7 @@ public class Book {
 	private int Inventory;
 	private double Price;
 	private double Rating;
-	public Book(int bookID, String iSBN, String title, String author, String publisher, String publication_date,
+	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
 			String description, String genreName, String img, int sold, int inventory, double price, double rating) {
 		super();
 		BookID = bookID;
@@ -31,10 +31,10 @@ public class Book {
 		Price = price;
 		Rating = rating;
 	}
-	public int getBookID() {
+	public String getBookID() {
 		return BookID;
 	}
-	public void setBookID(int bookID) {
+	public void setBookID(String bookID) {
 		BookID = bookID;
 	}
 	public String getISBN() {
