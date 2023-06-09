@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+.bookDetialsIcons {
+	color: #926B6A;
+}
+
+
+
+.bookDetialsIcons:hover {
+	color: #F7CAC9;
+}
