@@ -8,3 +8,11 @@
 .addBookBody {
 	margin: 30px 10% !important;
 }
+
+.addBookSelectImage {
+	text-align:center !important;
+    padding:3% !important;
+    border:thin solid #5D5C61 !important;
+    background-color: #5D5C61 !important;
+    color: #DAE8E9 !important;
+}
