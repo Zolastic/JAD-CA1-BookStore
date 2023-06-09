@@ -11,8 +11,6 @@
 <%@ page import="java.text.DecimalFormat"%>
 <%@ page import="java.io.*,java.net.*,java.util.*,java.sql.*"%>
 <%@ page import="utils.DBConnection"%>
-<%@ page import="java.net.URLEncoder"%>
-<%@ page import="java.nio.charset.StandardCharsets"%>
 
 
 <!DOCTYPE html>
@@ -124,8 +122,7 @@
 				}
 				String urlToBookDetails;
 				if(validatedUserID!=null){
-					String encodedUserID = URLEncoder.encode(validatedUserID, StandardCharsets.UTF_8.toString());
-					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID() + "&userID=" + encodedUserID;
+					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID() + "&userIDAvailable=true" ;
 				}
 				else{
 					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID();

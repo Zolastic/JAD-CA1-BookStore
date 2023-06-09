@@ -48,6 +48,7 @@
 	boolean err = false;
 	List<Map<String, Object>> reviews = (List<Map<String, Object>>)request.getAttribute("reviews");
 	String validatedUserID=(String) request.getAttribute("validatedUserID");
+	System.out.println(validatedUserID);
 	String addToCartAction = request.getParameter("addToCart");
 
 	if (addToCartAction != null) {
