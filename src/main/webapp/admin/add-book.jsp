@@ -13,7 +13,16 @@
 	<%@ page import="utils.DBConnection, model.*"%>
 	<%@include file="./navbar.jsp"%>
 	<!-- Add Book Form  -->
-	<form class="mt-28" action="<%= request.getContextPath()%>/AddBook" method="post">
+	<form class="mt-28" action="<%= request.getContextPath()%>/AddBook" method="post" enctype="multipart/form-data">
+		<!-- image -->
+		<div class="addBookSelectImage flex flex-col z-0 w-full mb-8 group">
+			<label for="image"
+				class="text-sm text-gray-900">Select Image</label>
+			<input id="image" name="image" type="file" onchange="onFileChange()" /> 
+		</div>
+		
+		
+		
 		<!-- title -->
 		<div class="relative z-0 w-full mb-8 group">
 			<input type="text" name="title" id="title"
