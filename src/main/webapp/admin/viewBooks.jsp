@@ -42,7 +42,7 @@
 			<a class="hover:cursor-pointer hover:text-amber-900"
 				href="<%=request.getContextPath()%>/BookDetails?bookID=<%=book.getBookID()%>">
 				<%
-					if ((book.getImage()) == null) {
+					if ((book.getImg()) == null) {
 						%>
 						<img
 				alt="" src="<%=request.getContextPath()%>/admin/img/No_Image_Available.jpg"
@@ -51,7 +51,7 @@
 					} else {
 						%>
 						<img
-				alt="" src="data:image/png;base64, <%= book.getImage() %>"
+				alt="" src="data:image/png;base64, <%= book.getImg() %>"
 				class="viewBooksImg rounded-lg mx-10 object-contain">
 						<%
 					}

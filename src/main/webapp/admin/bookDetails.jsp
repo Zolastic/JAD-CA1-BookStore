@@ -20,7 +20,7 @@
 
 	<div class="flex rounded-lg shadow-lg bg-gray-50 pt-3 pb-96 mt-28">
 		<%
-		if ((book.getImage()) == null) {
+		if ((book.getImg()) == null) {
 		%>
 		<img alt=""
 			src="<%=request.getContextPath()%>/admin/img/No_Image_Available.jpg"
@@ -28,7 +28,7 @@
 		<%
 		} else {
 		%>
-		<img alt="" src="data:image/png;base64, <%=book.getImage()%>"
+		<img alt="" src="data:image/png;base64, <%=book.getImg()%>"
 			class="viewBooksImg rounded-lg mx-10 object-contain">
 		<%
 		}
