@@ -136,6 +136,7 @@ public class EditBookServlet extends HttpServlet {
 				int inventory = resultSet.getInt("inventory");
 				double price = resultSet.getDouble("price");
 				double rating = resultSet.getDouble("rating");
+				resultSet.close();
 				Book book = new Book(bookID, isbn, title, author, publisher, publication_date, description, genreName,
 						img, sold, inventory, price, rating);
 				return book;
