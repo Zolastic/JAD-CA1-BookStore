@@ -11,6 +11,9 @@
 <%@ page import="java.text.DecimalFormat"%>
 <%@ page import="java.io.*,java.net.*,java.util.*,java.sql.*"%>
 <%@ page import="utils.DBConnection"%>
+<%@ page import="java.net.URLEncoder"%>
+<%@ page import="java.nio.charset.StandardCharsets"%>
+
 
 <!DOCTYPE html>
 <html>
@@ -25,6 +28,7 @@
 <body>
 	<%
 	ArrayList<model.Book> popularBooks = new ArrayList<>();
+	String validatedUserID=null;
 	try {
 		Connection connection = DBConnection.getConnection();
 		Statement statement = connection.createStatement();
@@ -50,6 +54,19 @@
 			img, sold, inventory, price, rating);
 			popularBooks.add(popularBook);
 		}
+		
+		String userID = (String) session.getAttribute("userID");
+		String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
+		PreparedStatement ps = connection.prepareStatement(sqlStr);
+		ps.setString(1, userID);
+		ResultSet rs = ps.executeQuery();
+		rs.next();
+		int rowCount = rs.getInt(1);
+		if (rowCount > 0) {
+			validatedUserID=userID;
+		}
+		
+		
 		connection.close();
 	} 
 	catch (SQLException e) {
@@ -57,8 +74,7 @@
 	}
 	%>
 	<%
-	String userID = (String) session.getAttribute("userID");
-	if (userID == null) {
+	if (validatedUserID == null) {
 	%>
 	<%@include file="navBar/headerNavPublic.html"%>
 	<%
@@ -106,10 +122,18 @@
 			%><div class="flex justify-between w-full mt-4">
 				<%
 				}
+				String urlToBookDetails;
+				if(validatedUserID!=null){
+					String encodedUserID = URLEncoder.encode(validatedUserID, StandardCharsets.UTF_8.toString());
+					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID() + "&userID=" + encodedUserID;
+				}
+				else{
+					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID();
+				}
 				%>
 				<div
 					class="m-4 p-6 bg-white border border-black rounded-lg w-80 transform hover:scale-110"
-					onclick="window.location.href = 'bookDetailsPage.jsp?bookID=<%=book.getBookID()%>';">
+					onclick="window.location.href = '<%= urlToBookDetails %>'">
 					<div class="h-48 w-48 flex items-center justify-center mx-auto">
 						<%
 						if (book.getImg() != null) {
