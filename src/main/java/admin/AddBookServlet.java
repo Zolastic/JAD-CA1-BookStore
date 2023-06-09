@@ -113,7 +113,7 @@ public class AddBookServlet extends HttpServlet {
 		String description = request.getParameter("description");
 		int genreId = Integer.parseInt(request.getParameter("genre"));
 		
-		String sqlStr = "INSERT INTO BOOK (title, price, authorID, publisherID, Qty, publication_date, ISBN, description, genre_id, book_id)\r\n"
+		String sqlStr = "INSERT INTO BOOK (title, price, authorID, publisherID, inventory, publication_date, ISBN, description, genre_id, book_id)\r\n"
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		try (Connection conn = DBConnection.getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sqlStr)) {

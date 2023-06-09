@@ -14,38 +14,57 @@
 <body>
 	<%@ page import="java.util.*, model.*"%>
 
-	<div
-		class="viewBooksHeader h-64 flex flex-col justify-center items-center">
-		<h1 class="font-bold text-2xl my-2 tracking-wider">Book Management System</h1>
-		<form action="<%=request.getContextPath()%>/SearchResults"
-			method="get" class="my-2">
-			<input id="userInput" name="userInput" type="text"
-				onkeyup="handleSearchChange()"
-				class="w-[444px] h-10 px-5 py-3 text-lg rounded-full border-2 border-blue-300 focus:border-l-blue-300 outline-none transition text-greyAccent placeholder:text-gray-300"
-				placeholder="Search for a book here!" />
-		</form>
-	</div>
+	<header class="viewBooksHeader">
+		<div class="h-64 flex flex-col justify-center items-center">
+			<h1 class="font-bold text-2xl my-2 tracking-wider">Book
+				Management System</h1>
+			<form action="<%=request.getContextPath()%>/SearchResults"
+				method="get" class="my-2">
+				<input id="userInput" name="userInput" type="text"
+					onkeyup="handleSearchChange()"
+					class="w-[444px] h-10 px-5 py-3 text-lg rounded-full border-2 border-blue-300 focus:border-l-blue-300 outline-none transition text-greyAccent placeholder:text-gray-300"
+					placeholder="Search for a book here!" />
+			</form>
+		</div>
+		<div class="flex justify-end items-end pb-3">
+			<a class="" href="<%=request.getContextPath()%>/AddBook"><i
+				class="viewBooksIcons fa-solid fa-plus fa-2xl mx-3 hover:cursor-pointer"></i></a>
+		</div>
+	</header>
 
 	<div class="flex flex-col">
 		<%
 		List<Book> books = (List<Book>) request.getAttribute("books");
-		System.out.printf("books: " + books);
 		if (books.size() > 0) {
 			for (Book book : books) {
 		%>
 		<div class="flex py-3 my-5 mx-10 rounded-lg shadow-lg bg-gray-50">
-			<img alt=""
-				src="<%=request.getContextPath()%>/admin/img/harryPotter.jpg"
-				class="viewBooksImg rounded-lg mx-10">
+			<a class="hover:cursor-pointer hover:text-amber-900"
+				href="<%=request.getContextPath()%>/BookDetails?bookID=<%=book.getBookID()%>"><img
+				alt="" src="<%=request.getContextPath()%>/admin/img/harryPotter.jpg"
+				class="viewBooksImg rounded-lg mx-10"></a>
 			<div class="flex flex-col ml-10">
-				<h1 class="text-3xl font-bold"><%=book.getTitle()%></h1>
+				<a class="hover:cursor-pointer hover:text-amber-900"
+					href="<%=request.getContextPath()%>/BookDetails?bookID=<%=book.getBookID()%>"><h1
+						class="text-3xl font-bold"><%=book.getTitle()%></h1></a>
 				<p class="mt-5 text-lg"><%=book.getDescription()%></p>
 				<p class="mt-5 text-sm">
 					Author:
 					<%=book.getAuthor()%></p>
+				<%
+				if (book.getRating() > 0) {
+				%>
 				<p class="mt-5 text-sm">
 					Rating:
 					<%=book.getRating()%></p>
+				<%
+				} else {
+				%>
+				<p class="mt-5 text-sm">Rating: no ratings</p>
+				<%
+				}
+				%>
+
 
 			</div>
 			<div class="flex-grow"></div>
@@ -63,9 +82,10 @@
 		}
 		} else {
 		%>
-			<div class="flex justify-center items-center mt-5">
-				<h1 class="text-xl font-semibold">There is no such book in the store!</h1>
-			</div>
+		<div class="flex justify-center items-center mt-5">
+			<h1 class="text-xl font-semibold">There is no such book in the
+				store!</h1>
+		</div>
 		<%
 		}
 		%>
