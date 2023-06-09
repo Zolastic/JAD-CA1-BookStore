@@ -230,7 +230,7 @@
 				<%
 				}
 				%>
-				<p class="text-4xl text-bold ml-5 mr-2"><%=bookDetails.getRating()%>/5.0
+				<p class="text-4xl text-bold ml-5 mr-2"><%=String.format("%.1f", bookDetails.getRating())%>/5.0
 				</p>
 				<p class="m1-3 text-gray-500">
 					(Total
@@ -280,7 +280,7 @@
 							}
 							%>
 							<p class="text-sm text-gray-500">
-								(<%=review.get("ratingByEachCust")%>
+								(<%=String.format("%.1f", review.get("ratingByEachCust"))%>
 								/5.0)
 							</p>
 						</div>
