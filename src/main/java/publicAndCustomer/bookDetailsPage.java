@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import utils.DBConnection;
-import java.net.URLDecoder;
 
 @WebServlet("/bookDetailsPage")
 public class bookDetailsPage extends HttpServlet {
@@ -29,14 +28,21 @@ public class bookDetailsPage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String bookID = request.getParameter("bookID");
-		String encodedUserID = request.getParameter("userID");
-		String userID = null;
+		String userID = "3";
+//		String userIDAvailable = request.getParameter("userIDAvailable");
+//		
+//		String userID = null;
+//		if(userIDAvailable!=null) {
+//			if(userIDAvailable.equals("true")) {
+//				userID=(String) request.getSession().getAttribute("userID");
+//			}
+//		}
+
 		Book bookDetails = null;
 		List<Map<String, Object>> reviews = new ArrayList<>();
 		if (bookID != null) {
 			try (Connection connection = DBConnection.getConnection()) {
-				if (encodedUserID != null) {
-					userID = URLDecoder.decode(encodedUserID, "UTF-8");
+				if (userID != null) {
 					String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
 					PreparedStatement ps = connection.prepareStatement(sqlStr);
 					ps.setString(1, userID);
@@ -96,82 +102,81 @@ public class bookDetailsPage extends HttpServlet {
 	}
 
 	protected void addToCart(HttpServletRequest request, HttpServletResponse response)
-	        throws ServletException, IOException {
-	    String validatedUserID = request.getParameter("validatedUserID");
-	    if (validatedUserID == null) {
-	        RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/login.jsp");
-	        dispatcher.forward(request, response);
-	    } else {
-	        String bookID = request.getParameter("bookID");
-	        int quantity = Integer.parseInt(request.getParameter("quantity"));
-	        String cartID = null;
-	        if (bookID == null || quantity == 0) {
-	            String referer = (request.getHeader("Referer") + "&addToCart=failed");
-	            response.sendRedirect(referer);
-	        } else {
-	            try (Connection connection = DBConnection.getConnection()) {
-	                String queryToGetCartID = "SELECT cartID FROM cart WHERE custID = ?";
-	                PreparedStatement statement = connection.prepareStatement(queryToGetCartID);
-	                statement.setString(1, validatedUserID);
+			throws ServletException, IOException {
+		String validatedUserID = request.getParameter("userID");
+		if (validatedUserID == null||validatedUserID.equals("null") ) {
+			RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/login.jsp");
+			dispatcher.forward(request, response);
+		} else {
+			String bookID = request.getParameter("bookID");
+			int quantity = Integer.parseInt(request.getParameter("quantity"));
+			String cartID = null;
+			if (bookID == null || quantity == 0) {
+				String referer = (request.getHeader("Referer") + "&addToCart=failed");
+				response.sendRedirect(referer);
+			} else {
+				try (Connection connection = DBConnection.getConnection()) {
+					String queryToGetCartID = "SELECT cartID FROM cart WHERE custID = ?";
+					PreparedStatement statement = connection.prepareStatement(queryToGetCartID);
+					statement.setString(1, validatedUserID);
 
-	                ResultSet resultSet = statement.executeQuery();
+					ResultSet resultSet = statement.executeQuery();
 
-	                if (resultSet.next()) {
-	                    cartID = resultSet.getString("cartID");
-	                }
+					if (resultSet.next()) {
+						cartID = resultSet.getString("cartID");
+					}
 
-	                String checkQuery = "SELECT Qty FROM cart_items WHERE cartID = ? AND BookID = ?";
-	                PreparedStatement checkStatement = connection.prepareStatement(checkQuery);
-	                checkStatement.setString(1, cartID);
-	                checkStatement.setString(2, bookID);
-	                ResultSet checkResultSet = checkStatement.executeQuery();
+					String checkQuery = "SELECT Qty FROM cart_items WHERE cartID = ? AND BookID = ?";
+					PreparedStatement checkStatement = connection.prepareStatement(checkQuery);
+					checkStatement.setString(1, cartID);
+					checkStatement.setString(2, bookID);
+					ResultSet checkResultSet = checkStatement.executeQuery();
 
-	                if (checkResultSet.next()) {
-	                    int currentQuantity = checkResultSet.getInt("Qty");
-	                    quantity += currentQuantity;
+					if (checkResultSet.next()) {
+						int currentQuantity = checkResultSet.getInt("Qty");
+						quantity += currentQuantity;
 
-	                    String updateQuery = "UPDATE cart_items SET Qty = ? WHERE cartID = ? AND BookID = ?";
-	                    PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
-	                    updateStatement.setInt(1, quantity);
-	                    updateStatement.setString(2, cartID);
-	                    updateStatement.setString(3, bookID);
-	                    int rowsAffected = updateStatement.executeUpdate();
+						String updateQuery = "UPDATE cart_items SET Qty = ? WHERE cartID = ? AND BookID = ?";
+						PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+						updateStatement.setInt(1, quantity);
+						updateStatement.setString(2, cartID);
+						updateStatement.setString(3, bookID);
+						int rowsAffected = updateStatement.executeUpdate();
 
-	                    if (rowsAffected > 0) {
-	                        String referer = (request.getHeader("Referer") + "&addToCart=success");
-	                        response.sendRedirect(referer);
-	                    } else {
-	                        String referer = (request.getHeader("Referer") + "&addToCart=failed");
-	                        response.sendRedirect(referer);
-	                    }
-	                } else {
-	                    String insertQuery = "INSERT INTO cart_items (cartID, Qty, BookID) VALUES (?, ?, ?)";
-	                    PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
-	                    insertStatement.setString(1, cartID);
-	                    insertStatement.setInt(2, quantity);
-	                    insertStatement.setString(3, bookID);
+						if (rowsAffected > 0) {
+							String referer = (request.getHeader("Referer") + "&addToCart=success");
+							response.sendRedirect(referer);
+						} else {
+							String referer = (request.getHeader("Referer") + "&addToCart=failed");
+							response.sendRedirect(referer);
+						}
+					} else {
+						String insertQuery = "INSERT INTO cart_items (cartID, Qty, BookID) VALUES (?, ?, ?)";
+						PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
+						insertStatement.setString(1, cartID);
+						insertStatement.setInt(2, quantity);
+						insertStatement.setString(3, bookID);
 
-	                    int rowsAffected = insertStatement.executeUpdate();
+						int rowsAffected = insertStatement.executeUpdate();
 
-	                    if (rowsAffected > 0) {
-	                        String referer = (request.getHeader("Referer") + "&addToCart=success");
-	                        response.sendRedirect(referer);
-	                    } else {
-	                        String referer = (request.getHeader("Referer") + "&addToCart=failed");
-	                        response.sendRedirect(referer);
-	                    }
-	                }
+						if (rowsAffected > 0) {
+							String referer = (request.getHeader("Referer") + "&addToCart=success");
+							response.sendRedirect(referer);
+						} else {
+							String referer = (request.getHeader("Referer") + "&addToCart=failed");
+							response.sendRedirect(referer);
+						}
+					}
 
-	                connection.close();
-	            } catch (SQLException e) {
-	                System.out.println("Error: " + e);
-	                String referer = (request.getHeader("Referer") + "&addToCart=failed");
-	                response.sendRedirect(referer);
-	            }
-	        }
-	    }
+					connection.close();
+				} catch (SQLException e) {
+					System.out.println("Error: " + e);
+					String referer = (request.getHeader("Referer") + "&addToCart=failed");
+					response.sendRedirect(referer);
+				}
+			}
+		}
 	}
-
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
