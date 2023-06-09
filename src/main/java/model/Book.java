@@ -16,9 +16,9 @@ public class Book {
 	private double Rating;
 	private int Quantity;
 	private int Selected;
-	private String Image;
+	
 	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
-			String description, String genreName, String img, int sold, int inventory, double price, double rating, String image) {
+			String description, String genreName, String img, int sold, int inventory, double price, double rating) {
 		super();
 		BookID = bookID;
 		ISBN = iSBN;
@@ -34,11 +34,10 @@ public class Book {
 		Price = price;
 		Rating = rating;
 		Selected=0;
-		Image = image;
 	}
 	
 	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
-			String description, String genreName, String img, int sold, int inventory, double price, int quantity, double rating, String image) {
+			String description, String genreName, String img, int sold, int inventory, double price, int quantity, double rating) {
 		super();
 		BookID = bookID;
 		ISBN = iSBN;
@@ -55,13 +54,12 @@ public class Book {
 		Quantity = quantity;
 		Rating=rating;
 		Selected=0;
-		Image = image;
 	}
 
 
 	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
 			String description, String genreName, String img, int sold, int inventory, double price, double rating,
-			int quantity, int selected, String image) {
+			int quantity, int selected) {
 		super();
 		BookID = bookID;
 		ISBN = iSBN;
@@ -78,7 +76,6 @@ public class Book {
 		Rating = rating;
 		Quantity = quantity;
 		Selected = selected;
-		Image = image;
 	}
 
 	public int getSelected() {
@@ -201,15 +198,4 @@ public class Book {
 		Quantity = quantity;
 	}
 
-	public String getImage() {
-		return Image;
-	}
-
-	public void setImage(String image) {
-		Image = image;
-	}
-	
-	
-	
-	
 }
