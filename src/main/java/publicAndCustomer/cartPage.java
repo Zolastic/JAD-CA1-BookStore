@@ -41,13 +41,14 @@ public class cartPage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try (Connection connection = DBConnection.getConnection()) {
-			String encodedUserID = request.getParameter("userID");
-			String userID = null;
-//			String userID="3";
+//			String encodedUserID = request.getParameter("userID");
+//			String userID = null;
+			String userID="3";
 			List<Book> books = new ArrayList<>();
-			if (encodedUserID != null) {
-				userID = URLDecoder.decode(encodedUserID, "UTF-8");
+//			if (encodedUserID != null) {
 				if (userID != null) {
+//				userID = URLDecoder.decode(encodedUserID, "UTF-8");
+//				if (userID != null) {
 					String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
 					PreparedStatement ps = connection.prepareStatement(sqlStr);
 					ps.setString(1, userID);
@@ -103,10 +104,11 @@ public class cartPage extends HttpServlet {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/cartPage.jsp");
 				dispatcher.forward(request, response);
 				connection.close();
-			} else {
-				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/login.jsp");
-				dispatcher.forward(request, response);
-			}
+//			}
+//		else {
+//				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/login.jsp");
+//				dispatcher.forward(request, response);
+//			}
 		} catch (SQLException e) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/login.jsp");
 			dispatcher.forward(request, response);
