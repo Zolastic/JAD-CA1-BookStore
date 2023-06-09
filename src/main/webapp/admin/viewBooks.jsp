@@ -13,8 +13,8 @@
 </head>
 <body>
 	<%@ page import="java.util.*, model.*"%>
-
-	<header class="viewBooksHeader">
+	<%@include file="./navbar.jsp"%>
+	<header class="viewBooksHeader mt-16">
 		<div class="h-64 flex flex-col justify-center items-center">
 			<h1 class="font-bold text-2xl my-2 tracking-wider">Book
 				Management System</h1>
@@ -40,9 +40,23 @@
 		%>
 		<div class="flex py-3 my-5 mx-10 rounded-lg shadow-lg bg-gray-50">
 			<a class="hover:cursor-pointer hover:text-amber-900"
-				href="<%=request.getContextPath()%>/BookDetails?bookID=<%=book.getBookID()%>"><img
-				alt="" src="<%=request.getContextPath()%>/admin/img/harryPotter.jpg"
-				class="viewBooksImg rounded-lg mx-10"></a>
+				href="<%=request.getContextPath()%>/BookDetails?bookID=<%=book.getBookID()%>">
+				<%
+					if ((book.getImg()) == null) {
+						%>
+						<img
+				alt="" src="<%=request.getContextPath()%>/admin/img/No_Image_Available.jpg"
+				class="viewBooksImg rounded-lg mx-10 object-contain">
+						<%
+					} else {
+						%>
+						<img
+				alt="" src="data:image/png;base64, <%= book.getImg() %>"
+				class="viewBooksImg rounded-lg mx-10 object-contain">
+						<%
+					}
+				%>			
+				</a>
 			<div class="flex flex-col ml-10">
 				<a class="hover:cursor-pointer hover:text-amber-900"
 					href="<%=request.getContextPath()%>/BookDetails?bookID=<%=book.getBookID()%>"><h1

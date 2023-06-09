@@ -13,14 +13,26 @@
 </head>
 <body class="my-8 mx-48">
 	<%@ page import="java.util.*, model.*"%>
+	<%@include file="./navbar.jsp"%>
 	<%
 	Book book = (Book) request.getAttribute("book");
 	%>
 
-	<div class="flex rounded-lg shadow-lg bg-gray-50 pt-3 pb-96">
+	<div class="flex rounded-lg shadow-lg bg-gray-50 pt-3 pb-96 mt-28">
+		<%
+		if ((book.getImg()) == null) {
+		%>
 		<img alt=""
-			src="<%=request.getContextPath()%>/admin/img/harryPotter.jpg"
-			class="viewBooksImg rounded-lg mx-10">
+			src="<%=request.getContextPath()%>/admin/img/No_Image_Available.jpg"
+			class="viewBooksImg rounded-lg mx-10 object-contain">
+		<%
+		} else {
+		%>
+		<img alt="" src="data:image/png;base64, <%=book.getImg()%>"
+			class="viewBooksImg rounded-lg mx-10 object-contain">
+		<%
+		}
+		%>
 		<div class="flex flex-col ml-10">
 			<h1 class="text-3xl font-bold tracking-wide"><%=book.getTitle()%>
 				(<%=book.getISBN()%>)

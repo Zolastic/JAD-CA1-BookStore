@@ -10,17 +10,21 @@
 </head>
 <body class="my-8 mx-48">
 	<%@ page import="java.util.*, model.*"%>
+	<%@include file="./navbar.jsp"%>
 	<%
 	Book book = (Book) request.getAttribute("book");
 	%>
 
-	<form class="mt-3"
-		action="<%=request.getContextPath()%>/EditBook" method="post">
-		
+	<form class="mt-28" action="<%=request.getContextPath()%>/EditBook"
+		method="post" enctype="multipart/form-data">
+
+		<div class="addBookSelectImage flex flex-col z-0 w-full mb-8 group">
+			<label for="image" class="text-sm text-gray-900">Select Image</label>
+			<input id="image" name="image" type="file" onchange="onFileChange()" />
+		</div>
+
 		<input type="text" name="bookID" id="bookID"
-				value="<%=book.getBookID()%>"
-				class="hidden"
-				placeholder=" " required/>
+			value="<%=book.getBookID()%>" class="hidden" placeholder=" " required />
 		<!-- title -->
 		<div class="relative z-0 w-full mb-8 group">
 			<input type="text" name="title" id="title"
