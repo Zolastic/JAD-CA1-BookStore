@@ -13,8 +13,8 @@
 </head>
 <body>
 	<%@ page import="java.util.*, model.*"%>
-
-	<header class="viewBooksHeader">
+	<%@include file="./navbar.jsp"%>
+	<header class="viewBooksHeader mt-16">
 		<div class="h-64 flex flex-col justify-center items-center">
 			<h1 class="font-bold text-2xl my-2 tracking-wider">Book
 				Management System</h1>

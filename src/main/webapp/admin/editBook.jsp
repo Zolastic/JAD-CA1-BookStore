@@ -10,11 +10,12 @@
 </head>
 <body class="my-8 mx-48">
 	<%@ page import="java.util.*, model.*"%>
+	<%@include file="./navbar.jsp"%>
 	<%
 	Book book = (Book) request.getAttribute("book");
 	%>
 
-	<form class="mt-3"
+	<form class="mt-28"
 		action="<%=request.getContextPath()%>/EditBook" method="post">
 		
 		<input type="text" name="bookID" id="bookID"

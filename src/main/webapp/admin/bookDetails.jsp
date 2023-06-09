@@ -13,11 +13,12 @@
 </head>
 <body class="my-8 mx-48">
 	<%@ page import="java.util.*, model.*"%>
+	<%@include file="./navbar.jsp"%>
 	<%
 	Book book = (Book) request.getAttribute("book");
 	%>
 
-	<div class="flex rounded-lg shadow-lg bg-gray-50 pt-3 pb-96">
+	<div class="flex rounded-lg shadow-lg bg-gray-50 pt-3 pb-96 mt-28">
 		<img alt=""
 			src="<%=request.getContextPath()%>/admin/img/harryPotter.jpg"
 			class="viewBooksImg rounded-lg mx-10">
