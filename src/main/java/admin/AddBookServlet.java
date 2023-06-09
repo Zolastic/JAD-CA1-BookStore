@@ -123,7 +123,7 @@ public class AddBookServlet extends HttpServlet {
 	        List<FileItem> items = upload.parseRequest(request);
 	        
 	        String title = getParameter(items, "title");
-			int price = Integer.parseInt(getParameter(items, "price"));
+			double price = Double.parseDouble(getParameter(items, "price"));
 			int author = Integer.parseInt(getParameter(items, "author"));
 			int publisher = Integer.parseInt(getParameter(items, "publisher"));
 			int quantity = Integer.parseInt(getParameter(items, "quantity"));
@@ -134,7 +134,7 @@ public class AddBookServlet extends HttpServlet {
 			String image = getBase64Parameter(items, "image");
 	        
 			ps.setString(1, title);
-			ps.setInt(2, price);
+			ps.setDouble(2, price);
 			ps.setInt(3, author);
 			ps.setInt(4, publisher);
 			ps.setInt(5, quantity);

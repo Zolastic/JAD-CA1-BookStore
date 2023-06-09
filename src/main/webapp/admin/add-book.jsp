@@ -15,7 +15,7 @@
 	<!-- Add Book Form  -->
 	<form class="mt-28" action="<%= request.getContextPath()%>/AddBook" method="post" enctype="multipart/form-data">
 		<!-- image -->
-		<div class="addBookSelectImage flex flex-col z-0 w-full mb-8 group">
+		<div class="flex flex-col z-0 w-full mb-8 group">
 			<label for="image"
 				class="text-sm text-gray-900">Select Image</label>
 			<input id="image" name="image" type="file" onchange="onFileChange()" /> 

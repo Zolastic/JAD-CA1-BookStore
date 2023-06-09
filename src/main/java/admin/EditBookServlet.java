@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +17,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 
 import model.*;
 import utils.DBConnection;
@@ -155,25 +162,33 @@ public class EditBookServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		String bookID = request.getParameter("bookID");
-		String title = request.getParameter("title");
-		double price = Double.parseDouble(request.getParameter("price"));
-		int author = Integer.parseInt(request.getParameter("author"));
-		int publisher = Integer.parseInt(request.getParameter("publisher"));
-		int quantity = Integer.parseInt(request.getParameter("quantity"));
-		String pubDate = request.getParameter("date");
-		String isbn = request.getParameter("isbn");
-		String description = request.getParameter("description");
-		int genreId = Integer.parseInt(request.getParameter("genre"));
-		int sold = Integer.parseInt(request.getParameter("sold"));
-
 		String sqlStr = " UPDATE book SET title = ?, price = ?, authorID = ?, publisherID = ?, inventory = ?, \r\n"
-				+ " publication_date = ?, ISBN = ?, description = ?,\r\n" + " genre_id = ?, img = null, sold = ?\r\n"
+				+ " publication_date = ?, ISBN = ?, description = ?,\r\n" + " genre_id = ?, img = ?, sold = ?\r\n"
 				+ " WHERE book_id = ?;";
 
 		try (Connection connection = DBConnection.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			// Create a factory for disk-based file items
+	        FileItemFactory factory = new DiskFileItemFactory();
+
+	        // Create a new file upload handler
+	        ServletFileUpload upload = new ServletFileUpload(factory);
+	        List<FileItem> items = upload.parseRequest(request);
+	        
+	        String bookID = getParameter(items, "bookID");
+	        String title = getParameter(items, "title");
+			double price = Double.parseDouble(getParameter(items, "price"));
+			int author = Integer.parseInt(getParameter(items, "author"));
+			int publisher = Integer.parseInt(getParameter(items, "publisher"));
+			int quantity = Integer.parseInt(getParameter(items, "quantity"));
+			String pubDate = getParameter(items, "date");
+			String isbn = getParameter(items, "isbn");
+			String description = getParameter(items, "description");
+			int genreId = Integer.parseInt(getParameter(items, "genre"));
+			int sold = Integer.parseInt(getParameter(items, "sold"));
+			String image = getBase64Parameter(items, "image");
+			
+			
 			ps.setString(1, title);
 			ps.setDouble(2, price);
 			ps.setInt(3, author);
@@ -183,8 +198,9 @@ public class EditBookServlet extends HttpServlet {
 			ps.setString(7, isbn);
 			ps.setString(8, description);
 			ps.setInt(9, genreId);
-			ps.setInt(10, sold);
-			ps.setString(11, bookID);
+			ps.setString(10, image);
+			ps.setInt(11, sold);
+			ps.setString(12, bookID);
 
 			int affectedRows = ps.executeUpdate();
 			System.out.printf("affectedRows: " + affectedRows);
@@ -205,6 +221,29 @@ public class EditBookServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private String getParameter(List<FileItem> items, String name) {
+		String value = items.stream().filter(item -> item.getFieldName().equals(name)).findFirst()
+			.map(item -> item.getString())
+			.orElse(null);
+		
+		return value;
+	}
+	
+	private String getBase64Parameter(List<FileItem> items, String name) throws IOException {
+		FileItem fileItem = items.stream().filter(item -> item.getFieldName().equals(name))
+				.findFirst()
+				.orElse(null);
+
+		if (fileItem == null) {
+			return null;
+		}
+
+		byte[] bytes = IOUtils.toByteArray(fileItem.getInputStream());
+	    byte[] encodedBytes = Base64.getEncoder().encode(bytes);
+	    String base64String = new String(encodedBytes);
+	    return base64String;
 	}
 
 }
