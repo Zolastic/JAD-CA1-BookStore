@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import model.Book;
-import java.util.UUID;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -120,7 +119,6 @@ public class bookDetailsPage extends HttpServlet {
 	                if (resultSet.next()) {
 	                    cartID = resultSet.getString("cartID");
 	                }
-	                String cartItemsID = UUID.randomUUID().toString();
 
 	                String checkQuery = "SELECT Qty FROM cart_items WHERE cartID = ? AND BookID = ?";
 	                PreparedStatement checkStatement = connection.prepareStatement(checkQuery);
@@ -147,12 +145,11 @@ public class bookDetailsPage extends HttpServlet {
 	                        response.sendRedirect(referer);
 	                    }
 	                } else {
-	                    String insertQuery = "INSERT INTO cart_items (cartItemsID, cartID, Qty, BookID) VALUES (?, ?, ?, ?)";
+	                    String insertQuery = "INSERT INTO cart_items (cartID, Qty, BookID) VALUES (?, ?, ?)";
 	                    PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
-	                    insertStatement.setString(1, cartItemsID);
-	                    insertStatement.setString(2, cartID);
-	                    insertStatement.setInt(3, quantity);
-	                    insertStatement.setString(4, bookID);
+	                    insertStatement.setString(1, cartID);
+	                    insertStatement.setInt(2, quantity);
+	                    insertStatement.setString(3, bookID);
 
 	                    int rowsAffected = insertStatement.executeUpdate();
 
