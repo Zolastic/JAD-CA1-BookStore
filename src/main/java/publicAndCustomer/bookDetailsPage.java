@@ -26,9 +26,9 @@ public class bookDetailsPage extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		String bookID = request.getParameter("bookID");
-		String userID = "3";
+	        throws ServletException, IOException {
+	    String bookID = request.getParameter("bookID");
+	    String userID = "3";
 //		String userIDAvailable = request.getParameter("userIDAvailable");
 //		
 //		String userID = null;
@@ -38,68 +38,86 @@ public class bookDetailsPage extends HttpServlet {
 //			}
 //		}
 
-		Book bookDetails = null;
-		List<Map<String, Object>> reviews = new ArrayList<>();
-		if (bookID != null) {
-			try (Connection connection = DBConnection.getConnection()) {
-				if (userID != null) {
-					String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-					PreparedStatement ps = connection.prepareStatement(sqlStr);
-					ps.setString(1, userID);
-					ResultSet rs = ps.executeQuery();
-					rs.next();
-					int rowCount = rs.getInt(1);
-					if (rowCount < 1) {
-						userID = null;
-					}
-				}
+	    Book bookDetails = null;
+	    List<Map<String, Object>> reviews = new ArrayList<>();
 
-				String simpleProc = "{call getBookDetails(?)}";
-				CallableStatement cs = connection.prepareCall(simpleProc);
-				cs.setString(1, bookID);
-				cs.execute();
-				ResultSet resultSetForBookDetails = cs.getResultSet();
+	    if (bookID != null) {
+	        try (Connection connection = DBConnection.getConnection()) {
+	            userID = validateUserID(connection, userID);
 
-				if (resultSetForBookDetails.next()) {
-					bookDetails = new Book(resultSetForBookDetails.getString("book_id"),
-							resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
-							resultSetForBookDetails.getString("authorName"),
-							resultSetForBookDetails.getString("publisherName"),
-							resultSetForBookDetails.getString("publication_date"),
-							resultSetForBookDetails.getString("description"),
-							resultSetForBookDetails.getString("genre_name"), resultSetForBookDetails.getString("img"),
-							resultSetForBookDetails.getInt("sold"), resultSetForBookDetails.getInt("inventory"),
-							resultSetForBookDetails.getDouble("price"), 1,
-							resultSetForBookDetails.getDouble("average_rating"));
-					String sqlStr = "SELECT review.*, users.name FROM review, users WHERE review.custID=users.userID AND bookID=?;";
-					PreparedStatement ps = connection.prepareStatement(sqlStr);
-					ps.setString(1, bookID);
-					ResultSet rs = ps.executeQuery();
+	            bookDetails = getBookDetails(connection, bookID);
+	            reviews = getBookReviews(connection, bookID);
+	            
+	            connection.close();
+	        } catch (SQLException e) {
+	            System.err.println("Error: " + e);
+	        }
+	    }
 
-					while (rs.next()) {
-
-						Map<String, Object> review = new HashMap<>();
-						review.put("userName", rs.getString("name"));
-						review.put("review_text", rs.getString("review_text"));
-						review.put("ratingByEachCust", rs.getDouble("rating"));
-						review.put("ratingDate", rs.getString("ratingDate"));
-						reviews.add(review);
-
-					}
-				}
-				connection.close();
-			} catch (SQLException e) {
-				System.err.println("Error :" + e);
-			}
-
-		}
-		request.setAttribute("bookDetails", bookDetails);
-		request.setAttribute("reviews", reviews);
-		request.setAttribute("validatedUserID", userID);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/bookDetailsPage.jsp");
-		dispatcher.forward(request, response);
-
+	    request.setAttribute("bookDetails", bookDetails);
+	    request.setAttribute("reviews", reviews);
+	    request.setAttribute("validatedUserID", userID);
+	    RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/bookDetailsPage.jsp");
+	    dispatcher.forward(request, response);
 	}
+
+	private String validateUserID(Connection connection, String userID) throws SQLException {
+	    if (userID != null) {
+	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
+	        PreparedStatement ps = connection.prepareStatement(sqlStr);
+	        ps.setString(1, userID);
+	        ResultSet rs = ps.executeQuery();
+	        rs.next();
+	        int rowCount = rs.getInt(1);
+	        if (rowCount < 1) {
+	            userID = null;
+	        }
+	    }
+	    return userID;
+	}
+
+	private Book getBookDetails(Connection connection, String bookID) throws SQLException {
+	    Book bookDetails = null;
+	    String simpleProc = "{call getBookDetails(?)}";
+	    CallableStatement cs = connection.prepareCall(simpleProc);
+	    cs.setString(1, bookID);
+	    cs.execute();
+	    ResultSet resultSetForBookDetails = cs.getResultSet();
+
+	    if (resultSetForBookDetails.next()) {
+	        bookDetails = new Book(resultSetForBookDetails.getString("book_id"),
+	                resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
+	                resultSetForBookDetails.getString("authorName"), resultSetForBookDetails.getString("publisherName"),
+	                resultSetForBookDetails.getString("publication_date"), resultSetForBookDetails.getString("description"),
+	                resultSetForBookDetails.getString("genre_name"), resultSetForBookDetails.getString("img"),
+	                resultSetForBookDetails.getInt("sold"), resultSetForBookDetails.getInt("inventory"),
+	                resultSetForBookDetails.getDouble("price"), 1, resultSetForBookDetails.getDouble("average_rating"));
+	    }
+
+	    return bookDetails;
+	}
+
+	private List<Map<String, Object>> getBookReviews(Connection connection, String bookID) throws SQLException {
+	    List<Map<String, Object>> reviews = new ArrayList<>();
+	    String sqlStr = "SELECT review.*, users.name FROM review, users WHERE review.custID=users.userID AND bookID=?;";
+	    PreparedStatement ps = connection.prepareStatement(sqlStr);
+	    ps.setString(1, bookID);
+	    ResultSet rs = ps.executeQuery();
+
+	    while (rs.next()) {
+	        Map<String, Object> review = new HashMap<>();
+	        review.put("userName", rs.getString("name"));
+	        review.put("review_text", rs.getString("review_text"));
+	        review.put("ratingByEachCust", rs.getDouble("rating"));
+	        review.put("ratingDate", rs.getString("ratingDate"));
+	        reviews.add(review);
+	    }
+
+	    return reviews;
+	}
+
+	
+	
 
 	protected void addToCart(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

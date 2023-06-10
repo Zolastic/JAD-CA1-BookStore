@@ -26,7 +26,7 @@
 <body>
 	<%
 	ArrayList<model.Book> popularBooks = new ArrayList<>();
-	String validatedUserID=null;
+	String validatedUserID = null;
 	try {
 		Connection connection = DBConnection.getConnection();
 		Statement statement = connection.createStatement();
@@ -52,7 +52,7 @@
 			img, sold, inventory, price, rating);
 			popularBooks.add(popularBook);
 		}
-		
+
 		String userID = (String) session.getAttribute("userID");
 		String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
 		PreparedStatement ps = connection.prepareStatement(sqlStr);
@@ -61,13 +61,11 @@
 		rs.next();
 		int rowCount = rs.getInt(1);
 		if (rowCount > 0) {
-			validatedUserID=userID;
+			validatedUserID = userID;
 		}
-		
-		
+
 		connection.close();
-	} 
-	catch (SQLException e) {
+	} catch (SQLException e) {
 		System.err.println("Error :" + e);
 	}
 	%>
@@ -121,21 +119,20 @@
 				<%
 				}
 				String urlToBookDetails;
-				if(validatedUserID!=null){
-					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID() + "&userIDAvailable=true" ;
-				}
-				else{
-					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID();
+				if (validatedUserID != null) {
+				urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID() + "&userIDAvailable=true";
+				} else {
+				urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID();
 				}
 				%>
 				<div
-					class="m-4 p-6 bg-white border border-black rounded-lg w-80 transform hover:scale-110"
-					onclick="window.location.href = '<%= urlToBookDetails %>'">
-					<div class="h-48 w-48 flex items-center justify-center mx-auto">
+					class="m-4 p-6 bg-white border border-black rounded-lg w-80 shadow-lg transform hover:scale-110"
+					onclick="window.location.href = '<%=urlToBookDetails%>'">
+					<div class="h-48 w-auto flex items-center justify-center mx-auto">
 						<%
 						if (book.getImg() != null) {
 						%>
-						<img class="h-48 w-48 src="<%=book.getImg()%>">
+						<img class="h-48 object-contain" src="<%=book.getImg()%>">
 						<%
 						} else {
 						%>
@@ -144,6 +141,7 @@
 						}
 						%>
 					</div>
+
 
 					<p class="text-xl font-semibold text-gray-800 text-center mt-4"><%=book.getTitle()%></p>
 					<%
@@ -205,6 +203,7 @@
 							<%=book.getGenreName()%>
 						</p>
 					</div>
+					
 
 				</div>
 
