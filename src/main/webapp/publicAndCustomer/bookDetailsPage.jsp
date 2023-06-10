@@ -46,30 +46,29 @@
 	Book bookDetails = (Book) request.getAttribute("bookDetails");
 	String bookID = null;
 	boolean err = false;
-	List<Map<String, Object>> reviews = (List<Map<String, Object>>)request.getAttribute("reviews");
-	String validatedUserID=(String) request.getAttribute("validatedUserID");
-	System.out.println(validatedUserID);
+	List<Map<String, Object>> reviews = (List<Map<String, Object>>) request.getAttribute("reviews");
+	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	String addToCartAction = request.getParameter("addToCart");
 
 	if (addToCartAction != null) {
-	    if (addToCartAction.equals("success")) {
+		if (addToCartAction.equals("success")) {
 	%>
-	    <script>
+	<script>
 	        alert("Item added to cart successfully");
 	    </script>
 	<%
-	    } else {
+	} else {
 	%>
-	    <script>
+	<script>
 	        alert("Error adding to cart");
 	    </script>
 	<%
-	    }
+	}
 	}
 
-
-	if (bookDetails == null) { 
-	err = true; %>
+	if (bookDetails == null) {
+	err = true;
+	%>
 	<div class="fixed inset-0 flex items-center justify-center">
 		<div class="bg-yellow-200 px-4 py-2 rounded-lg">
 			<i class="fas fa-exclamation-triangle mr-2"></i> Error, No books
@@ -78,20 +77,17 @@
 	</div>
 	<%
 	} else {
-		bookID=bookDetails.getBookID();
-			String sQty = request.getParameter("quantity");
-			if (sQty != null) {
+	bookID = bookDetails.getBookID();
+	String sQty = request.getParameter("quantity");
+	if (sQty != null) {
 		int iQty = Integer.parseInt(sQty);
 		if (iQty >= 1 && iQty <= (bookDetails.getInventory())) {
 			bookDetails.setQuantity(iQty);
 		}
 
-			}
+	}
 
-		} 
-	
-	
-	
+	}
 
 	if (validatedUserID == null) {
 	%>
@@ -130,6 +126,18 @@
 			</div>
 			<div class="w-1/3 py-2 px-2">
 				<h1 class="text-7xl italic mb-4"><%=bookDetails.getTitle()%></h1>
+				<div class="flex items-center">
+					<p class="text-bold text-lg mb-4 mr-2 mt-2 pt-2">
+						ISBN:
+						<%=bookDetails.getISBN()%>
+					</p>
+					<p
+						class="text-white text-sm bg-rose-900 text-center rounded-lg px-2">
+						<%=bookDetails.getGenreName()%>
+					</p>
+				</div>
+
+
 				<div class="flex items-center my-2">
 					<p class="text-lg text-bold mr-2"><%=bookDetails.getRating()%>
 					</p>
@@ -157,9 +165,15 @@
 					</p>
 				</div>
 
+
 				<p class="text-lg mb-4">
 					Author:
 					<%=bookDetails.getAuthor()%></p>
+
+				<p class="text-lg mb-4">
+					Published By
+					<%=bookDetails.getPublisher()%>, At
+					<%=bookDetails.getPublication_date()%></p>
 				<p class="text-lg mb-4">
 					Price: $<%=bookDetails.getPrice()%></p>
 				<div class="flex items-center mb-4">
@@ -189,14 +203,13 @@
 						<input type="hidden" name="bookID" value="<%=bookID%>"> <input
 							type="hidden" name="quantity"
 							value="<%=bookDetails.getQuantity()%>"> <input
-							type="hidden" name="userID" value="<%=validatedUserID%>">
+							type="hidden" name="validatedUserID" value="<%=validatedUserID%>">
 						<input type="hidden" name="action" value="addToCart">
 						<button type="submit"
 							class="bg-slate-500 hover:bg-slate-700 transform hover:scale-110 text-white px-4 py-2 rounded w-full">
-							<i class="fas fa-shopping-cart text-white-500 mr-2"></i>
-							Add to Cart
-							<i class="fas fa-shopping-cart text-white-500 ml-2"></i>
-							</button>
+							<i class="fas fa-shopping-cart text-white-500 mr-2"></i> Add to
+							Cart <i class="fas fa-shopping-cart text-white-500 ml-2"></i>
+						</button>
 					</form>
 
 				</div>
@@ -235,7 +248,7 @@
 				</p>
 				<p class="m1-3 text-gray-500">
 					(Total
-					<%=reviews.size() %>
+					<%=reviews.size()%>
 					Reviews)
 				</p>
 			</div>
