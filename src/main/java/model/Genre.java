@@ -1,16 +1,24 @@
 package model;
 
 public class Genre {
-	private int id;
+	private String id;
 	private String name;
-	public Genre(int id, String name) {
+	private String img;
+	public Genre(String id, String name, String img) {
 		this.id = id;
 		this.name = name;
+		this.img=img;
 	}
-	public int getId() {
+	public String getImg() {
+		return img;
+	}
+	public void setImg(String img) {
+		this.img = img;
+	}
+	public String getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getName() {

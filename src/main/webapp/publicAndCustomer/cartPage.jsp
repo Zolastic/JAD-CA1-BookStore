@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="model.Book"%>
-<%@ page import="java.io.*,java.net.*,java.util.*,java.sql.*"%>
+<%@ page import="java.util.*"%>
 <%@ page import="java.nio.charset.StandardCharsets"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -128,16 +128,14 @@
 			</div>
 			<%
 			} else {
-				for (Book item : cartItems) {
-		            if (item.getSelected() != 1) {
-		                allSelected = false;
-		            }
-		        }
 			for (Book item : cartItems) {
+				if (item.getSelected() != 1) {
+	                allSelected = false;
+	            }
 				String urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + item.getBookID() + "&userIDAvailable=true" ;
 			%>
 			<div
-				class="flex items-center border border-gray-300 rounded-lg my-2 p-5 shadow">
+				class="flex items-center border border-gray-300 rounded-lg my-2 p-5 shadow-lg">
 
 				<form id="selectCartItemForm_<%=item.getBookID()%>"
 					action="/CA1-assignment/cartPage" method="post">
@@ -156,7 +154,7 @@
 				</form>
 
 
-				<div class="flex items-center w-30 h-30 m-6"
+				<div class="flex items-center h-30 m-6"
 					onclick="window.location.href = '<%=urlToBookDetails%>'">
 					<%
 					if (item.getImg() != null) {
