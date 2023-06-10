@@ -103,7 +103,7 @@ public class bookDetailsPage extends HttpServlet {
 
 	protected void addToCart(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String validatedUserID = request.getParameter("userID");
+		String validatedUserID = request.getParameter("validatedUserID");
 		if (validatedUserID == null||validatedUserID.equals("null") ) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/login.jsp");
 			dispatcher.forward(request, response);

@@ -129,7 +129,6 @@
 			<%
 			} else {
 				for (Book item : cartItems) {
-		            subtotal += item.getSelected() == 1 ? (item.getPrice() * item.getQuantity()) : 0;
 		            if (item.getSelected() != 1) {
 		                allSelected = false;
 		            }

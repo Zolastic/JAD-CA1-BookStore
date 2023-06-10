@@ -48,17 +48,14 @@ public class cartPage extends HttpServlet {
 //					userID=(String) request.getSession().getAttribute("userID");
 //				}
 //			}
-			String encodedScrollPosition = request.getParameter("encodedScrollPosition");
-			String scrollPosition = "";
+			String scrollPosition = request.getParameter("scrollPosition");
+//			String scrollPosition = "";
 			String userID = "3";
 			String cartID = null;
 			List<Book> books = new ArrayList<>();
 			if (userID != null) {
 
 //				if (userID != null) {
-				if (encodedScrollPosition != null) {
-					scrollPosition = URLDecoder.decode(encodedScrollPosition, "UTF-8");
-				}
 
 				String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
 				PreparedStatement ps = connection.prepareStatement(sqlStr);
