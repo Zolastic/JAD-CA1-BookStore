@@ -41,6 +41,7 @@
 	}
 
 	if (!err) {
+	List<Book> booksOnCurrentPage = null;
 	int booksPerPage = 10;
 	int totalBooks = allGenreBook.size();
 	int totalPages = (int) Math.ceil((double) totalBooks / booksPerPage);
@@ -50,7 +51,11 @@
 	}
 	int startIndex = (currentPage - 1) * booksPerPage;
 	int endIndex = Math.min(startIndex + booksPerPage, totalBooks);
-	List<Book> booksOnCurrentPage = allGenreBook.subList(startIndex, endIndex);
+	if (searchExecuted == null) {
+		booksOnCurrentPage = allGenreBook.subList(startIndex, endIndex);
+	} else {
+		booksOnCurrentPage = allGenreBook;
+	}
 	%>
 	<div class="mx-20 mb-60">
 		<div class="flex items-center justify-between">
