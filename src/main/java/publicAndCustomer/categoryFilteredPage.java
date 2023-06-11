@@ -41,6 +41,7 @@ public class categoryFilteredPage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String userIDAvailable = request.getParameter("userIDAvailable");
+		System.out.println(userIDAvailable);
 		String genreID = request.getParameter("genreID");
 		String genreName = request.getParameter("genreName");
 		String userID = null;

@@ -48,15 +48,13 @@ public class checkoutPage extends HttpServlet {
 			throws ServletException, IOException {
 		try (Connection connection = DBConnection.getConnection()) {
 			Cookie[] cookies = request.getCookies();
-			String userID = "3";
-//		String userIDAvailable = request.getParameter("userIDAvailable");
-//		
-//		String userID = null;
-//		if(userIDAvailable!=null) {
-//			if(userIDAvailable.equals("true")) {
-//				userID=(String) request.getSession().getAttribute("userID");
-//			}
-//		}
+		String userIDAvailable = request.getParameter("userIDAvailable");
+		String userID = null;
+		if(userIDAvailable!=null) {
+			if(userIDAvailable.equals("true")) {
+				userID=(String) request.getSession().getAttribute("userID");
+			}
+		}
 
 			List<Book> checkoutItems = new ArrayList<>();
 			String checkoutItemsString = null;

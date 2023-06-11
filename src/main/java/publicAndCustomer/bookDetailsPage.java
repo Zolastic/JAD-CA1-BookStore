@@ -28,15 +28,15 @@ public class bookDetailsPage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	        throws ServletException, IOException {
 	    String bookID = request.getParameter("bookID");
-	    String userID = "3";
-//		String userIDAvailable = request.getParameter("userIDAvailable");
-//		
-//		String userID = null;
-//		if(userIDAvailable!=null) {
-//			if(userIDAvailable.equals("true")) {
-//				userID=(String) request.getSession().getAttribute("userID");
-//			}
-//		}
+
+		String userIDAvailable = request.getParameter("userIDAvailable");
+		
+		String userID = null;
+		if(userIDAvailable!=null) {
+			if(userIDAvailable.equals("true")) {
+				userID=(String) request.getSession().getAttribute("userID");
+			}
+		}
 
 	    Book bookDetails = null;
 	    List<Map<String, Object>> reviews = new ArrayList<>();
