@@ -114,7 +114,7 @@
     </script>
 
 
-	<%@ include file="navBar/headerNavCustomer.html"%>
+	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div class="mx-10 mb-60">
 		<h1 class="text-3xl font-bold italic my-6">
 			<i class="fas fa-shopping-cart text-blue-950 mr-2"></i>Your Cart
@@ -253,8 +253,7 @@
 									onclick="submitCheckoutForm()">Checkout</button>
 								<input type="hidden" id="selectedCartItems" name="selectedCartItems"
 									value=""> <input type="hidden" name="action"
-									value="checkout"> <input type="hidden" class="cartID"
-									name="cartID" value="<%=validatedUserID%>">
+									value="checkout"> 
 							</form>
 						</div>
 					</div>

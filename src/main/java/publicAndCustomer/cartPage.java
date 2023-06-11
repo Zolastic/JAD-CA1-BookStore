@@ -56,7 +56,7 @@ public class cartPage extends HttpServlet {
 
 	        userID = validateUserID(connection, userID);
 	        if (userID == null) {
-	        	RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/login.jsp");
+	        	RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
 	            return;
 	        }
@@ -272,23 +272,17 @@ public class cartPage extends HttpServlet {
 	}
 
 	protected void checkout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    String cartItems = request.getParameter("selectedCartItems");
-	    String cartID = request.getParameter("cartID");
+	    String checkoutItems = request.getParameter("selectedCartItems");
 	    
-	    if (cartID == null || cartItems == null) {
+	    if (checkoutItems == null) {
 	        String referer = request.getHeader("Referer");
 	        referer = removeParameterFromUrl(referer);
 	        response.sendRedirect(referer + "?error=true");
 	    } else {
-	        String encodedCartItems = URLEncoder.encode(cartItems, "UTF-8");
-
-	        Cookie cartItemsCookie = new Cookie("cartItems", encodedCartItems);
-	        cartItemsCookie.setMaxAge(5 * 60 * 60);
-	        response.addCookie(cartItemsCookie);
-	        
-	        Cookie cartIDCookie = new Cookie("cartID", cartID);
-	        cartIDCookie.setMaxAge(5 * 60 * 60);
-	        response.addCookie(cartIDCookie);
+	        String encodedCheckoutItems = URLEncoder.encode(checkoutItems, "UTF-8");
+	        Cookie checkoutItemsCookie = new Cookie("checkoutItems", encodedCheckoutItems);
+	        checkoutItemsCookie.setMaxAge(5 * 60 * 60);
+	        response.addCookie(checkoutItemsCookie);
 
 	        response.sendRedirect("http://localhost:8080/CA1-assignment/checkoutPage");
 	    }

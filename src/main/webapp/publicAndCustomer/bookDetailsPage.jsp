@@ -95,7 +95,7 @@
 	<%
 	} else {
 	%>
-	<%@ include file="navBar/headerNavCustomer.html"%>
+	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<%
 	}
 
