@@ -11,8 +11,6 @@
 <%@ page import="java.text.DecimalFormat"%>
 <%@ page import="java.io.*,java.net.*,java.util.*,java.sql.*"%>
 <%@ page import="utils.DBConnection"%>
-<%@ page import="java.net.URLEncoder"%>
-<%@ page import="java.nio.charset.StandardCharsets"%>
 
 
 <!DOCTYPE html>
@@ -28,7 +26,7 @@
 <body>
 	<%
 	ArrayList<model.Book> popularBooks = new ArrayList<>();
-	String validatedUserID=null;
+	String validatedUserID = null;
 	try {
 		Connection connection = DBConnection.getConnection();
 		Statement statement = connection.createStatement();
@@ -54,7 +52,7 @@
 			img, sold, inventory, price, rating);
 			popularBooks.add(popularBook);
 		}
-		
+
 		String userID = (String) session.getAttribute("userID");
 		String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
 		PreparedStatement ps = connection.prepareStatement(sqlStr);
@@ -63,22 +61,23 @@
 		rs.next();
 		int rowCount = rs.getInt(1);
 		if (rowCount > 0) {
-			validatedUserID=userID;
+			validatedUserID = userID;
 		}
-		
-		
+
 		connection.close();
-	} 
-	catch (SQLException e) {
+	} catch (SQLException e) {
 		System.err.println("Error :" + e);
 	}
 	%>
 	<%
+	String urlToAllBooks;
 	if (validatedUserID == null) {
+		urlToAllBooks="/CA1-assignment/allBooksPage";
 	%>
 	<%@include file="navBar/headerNavPublic.html"%>
 	<%
 	} else {
+		urlToAllBooks="/CA1-assignment/allBooksPage?userIDAvailable=true";
 	%>
 	<%@include file="navBar/headerNavCustomer.html"%>
 	<%
@@ -92,8 +91,8 @@
 					<p class="text-slate-500 text-3xl italic">Searching for a book?
 						Browse & Buy Now!</p>
 					<button
-						class="bg-slate-600 text-white hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110">Explore
-						All Books</button>
+						class="bg-slate-600 text-white hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110"
+						onclick="window.location.href = '<%=urlToAllBooks%>'">Explore All Books</button>
 				</div>
 			</div>
 			<div>
@@ -123,22 +122,20 @@
 				<%
 				}
 				String urlToBookDetails;
-				if(validatedUserID!=null){
-					String encodedUserID = URLEncoder.encode(validatedUserID, StandardCharsets.UTF_8.toString());
-					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID() + "&userID=" + encodedUserID;
-				}
-				else{
-					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID();
+				if (validatedUserID != null) {
+				urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID() + "&userIDAvailable=true";
+				} else {
+				urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID();
 				}
 				%>
 				<div
-					class="m-4 p-6 bg-white border border-black rounded-lg w-80 transform hover:scale-110"
-					onclick="window.location.href = '<%= urlToBookDetails %>'">
-					<div class="h-48 w-48 flex items-center justify-center mx-auto">
+					class="m-4 p-6 bg-white border border-black rounded-lg w-80 shadow-lg transform hover:scale-110"
+					onclick="window.location.href = '<%=urlToBookDetails%>'">
+					<div class="h-48 w-auto flex items-center justify-center mx-auto">
 						<%
 						if (book.getImg() != null) {
 						%>
-						<img class="h-48 w-48 src="<%=book.getImg()%>">
+						<img class="h-48 object-contain" src="<%=book.getImg()%>">
 						<%
 						} else {
 						%>
@@ -147,6 +144,7 @@
 						}
 						%>
 					</div>
+
 
 					<p class="text-xl font-semibold text-gray-800 text-center mt-4"><%=book.getTitle()%></p>
 					<%
@@ -208,6 +206,7 @@
 							<%=book.getGenreName()%>
 						</p>
 					</div>
+					
 
 				</div>
 
@@ -225,7 +224,8 @@
 	</div>
 	<div class="flex items-center justify-center m-10">
 		<button
-			class="bg-slate-600 text-white text-md hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110">
+			class="bg-slate-600 text-white text-md hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110"
+			onclick="window.location.href = '<%=urlToAllBooks%>'">
 			EXPLORE ALL</button>
 	</div>
 
