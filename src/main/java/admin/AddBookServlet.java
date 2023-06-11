@@ -32,7 +32,7 @@ import utils.DBConnection;
 /**
  * Servlet implementation class AddBook
  */
-@WebServlet("/AddBook")
+@WebServlet("/admin/AddBook")
 public class AddBookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -43,7 +43,7 @@ public class AddBookServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			
 			loadData(request, connection);
-			request.getRequestDispatcher("admin/add-book.jsp").forward(request, response);
+			request.getRequestDispatcher("add-book.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -150,10 +150,10 @@ public class AddBookServlet extends HttpServlet {
 			loadData(request, conn);
 			
 			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("admin/add-book.jsp");
+				RequestDispatcher success = request.getRequestDispatcher("add-book.jsp");
 				success.forward(request, response);
 			} else {
-				RequestDispatcher error = request.getRequestDispatcher("admin/add-book.jsp?errCode=400");
+				RequestDispatcher error = request.getRequestDispatcher("add-book.jsp?errCode=400");
 				error.forward(request, response);
 			}
 

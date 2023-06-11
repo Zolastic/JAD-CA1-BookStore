@@ -1,0 +1,49 @@
+@charset "UTF-8";
+
+.loginPageBody {
+	background: linear-gradient(to right, #b4c7dd, #F7CAC9);
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(10px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+.registrationPageFloatingImage {
+	animation: floating 8s infinite;
+}
+
+.cardZ {
+  background: #F2F2F2 !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5.1px);
+}
+
+.left {
+  /* background-image: url("./img/"); */
+  background-color: #57687c; 
+  background-position: 1%;
+}
+.left h1 {
+  font-family: "Barlow", sans-serif;
+  font-weight: lighter;
+}
+
+.left img {
+  filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.3));
+}
+
+.right h1 {
+  font-size: 1.6em;
+  color: white;
+  letter-spacing: 1px;
+  font-family: Arial;
+}

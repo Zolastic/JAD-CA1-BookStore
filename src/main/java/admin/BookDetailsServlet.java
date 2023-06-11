@@ -23,7 +23,7 @@ import utils.DBConnection;
 /**
  * Servlet implementation class BookDetailsServlet
  */
-@WebServlet("/BookDetails")
+@WebServlet("/admin/BookDetails")
 public class BookDetailsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -45,7 +45,7 @@ public class BookDetailsServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			String bookID = request.getParameter("bookID");
 			loadData(request, connection, bookID);
-			request.getRequestDispatcher("admin/bookDetails.jsp").forward(request, response);
+			request.getRequestDispatcher("bookDetails.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page

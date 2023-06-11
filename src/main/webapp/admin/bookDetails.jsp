@@ -77,7 +77,7 @@
 		<div class="flex-grow"></div>
 		<div class="flex">
 			<a
-				href="<%=request.getContextPath()%>/EditBook?bookID=<%=book.getBookID()%>"><i
+				href="<%=request.getContextPath()%>/admin/EditBook?bookID=<%=book.getBookID()%>"><i
 				class="bookDetialsIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
 			<a class="m-0 p-0 toggleButton" data-book-id="<%=book.getBookID()%>"
 				data-book-title="<%=book.getTitle()%>"> <i
@@ -96,7 +96,7 @@
 			</h2>
 			<div class="flex mt-5">
 				<form id="deleteForm" method="post"
-					action="<%=request.getContextPath()%>/DeleteBook">
+					action="<%=request.getContextPath()%>/admin/DeleteBook">
 					<input type="hidden" id="bookID" name="bookID" value="">
 					<button type="submit"
 						class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-purple-200">

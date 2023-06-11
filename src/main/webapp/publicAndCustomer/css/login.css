@@ -1,0 +1,22 @@
+@charset "UTF-8";
+
+.loginTextHeader {
+	color: #926b6a !important;
+}
+
+.loginLinks {
+	color: #2C3E50;
+}
+
+.loginLinks:hover {
+	color: #57687c;
+}
+
+.loginButton {
+	background-color: #F7CAC9;
+	color: #926b6a;
+}
+
+.loginErrorMsg {
+	color: #EF616B;
+}
