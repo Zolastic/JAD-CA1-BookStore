@@ -42,15 +42,14 @@ public class cartPage extends HttpServlet {
 	        throws ServletException, IOException {
 	    try (Connection connection = DBConnection.getConnection()) {
 	        String scrollPosition = request.getParameter("scrollPosition");
-	        String userID = "3";
-//			String userIDAvailable = request.getParameter("userIDAvailable");
-//			
-//			String userID = null;
-//			if(userIDAvailable!=null) {
-//				if(userIDAvailable.equals("true")) {
-//					userID=(String) request.getSession().getAttribute("userID");
-//				}
-//			}
+			String userIDAvailable = request.getParameter("userIDAvailable");
+			
+			String userID = null;
+			if(userIDAvailable!=null) {
+				if(userIDAvailable.equals("true")) {
+					userID=(String) request.getSession().getAttribute("userID");
+				}
+			}
 	        String cartID = null;
 	        List<Book> cartItems = new ArrayList<>();
 
@@ -180,17 +179,17 @@ public class cartPage extends HttpServlet {
 				if (rowsAffected > 0) {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
-					response.sendRedirect(referer + "?scrollPosition=" + scrollPosition);
+					response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition);
 				} else {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
-					response.sendRedirect(referer + "?scrollPosition=" + scrollPosition+ "&error=true");
+					response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition+ "&error=true");
 				}
 			}catch (SQLException e) {
 			System.err.println("Error: " + e);
 			String referer = request.getHeader("Referer");
 			referer = removeParameterFromUrl(referer);
-			response.sendRedirect(referer + "?scrollPosition=" + scrollPosition+ "&error=true");
+			response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition+ "&error=true");
 
 		}
 		} 
@@ -219,18 +218,18 @@ public class cartPage extends HttpServlet {
 				if (rowsAffected > 0) {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
-					response.sendRedirect(referer + "?scrollPosition=" + scrollPosition);
+					response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition);
 				} else {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
-					response.sendRedirect(referer + "?scrollPosition=" + scrollPosition+ "&error=true");
+					response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition+ "&error=true");
 				}
 			}catch (SQLException e) {
 			System.err.println("Error: " + e);
 
 			String referer = request.getHeader("Referer");
 			referer = removeParameterFromUrl(referer);
-			response.sendRedirect(referer + "?scrollPosition=" + scrollPosition+ "&error=true");
+			response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition+ "&error=true");
 		}
 		} 
 	}
@@ -243,7 +242,7 @@ public class cartPage extends HttpServlet {
 		if (cartID == null || bookID == null || scrollPosition == null) {
 			String referer = request.getHeader("Referer");
 			referer = removeParameterFromUrl(referer);
-			response.sendRedirect(referer + "?scrollPosition=" + scrollPosition+ "&error=true");
+			response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition+ "&error=true");
 		} else {
 			try (Connection connection = DBConnection.getConnection()) {
 				String deleteQuery = "DELETE FROM cart_items WHERE cartID=? AND BookID=?;";
@@ -255,17 +254,17 @@ public class cartPage extends HttpServlet {
 				if (rowsAffected > 0) {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
-					response.sendRedirect(referer + "?scrollPosition=" + scrollPosition);
+					response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition);
 				} else {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
-					response.sendRedirect(referer + "?scrollPosition=" + scrollPosition+ "&error=true");
+					response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition+ "&error=true");
 				}
 			} catch (SQLException e) {
 				System.err.println("Error: " + e);
 				String referer = request.getHeader("Referer");
 				referer = removeParameterFromUrl(referer);
-				response.sendRedirect(referer + "?scrollPosition=" + scrollPosition+ "&error=true");
+				response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition+ "&error=true");
 			}
 
 		}
@@ -284,7 +283,7 @@ public class cartPage extends HttpServlet {
 	        checkoutItemsCookie.setMaxAge(5 * 60 * 60);
 	        response.addCookie(checkoutItemsCookie);
 
-	        response.sendRedirect("http://localhost:8080/CA1-assignment/checkoutPage");
+	        response.sendRedirect("http://localhost:8080/CA1-assignment/checkoutPage?userIDAvailable=true");
 	    }
 	}
 
@@ -312,17 +311,17 @@ public class cartPage extends HttpServlet {
 				if (rowsAffected > 0) {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
-					response.sendRedirect(referer + "?scrollPosition=" + scrollPosition);
+					response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition);
 				} else {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
-					response.sendRedirect(referer + "?scrollPosition=" + scrollPosition+ "&error=true");
+					response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition+ "&error=true");
 				}
 			}catch (SQLException e) {
 			System.err.println("Error: " + e);
 			String referer = request.getHeader("Referer");
 			referer = removeParameterFromUrl(referer);
-			response.sendRedirect(referer + "?scrollPosition=" + scrollPosition+ "&error=true");
+			response.sendRedirect(referer + "?userIDAvailable=true"+"&scrollPosition=" + scrollPosition+ "&error=true");
 		}
 		} 
 	}

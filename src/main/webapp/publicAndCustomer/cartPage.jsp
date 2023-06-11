@@ -21,17 +21,16 @@
 	List<Book> cartItems = (List<Book>) request.getAttribute("cartItems");
 	Double subtotal = 0.0;
 	String scrollPosition = (String) request.getAttribute("scrollPosition");
-	boolean allSelected=true;
+	boolean allSelected = true;
 
 	String cartID = (String) request.getAttribute("cartID");
 	String err = request.getParameter("error");
 	if (err != null) {
-	    if (err.equals("true")) {
-	        out.print("<script>alert('Internal Server Error')</script>");
-	    }
+		if (err.equals("true")) {
+			out.print("<script>alert('Internal Server Error')</script>");
+		}
 	}
 	if (cartID != null && validatedUserID != null) {
-		
 	%>
 	<script>
 	
@@ -62,14 +61,14 @@
     
     function submitCheckoutForm() {
         let selectedCartItems = [];
-        <% for (Book item : cartItems) {
-            if (item.getSelected() == 1) { %>
+        <%for (Book item : cartItems) {
+	if (item.getSelected() == 1) {%>
                 selectedCartItems.push({
-                    bookID: "<%= item.getBookID() %>",
-                    quantity: <%= item.getQuantity() %>
+                    bookID: "<%=item.getBookID()%>",
+                    quantity: <%=item.getQuantity()%>
                 });
-            <% }
-        } %>
+            <%}
+}%>
         
         if (selectedCartItems.length > 0) {
             let selectedCartItemsString = JSON.stringify(selectedCartItems);
@@ -130,9 +129,9 @@
 			} else {
 			for (Book item : cartItems) {
 				if (item.getSelected() != 1) {
-	                allSelected = false;
-	            }
-				String urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + item.getBookID() + "&userIDAvailable=true" ;
+					allSelected = false;
+				}
+				String urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + item.getBookID() + "&userIDAvailable=true";
 			%>
 			<div
 				class="flex items-center border border-gray-300 rounded-lg my-2 p-5 shadow-lg">
@@ -186,16 +185,16 @@
 							onclick="updateQuantity(-1, <%=item.getBookID()%>)">
 							<i class="fas fa-minus transform hover:scale-110"></i>
 						</button>
-						<input id="quantityInput_<%=item.getBookID()%>" class="w-12 text-center" type="number"
-							name="quantity" value="<%=item.getQuantity()%>"
+						<input id="quantityInput_<%=item.getBookID()%>"
+							class="w-12 text-center" type="number" name="quantity"
+							value="<%=item.getQuantity()%>"
 							onchange="updateQuantity(0, <%=item.getBookID()%>)">
 						<button id="plusBtn"
 							class="text-gray-500 hover:text-black focus:outline-none"
 							onclick="updateQuantity(1, <%=item.getBookID()%>)">
 							<i class="fas fa-plus transform hover:scale-110"></i>
 						</button>
-						<input type="hidden"
-							name="scrollPositionForQty"
+						<input type="hidden" name="scrollPositionForQty"
 							id="scrollPositionForQty_<%=item.getBookID()%>" value="">
 						<input type="hidden" id="updatedQuantity_<%=item.getBookID()%>"
 							name="updatedQuantity" value=""> <input type="hidden"
@@ -231,14 +230,14 @@
 					<form id="selectAllCartItemForm" action="/CA1-assignment/cartPage"
 						method="post">
 						<input type="checkbox" id="select-all"
-							onchange="selectAllCartItem()" class="mr-2 w-4 h-4" <%=allSelected ? "checked" : ""%>> <label
+							onchange="selectAllCartItem()" class="mr-2 w-4 h-4"
+							<%=allSelected ? "checked" : ""%>> <label
 							for="select-all">Select All</label> <input type="hidden"
 							name="scrollPositionForSelectAll" id="scrollPositionForSelectAll"
 							value=""> <input type="hidden" name="action"
 							value="selectAllCartItems"> <input type="hidden"
-							name="cartID" value="<%=cartID%>">
-						<input type="hidden" name="newSelection" id="newSelection"
-							value="">
+							name="cartID" value="<%=cartID%>"> <input type="hidden"
+							name="newSelection" id="newSelection" value="">
 					</form>
 					<div>
 
@@ -251,9 +250,9 @@
 								<button
 									class="px-4 p-2 bg-slate-600 hover:bg-slate-700 hover:scale-110 text-white rounded hover:bg-blue-600"
 									onclick="submitCheckoutForm()">Checkout</button>
-								<input type="hidden" id="selectedCartItems" name="selectedCartItems"
-									value=""> <input type="hidden" name="action"
-									value="checkout"> 
+								<input type="hidden" id="selectedCartItems"
+									name="selectedCartItems" value=""> <input type="hidden"
+									name="action" value="checkout">
 							</form>
 						</div>
 					</div>
