@@ -79,7 +79,7 @@
 	} else {
 		urlToAllBooks="/CA1-assignment/allBooksPage?userIDAvailable=true";
 	%>
-	<%@include file="navBar/headerNavCustomer.html"%>
+	<%@include file="navBar/headerNavCustomer.jsp"%>
 	<%
 	}
 	%>
