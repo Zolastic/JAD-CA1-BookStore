@@ -70,11 +70,14 @@
 	}
 	%>
 	<%
+	String urlToAllBooks;
 	if (validatedUserID == null) {
+		urlToAllBooks="/CA1-assignment/allBooksPage";
 	%>
 	<%@include file="navBar/headerNavPublic.html"%>
 	<%
 	} else {
+		urlToAllBooks="/CA1-assignment/allBooksPage?userIDAvailable=true";
 	%>
 	<%@include file="navBar/headerNavCustomer.html"%>
 	<%
@@ -88,8 +91,8 @@
 					<p class="text-slate-500 text-3xl italic">Searching for a book?
 						Browse & Buy Now!</p>
 					<button
-						class="bg-slate-600 text-white hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110">Explore
-						All Books</button>
+						class="bg-slate-600 text-white hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110"
+						onclick="window.location.href = '<%=urlToAllBooks%>'">Explore All Books</button>
 				</div>
 			</div>
 			<div>
@@ -221,7 +224,8 @@
 	</div>
 	<div class="flex items-center justify-center m-10">
 		<button
-			class="bg-slate-600 text-white text-md hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110">
+			class="bg-slate-600 text-white text-md hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110"
+			onclick="window.location.href = '<%=urlToAllBooks%>'">
 			EXPLORE ALL</button>
 	</div>
 
