@@ -18,7 +18,7 @@
 		<div class="h-64 flex flex-col justify-center items-center">
 			<h1 class="font-bold text-2xl my-2 tracking-wider">Book
 				Management System</h1>
-			<form action="<%=request.getContextPath()%>/SearchResults"
+			<form action="<%=request.getContextPath()%>/admin/SearchResults"
 				method="get" class="my-2">
 				<input id="userInput" name="userInput" type="text"
 					onkeyup="handleSearchChange()"
@@ -27,7 +27,7 @@
 			</form>
 		</div>
 		<div class="flex justify-end items-end pb-3">
-			<a class="" href="<%=request.getContextPath()%>/AddBook"><i
+			<a class="" href="<%=request.getContextPath()%>/admin/AddBook"><i
 				class="viewBooksIcons fa-solid fa-plus fa-2xl mx-3 hover:cursor-pointer"></i></a>
 		</div>
 	</header>
@@ -40,7 +40,7 @@
 		%>
 		<div class="flex py-3 my-5 mx-10 rounded-lg shadow-lg bg-gray-50">
 			<a class="hover:cursor-pointer hover:text-amber-900"
-				href="<%=request.getContextPath()%>/BookDetails?bookID=<%=book.getBookID()%>">
+				href="<%=request.getContextPath()%>/admin/BookDetails?bookID=<%=book.getBookID()%>">
 				<%
 					if ((book.getImg()) == null) {
 						%>
@@ -59,7 +59,7 @@
 				</a>
 			<div class="flex flex-col ml-10">
 				<a class="hover:cursor-pointer hover:text-amber-900"
-					href="<%=request.getContextPath()%>/BookDetails?bookID=<%=book.getBookID()%>"><h1
+					href="<%=request.getContextPath()%>/admin/BookDetails?bookID=<%=book.getBookID()%>"><h1
 						class="text-3xl font-bold"><%=book.getTitle()%></h1></a>
 				<p class="mt-5 text-lg"><%=book.getDescription()%></p>
 				<p class="mt-5 text-sm">
@@ -84,7 +84,7 @@
 			<div class="flex-grow"></div>
 			<div class="flex">
 				<a
-					href="<%=request.getContextPath()%>/EditBook?bookID=<%=book.getBookID()%>"><i
+					href="<%=request.getContextPath()%>/admin/EditBook?bookID=<%=book.getBookID()%>"><i
 					class="viewBooksIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
 				<a class="m-0 p-0 toggleButton" data-book-id="<%=book.getBookID()%>"
 					data-book-title="<%=book.getTitle()%>"> <i
@@ -115,7 +115,7 @@
 				</h2>
 				<div class="flex mt-5">
 					<form id="deleteForm" method="post"
-						action="<%=request.getContextPath()%>/DeleteBook">
+						action="<%=request.getContextPath()%>/admin/DeleteBook">
 						<input type="hidden" id="bookID" name="bookID" value="">
 						<button type="submit"
 							class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-purple-200">

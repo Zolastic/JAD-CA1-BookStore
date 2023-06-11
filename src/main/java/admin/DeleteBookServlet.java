@@ -24,7 +24,7 @@ import utils.DBConnection;
 /**
  * Servlet implementation class DeleteBookServlet
  */
-@WebServlet("/DeleteBook")
+@WebServlet("/admin/DeleteBook")
 public class DeleteBookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 

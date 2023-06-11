@@ -15,7 +15,7 @@
 	Book book = (Book) request.getAttribute("book");
 	%>
 
-	<form class="mt-28" action="<%=request.getContextPath()%>/EditBook"
+	<form class="mt-28" action="<%=request.getContextPath()%>/admin/EditBook"
 		method="post" enctype="multipart/form-data">
 
 		<div class="addBookSelectImage flex flex-col z-0 w-full mb-8 group">

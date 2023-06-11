@@ -20,7 +20,7 @@ import utils.DBConnection;
 /**
  * Servlet implementation class viewBooks
  */
-@WebServlet("/ViewBooks")
+@WebServlet("/admin/ViewBooks")
 public class ViewBooksServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -42,7 +42,7 @@ public class ViewBooksServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 
 			loadData(request, connection);
-			request.getRequestDispatcher("admin/viewBooks.jsp").forward(request, response);
+			request.getRequestDispatcher("viewBooks.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page

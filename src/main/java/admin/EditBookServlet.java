@@ -30,7 +30,7 @@ import utils.DBConnection;
 /**
  * Servlet implementation class EditBook
  */
-@WebServlet("/EditBook")
+@WebServlet("/admin/EditBook")
 public class EditBookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -52,7 +52,7 @@ public class EditBookServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			String bookID = request.getParameter("bookID");
 			loadData(request, connection, bookID);
-			request.getRequestDispatcher("admin/editBook.jsp").forward(request, response);
+			request.getRequestDispatcher("editBook.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -207,11 +207,11 @@ public class EditBookServlet extends HttpServlet {
 			loadData(request, connection, bookID);
 
 			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("admin/editBook.jsp?bookID=" + bookID);
+				RequestDispatcher success = request.getRequestDispatcher("editBook.jsp?bookID=" + bookID);
 				success.forward(request, response);
 			} else {
 				RequestDispatcher error = request
-						.getRequestDispatcher("admin/editBook.jsp?errCode=400&bookID=" + bookID);
+						.getRequestDispatcher("editBook.jsp?errCode=400&bookID=" + bookID);
 				error.forward(request, response);
 			}
 

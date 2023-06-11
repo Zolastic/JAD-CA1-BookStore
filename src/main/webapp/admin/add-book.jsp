@@ -13,7 +13,7 @@
 	<%@ page import="utils.DBConnection, model.*"%>
 	<%@include file="./navbar.jsp"%>
 	<!-- Add Book Form  -->
-	<form class="mt-28" action="<%= request.getContextPath()%>/AddBook" method="post" enctype="multipart/form-data">
+	<form class="mt-28" action="<%= request.getContextPath()%>/admin/AddBook" method="post" enctype="multipart/form-data">
 		<!-- image -->
 		<div class="flex flex-col z-0 w-full mb-8 group">
 			<label for="image"
