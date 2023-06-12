@@ -82,7 +82,7 @@
 					<div class="border border-b border-gray-300 my-2"></div>
 					<div class="my-5">
 						<label>Full Address:</label> <input type="text" name="address"
-							class="w-full border border-gray-300 rounded px-4 py-2">
+							class="w-full border border-gray-300 rounded px-4 py-2" required>
 					</div>
 				</div>
 				<div class="p-2 pb-10 rounded shadow ">
@@ -153,7 +153,7 @@
 	%>
 	<script>
 		alert("Error loading page");
-		if (validatedUserID != null) {
+		if (<%=validatedUserID%> != null) {
 			window.location.href = "http://localhost:8080/CA1-assignment/cartPage?userIDAvailable=true";
 		} else {
 			window.location.href = "http://localhost:8080/CA1-assignment/cartPage";

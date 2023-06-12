@@ -330,9 +330,6 @@ public class checkoutPage extends HttpServlet {
 					}
 				}
 			}
-			System.out.println(address);
-			System.out.println(checkoutItemsArrayString.size());
-			System.out.println(userID);
 			if (userID != null && address != null || checkoutItemsArrayString.size()!=0) {
 				try {
 					checkoutItems = getCheckoutItems(connection, userID, checkoutItemsArrayString);
@@ -357,7 +354,6 @@ public class checkoutPage extends HttpServlet {
 								if (refund.getStatus().equals("succeeded")) {
 									clearCheckoutItemsCookie(response);
 									response.sendRedirect("paymentError?userIDAvailable=true");
-									System.out.println("a");
 								} else {
 									clearCheckoutItemsCookie(response);
 									response.sendRedirect("paymentError?error=RefundFailed&userIDAvailable=true");
@@ -376,7 +372,6 @@ public class checkoutPage extends HttpServlet {
 							if (refund.getStatus().equals("succeeded")) {
 								clearCheckoutItemsCookie(response);
 								response.sendRedirect("paymentError?userIDAvailable=true");
-								System.out.println("b");
 							} else {
 								clearCheckoutItemsCookie(response);
 								response.sendRedirect("paymentError?error=RefundFailed&userIDAvailable=true");
@@ -392,35 +387,29 @@ public class checkoutPage extends HttpServlet {
 							if (refund.getStatus().equals("succeeded")) {
 								clearCheckoutItemsCookie(response);
 								response.sendRedirect("paymentError?userIDAvailable=true");
-								System.out.println("c");
 							} else {
 								clearCheckoutItemsCookie(response);
 								response.sendRedirect("paymentError?error=RefundFailed&userIDAvailable=true");
-								System.out.println("d");
 							}
 						} else {
 							clearCheckoutItemsCookie(response);
 							response.sendRedirect("paymentError?userIDAvailable=true");
-							System.out.println("e");
 						}
 					}
 				} catch (StripeException e) {
 					System.err.println("Error: " + e.getMessage());
 					clearCheckoutItemsCookie(response);
 					response.sendRedirect("paymentError?userIDAvailable=true");
-					System.out.println("f");
 				}
 			} else {
 				clearCheckoutItemsCookie(response);
 				response.sendRedirect("paymentError?userIDAvailable=true");
-				System.out.println("g");
 			}
 
 		} catch (SQLException e1) {
 			System.err.println("Error: " + e1.getMessage());
 			clearCheckoutItemsCookie(response);
 			response.sendRedirect("paymentError?userIDAvailable=true");
-			System.out.println("h");
 		}
 	}
 

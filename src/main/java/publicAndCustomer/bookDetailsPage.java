@@ -123,7 +123,7 @@ public class bookDetailsPage extends HttpServlet {
 			throws ServletException, IOException {
 		String validatedUserID = request.getParameter("validatedUserID");
 		if (validatedUserID == null||validatedUserID.equals("null") ) {
-			RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/login.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
 			dispatcher.forward(request, response);
 		} else {
 			String bookID = request.getParameter("bookID");
