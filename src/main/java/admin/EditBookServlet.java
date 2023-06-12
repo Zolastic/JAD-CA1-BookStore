@@ -77,9 +77,10 @@ public class EditBookServlet extends HttpServlet {
 
 			List<Genre> genres = new ArrayList<>();
 			while (genreResultSet.next()) {
-				int genreId = genreResultSet.getInt("genreId");
+				String genreId = genreResultSet.getString("genreId");
 				String genreName = genreResultSet.getString("genreName");
-				genres.add(new Genre(genreId, genreName));
+				String genreImage = genreResultSet.getString("image");
+				genres.add(new Genre(genreId, genreName, genreImage));
 			}
 
 			return genres;

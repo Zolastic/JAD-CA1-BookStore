@@ -4,7 +4,18 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
+<%
+String signUpState = request.getParameter("signUp");
+if (signUpState != null) {
+%>
+<title>Inkwell: Sign Up</title>
+<%
+} else {
+%>
 <title>Inkwell: Login</title>
+<%
+}
+%>
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/publicAndCustomer/css/registrationPage.css">
@@ -24,7 +35,6 @@
 					Discover different dimensions with Inkwell.</h1>
 			</div>
 			<%
-			String signUpState = request.getParameter("signUp");
 			if (signUpState != null) {
 			%>
 			<%@include file="./signUp.jsp"%>
