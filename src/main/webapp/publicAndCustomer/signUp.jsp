@@ -5,7 +5,7 @@
 	crossorigin="anonymous"></script>
 
 <div class="w-1/2  h-full flex-wrap justify-center p-12">
-	<h1 class="loginTextHeader text-center text-3xl font-bold">SignUp</h1>
+	<h1 class="loginTextHeader text-center text-3xl font-bold">SIGN UP</h1>
 	<form class="mt-6" action="<%=request.getContextPath()%>/SignUp"
 		method="post">
 		<div class="field-wrapper flex relative z-0 w-full mb-8 group">
@@ -41,9 +41,10 @@
 		}
 		%>
 		<div class="field-wrapper flex justify-center my-2">
+		<span class="mr-1">Already have an account?</span>
 			<a
 				href="<%=request.getContextPath()%>/publicAndCustomer/registrationPage.jsp"
-				class="loginLinks">Log In</a>
+				class="loginLinks">Log In Here!</a>
 		</div>
 		<div class="field-wrapper flex justify-center mt-5">
 			<button type="submit"

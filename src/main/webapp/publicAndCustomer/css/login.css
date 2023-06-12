@@ -5,16 +5,16 @@
 }
 
 .loginLinks {
-	color: #2C3E50;
-}
-
-.loginLinks:hover {
 	color: #57687c;
 }
 
+.loginLinks:hover {
+	color: #926b6a;;
+}
+
 .loginButton {
-	background-color: #F7CAC9;
-	color: #926b6a;
+	background-color: #b4c7dd;
+	color: #57687c;
 }
 
 .loginErrorMsg {

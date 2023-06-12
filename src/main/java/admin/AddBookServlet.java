@@ -62,13 +62,14 @@ public class AddBookServlet extends HttpServlet {
 	private List<Genre> getGenres(Connection connection) throws SQLException {
 		try (Statement genreStatement = connection.createStatement();
 			 ResultSet genreResultSet = genreStatement
-							.executeQuery("SELECT genre_id as genreId, genre_name as genreName FROM genre;");) {
+							.executeQuery("SELECT genre_id as genreId, genre_name as genreName, genre_img as image FROM genre;");) {
 				
 				List<Genre> genres = new ArrayList<>();
 				while (genreResultSet.next()) {
-					int genreId = genreResultSet.getInt("genreId");
+					String genreId = genreResultSet.getString("genreId");
 					String genreName = genreResultSet.getString("genreName");
-					genres.add(new Genre(genreId, genreName));
+					String genreImage = genreResultSet.getString("image");
+					genres.add(new Genre(genreId, genreName, genreImage));
 				}
 				
 				return genres;

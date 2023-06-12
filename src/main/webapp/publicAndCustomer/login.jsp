@@ -34,13 +34,14 @@
 			<a href="/forgetpassword" class="loginLinks">Forget Password?</a>
 		</div>
 		<div class="field-wrapper flex justify-center my-2">
+			<span class="mr-1">Don't have an account?</span>
 			<a
 				href="<%=request.getContextPath()%>/publicAndCustomer/registrationPage.jsp?signUp=true"
-				class="loginLinks">Sign Up</a>
+				class="loginLinks">Sign Up!</a>
 		</div>
 		<div class="field-wrapper flex justify-center mt-5">
 			<button type="submit"
-				class="loginButton text-amber-800 bg-pink-200 hover:bg-pink-250 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Login!</button>
+				class="loginButton p-4 text-amber-800 bg-pink-200 hover:bg-pink-250 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Login!</button>
 		</div>
 	</form>
 </div>

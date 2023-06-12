@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.BookDAO;
 import model.*;
 import utils.DBConnection;
 
@@ -23,6 +24,7 @@ import utils.DBConnection;
 @WebServlet("/admin/ViewBooks")
 public class ViewBooksServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private BookDAO bookDAO = new BookDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -50,45 +52,9 @@ public class ViewBooksServlet extends HttpServlet {
 	}
 
 	private void loadData(HttpServletRequest request, Connection connection) throws SQLException {
-		List<Book> books = getBooks(connection);
+		String userInput = request.getParameter("userInput");
+		List<Book> books = bookDAO.searchBooks(connection, userInput);
 		request.setAttribute("books", books);
-	}
-
-	private List<Book> getBooks(Connection connection) throws SQLException {
-		try (Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery(
-						"SELECT book.book_id as bookID, book.img, book.title, book.price, book.description, \r\n"
-								+ "book.publication_date as publicationDate, book.ISBN, book.inventory, genre.genre_name as genreName, book.sold, \r\n"
-								+ "ROUND(AVG(IFNULL(rating, 0)), 1) as rating , author.authorName, publisher.publisherName \r\n"
-								+ "FROM book \r\n" + "JOIN genre ON genre.genre_id = book.genre_id \r\n"
-								+ "LEFT JOIN review ON review.bookID = book.book_id \r\n"
-								+ "JOIN author ON book.authorID = author.authorID \r\n"
-								+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n"
-								+ "GROUP BY book.book_id, book.img, book.title, book.price, \r\n"
-								+ "genre.genre_name, book.sold, book.inventory, author.authorName, \r\n"
-								+ "publisher.publisherName;");) {
-
-			List<Book> books = new ArrayList<>();
-			while (resultSet.next()) {
-				String bookID = resultSet.getString("bookID");
-				String isbn = resultSet.getString("isbn");
-				String title = resultSet.getString("title");
-				String author = resultSet.getString("authorName");
-				String publisher = resultSet.getString("publisherName");
-				String publication_date = resultSet.getString("publicationDate");
-				String description = resultSet.getString("description");
-				String img = resultSet.getString("img");
-				String genreName = resultSet.getString("genreName");
-				int sold = resultSet.getInt("sold");
-				int inventory = resultSet.getInt("inventory");
-				double price = resultSet.getDouble("price");
-				double rating = resultSet.getDouble("rating");
-				books.add(new Book(bookID, isbn, title, author, publisher, publication_date, description, genreName,
-						img, sold, inventory, price, rating));
-			}
-
-			return books;
-		}
 	}
 
 	/**
