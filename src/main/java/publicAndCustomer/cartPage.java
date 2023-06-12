@@ -283,7 +283,7 @@ public class cartPage extends HttpServlet {
 	        checkoutItemsCookie.setMaxAge(5 * 60 * 60);
 	        response.addCookie(checkoutItemsCookie);
 
-	        response.sendRedirect("http://localhost:8080/CA1-assignment/checkoutPage?userIDAvailable=true");
+	        response.sendRedirect("checkoutPage?userIDAvailable=true");
 	    }
 	}
 

@@ -122,7 +122,7 @@
 			<%
 			if (cartItems == null || cartItems.isEmpty()) {
 			%>
-			<div class="flex items-center justify-center">
+			<div class="fixed inset-0 flex items-center justify-center mt-10">
 				<p>Cart is empty</p>
 			</div>
 			<%
