@@ -1,0 +1,19 @@
+@charset "UTF-8";
+
+.editProfileButton {
+	background-color: #b4c7dd;
+	color: #2C3E50;
+}
+
+.editProfileButton:hover {
+	background-color: #57687c;
+}
+
+.deleteAccountButton {
+	background-color: #FD5466;
+	color: #F7CAC9;
+}
+
+.deleteAccountButton:hover {
+	background-color: #EF616B;
+}
