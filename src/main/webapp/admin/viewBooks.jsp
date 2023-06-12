@@ -14,14 +14,37 @@
 <body>
 	<%@ page import="java.util.*, model.*"%>
 	<%@include file="./navbar.jsp"%>
+	<%
+	List<Book> books = (List<Book>) request.getAttribute("books");
+	String sCurrentPage = request.getParameter("page");
+
+	if (sCurrentPage == null) {
+		sCurrentPage = "1";
+	}
+
+	int iCurrentPage = Integer.parseInt(sCurrentPage);
+	int itemsPerPage = 10;
+
+	int startIndex = (iCurrentPage - 1) * itemsPerPage;
+	int endIndex = Math.min(startIndex + itemsPerPage, books.size());
+
+	List<Book> booksPerPage = books.subList(startIndex, endIndex);
+
+	int totalBooks = books.size();
+	int totalPages = (int) Math.ceil((double) totalBooks / itemsPerPage);
+
+	String userInput = request.getParameter("userInput");
+
+	String pageURL = String.format("%s/admin/ViewBooks?%spage=", request.getContextPath(),
+			userInput == null ? "" : "userInput="+ userInput +"&");
+	%>
 	<header class="viewBooksHeader mt-16">
 		<div class="h-64 flex flex-col justify-center items-center">
 			<h1 class="font-bold text-2xl my-2 tracking-wider">Book
 				Management System</h1>
 			<form action="<%=request.getContextPath()%>/admin/SearchResults"
 				method="get" class="my-2">
-				<input id="userInput" name="userInput" type="text"
-					onkeyup="handleSearchChange()"
+				<input id="userInput" name="userInput" type="text" value="<%= userInput == null ? "" : userInput %>"
 					class="w-[444px] h-10 px-5 py-3 text-lg rounded-full border-2 border-blue-300 focus:border-l-blue-300 outline-none transition text-greyAccent placeholder:text-gray-300"
 					placeholder="Search for a book here!" />
 			</form>
@@ -34,29 +57,23 @@
 
 	<div class="flex flex-col">
 		<%
-		List<Book> books = (List<Book>) request.getAttribute("books");
 		if (books.size() > 0) {
-			for (Book book : books) {
+			for (Book book : booksPerPage) {
 		%>
 		<div class="flex py-3 my-5 mx-10 rounded-lg shadow-lg bg-gray-50">
 			<a class="hover:cursor-pointer hover:text-amber-900"
 				href="<%=request.getContextPath()%>/admin/BookDetails?bookID=<%=book.getBookID()%>">
 				<%
-					if ((book.getImg()) == null) {
-						%>
-						<img
-				alt="" src="<%=request.getContextPath()%>/admin/img/No_Image_Available.jpg"
-				class="viewBooksImg rounded-lg mx-10 object-contain">
-						<%
-					} else {
-						%>
-						<img
-				alt="" src="data:image/png;base64, <%= book.getImg() %>"
-				class="viewBooksImg rounded-lg mx-10 object-contain">
-						<%
-					}
-				%>			
-				</a>
+				if ((book.getImg()) == null) {
+				%> <img alt=""
+				src="<%=request.getContextPath()%>/admin/img/No_Image_Available.jpg"
+				class="viewBooksImg rounded-lg mx-10 object-contain"> <%
+		 } else {
+		 %> <img alt="" src="data:image/png;base64, <%=book.getImg()%>"
+						class="viewBooksImg rounded-lg mx-10 object-contain"> <%
+		 }
+		 %>
+			</a>
 			<div class="flex flex-col ml-10">
 				<a class="hover:cursor-pointer hover:text-amber-900"
 					href="<%=request.getContextPath()%>/admin/BookDetails?bookID=<%=book.getBookID()%>"><h1
@@ -103,6 +120,25 @@
 		<%
 		}
 		%>
+
+		<!-- pagination -->
+		<div class="flex justify-center items-center mb-2">
+			<ul class="inline-flex items-center -space-x-px">
+				<li><a href="<%= pageURL + (iCurrentPage - 1) %>"
+					class="<%=iCurrentPage == 1 ? "paginationDisabled pointer-events-none" : "paginationEnabled"%> block px-3 py-2 ml-0 leading-tight border border-gray-300 rounded-l-lg">&laquo;</a></li>
+				<li>
+					<%
+					for (int i = 1; i <= totalPages; i++) {
+					%> <a href="<%= pageURL + i %>"
+					class="paginationEnabled px-3 py-2 leading-tight border border-gray-300"><%=i%></a>
+					<%
+					}
+					%>
+				</li>
+				<li><a href="<%= pageURL + (iCurrentPage + 1) %>"
+					class="<%=iCurrentPage == totalPages ? "paginationDisabled pointer-events-none" : "paginationEnabled"%> block px-3 py-2 leading-tight border border-gray-300 rounded-r-lg">&raquo;</a></li>
+			</ul>
+		</div>
 
 
 		<!-- Modal for confirm delete -->

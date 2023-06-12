@@ -16,3 +16,18 @@
 .viewBooksIcons {
 	color: #926b6a;
 }
+
+.paginationEnabled {
+	background-color: #2C3E50;
+	color: #b4c7dd;
+}
+
+.paginationEnabled:hover {
+	background-color: #57687c;
+	color: #F2F2F2;
+}
+
+.paginationDisabled{
+	background-color: #57687c;
+	color: #b4c7dd;
+}

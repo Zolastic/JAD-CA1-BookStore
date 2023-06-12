@@ -20,13 +20,13 @@ import utils.DBConnection;
  * Servlet implementation class SignUp
  */
 @WebServlet("/SignUp")
-public class SignUp extends HttpServlet {
+public class SignUpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public SignUp() {
+	public SignUpServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -52,7 +52,7 @@ public class SignUp extends HttpServlet {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		String duplicateCheckSqlStr = "SELECT * FROM users WHERE email = ?;";
-		String insertSqlStr = "INSERT INTO users VALUES (?, ?, ?, ?, \"customer\");";
+		String insertSqlStr = "INSERT INTO users (userID, name, email, password, role) VALUES (?, ?, ?, ?, \"customer\");";
 		try (Connection connection = DBConnection.getConnection();
 				PreparedStatement duplicateCheckps = connection.prepareStatement(duplicateCheckSqlStr);
 				PreparedStatement insertps = connection.prepareStatement(insertSqlStr);) {
