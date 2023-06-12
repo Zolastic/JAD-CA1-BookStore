@@ -18,12 +18,21 @@
 	User user = (User) request.getAttribute("user");
 	String image = user.getImage() == null ? request.getContextPath() + "/publicAndCustomer/img/defaultUserPFP.png"
 			: "data:image/png;base64, " + user.getImage();
+			
+	String statusCode = request.getParameter("statusCode");
 	%>
 
 	<%@include file="navBar/headerNavCustomer.jsp"%>
 	<div class="my-8 mx-48">
 		<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Change Password</h1>
+
 		<form action="<%=request.getContextPath()%>/ChangePassword" method="post" onsubmit="return validateForm()">
+		
+			<!-- userID  -->
+			<input type="text" name="userID" id=""
+			value="<%=user.getUserID()%>" class="hidden"
+				placeholder=" " required />
+		
 			<!-- current password -->
 			<div class="relative z-0 w-full mt-5 mb-8 group">
 				<input type="password" name="currentPassword" id="currentPassword"
@@ -47,8 +56,28 @@
 					placeholder=" " required /> <label for="confirmNewPassword"
 					class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-amber-800 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Confirm New Password</label>
 			</div>
-			<div class="changePasswordErrorMsg my-3">
-				<h1 id="changePasswordErrorMsg hidden" class="tracking-wide"></h1>
+			<div class="my-3">
+				<h1 id="changePasswordErrorMsg" class="tracking-wide hidden"></h1>
+				<%
+				if (statusCode != null) {
+					if (statusCode.equals("200")) {
+						%>
+						<h1 class="changePasswordSuccessMsg tracking-wide">Password Changed!</h1>
+						<%
+					} else if (statusCode.equals("400")) {
+						%>
+						<%
+					} else if (statusCode.equals("401")) {
+						%>
+						<h1 class="changePasswordErrorMsg tracking-wide">Uh-oh! Incorrect Current Password</h1>
+						<%
+					} else if (statusCode.equals("500")) {
+						%>
+						<h1 class="changePasswordErrorMsg tracking-wide">Uh-oh! Internal Server Error</h1>
+						<%
+					}
+				}
+				%>
 			</div>
 			<button type="submit"
 				class="text-amber-800 bg-pink-100 hover:bg-pink-200 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Change Password</button>

@@ -6,13 +6,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import model.User;
 import utils.DBConnection;
@@ -95,7 +102,63 @@ public class ChangePasswordServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
+		String userID = request.getParameter("userID");
+		String currentPassword = request.getParameter("currentPassword");
+		String newPassword = request.getParameter("newPassword");
+		String confirmNewPassword = request.getParameter("confirmNewPassword");
+		
+		boolean currentPasswordValidationStatus = false;
+		
+		String currentPasswordValidationSqlStr = "SELECT password FROM users WHERE userID = ?;";
+		String updatePasswordSqlStr = "UPDATE users SET password = ? WHERE userID = ?;";
+
+		try (Connection connection = DBConnection.getConnection();
+				PreparedStatement currentPasswordValidationps = connection.prepareStatement(currentPasswordValidationSqlStr);
+				PreparedStatement updatePasswordps = connection.prepareStatement(updatePasswordSqlStr);) {
+			
+			loadData(request, connection, userID);
+			
+			if (!(newPassword.equals(confirmNewPassword))) {
+				RequestDispatcher error = request
+						.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=400&userID=" + userID);
+				error.forward(request, response);
+				return;
+			}
+			
+			currentPasswordValidationps.setString(1, userID);
+			ResultSet currentPasswordValidationRS = currentPasswordValidationps.executeQuery();
+			
+			if (currentPasswordValidationRS.next()) {
+				String officialCurrentPassword = currentPasswordValidationRS.getString("password");
+				currentPasswordValidationStatus = officialCurrentPassword.equals(currentPassword);
+			}
+			
+			if (!currentPasswordValidationStatus) {
+				RequestDispatcher error = request
+						.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=401&userID=" + userID);
+				error.forward(request, response);
+				return;
+			}
+			
+			updatePasswordps.setString(1, newPassword);
+			updatePasswordps.setString(2, userID);
+			
+			int affectedRows = updatePasswordps.executeUpdate();
+			
+			loadData(request, connection, userID);
+			
+			if (affectedRows > 0) {
+				RequestDispatcher success = request.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=200&userID=" + userID);
+				success.forward(request, response);
+			} else {
+				RequestDispatcher error = request
+						.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=500&userID=" + userID);
+				error.forward(request, response);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

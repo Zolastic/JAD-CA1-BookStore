@@ -23,7 +23,6 @@
 		<form id="upload-form" action="<%=request.getContextPath()%>/EditProfile" method="post"
 			enctype="multipart/form-data">
 			<input type="text" name="userID" id=""
-				userID""
 			value="<%=user.getUserID()%>" class="hidden"
 				placeholder=" " required />
 
