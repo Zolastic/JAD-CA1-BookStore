@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Base64;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -21,22 +20,21 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.IOUtils;
 
 import model.User;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class EditProfilePage
+ * Servlet implementation class ChangePasswordServlet
  */
-@WebServlet("/EditProfile")
-public class EditProfileServlet extends HttpServlet {
+@WebServlet("/ChangePassword")
+public class ChangePasswordServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public EditProfileServlet() {
+    public ChangePasswordServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -44,7 +42,7 @@ public class EditProfileServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
@@ -63,7 +61,7 @@ public class EditProfileServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			String userID = request.getParameter("userID");
 			loadData(request, connection, userID);
-			request.getRequestDispatcher("publicAndCustomer/editProfile.jsp").forward(request, response);
+			request.getRequestDispatcher("publicAndCustomer/changePassword.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -102,72 +100,65 @@ public class EditProfileServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		String sqlStr = "UPDATE users SET name = ?, email = ?, img = ? WHERE userID = ?;";
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		String userID = request.getParameter("userID");
+		String currentPassword = request.getParameter("currentPassword");
+		String newPassword = request.getParameter("newPassword");
+		String confirmNewPassword = request.getParameter("confirmNewPassword");
+		
+		boolean currentPasswordValidationStatus = false;
+		
+		String currentPasswordValidationSqlStr = "SELECT password FROM users WHERE userID = ?;";
+		String updatePasswordSqlStr = "UPDATE users SET password = ? WHERE userID = ?;";
 
 		try (Connection connection = DBConnection.getConnection();
-				PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			// Create a factory for disk-based file items
-	        FileItemFactory factory = new DiskFileItemFactory();
-
-	        // Create a new file upload handler
-	        ServletFileUpload upload = new ServletFileUpload(factory);
-	        List<FileItem> items = upload.parseRequest(request);
-	        
-	        String userID = getParameter(items, "userID");
-	        String name = getParameter(items, "name");
-	        String email = getParameter(items, "email");
-	        String image = getBase64Parameter(items, "image");
-	        System.out.println("image: " + image);
+				PreparedStatement currentPasswordValidationps = connection.prepareStatement(currentPasswordValidationSqlStr);
+				PreparedStatement updatePasswordps = connection.prepareStatement(updatePasswordSqlStr);) {
 			
-			ps.setString(1, name);
-			ps.setString(2, email);
-			ps.setString(3, image);
-			ps.setString(4, userID);
-
-			int affectedRows = ps.executeUpdate();
-			System.out.printf("affectedRows: " + affectedRows);
-			// Load data for page
 			loadData(request, connection, userID);
-
+			
+			if (!(newPassword.equals(confirmNewPassword))) {
+				RequestDispatcher error = request
+						.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=400&userID=" + userID);
+				error.forward(request, response);
+				return;
+			}
+			
+			currentPasswordValidationps.setString(1, userID);
+			ResultSet currentPasswordValidationRS = currentPasswordValidationps.executeQuery();
+			
+			if (currentPasswordValidationRS.next()) {
+				String officialCurrentPassword = currentPasswordValidationRS.getString("password");
+				currentPasswordValidationStatus = officialCurrentPassword.equals(currentPassword);
+			}
+			
+			if (!currentPasswordValidationStatus) {
+				RequestDispatcher error = request
+						.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=401&userID=" + userID);
+				error.forward(request, response);
+				return;
+			}
+			
+			updatePasswordps.setString(1, newPassword);
+			updatePasswordps.setString(2, userID);
+			
+			int affectedRows = updatePasswordps.executeUpdate();
+			
+			loadData(request, connection, userID);
+			
 			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("publicAndCustomer/editProfile.jsp?userID=" + userID);
+				RequestDispatcher success = request.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=200&userID=" + userID);
 				success.forward(request, response);
 			} else {
 				RequestDispatcher error = request
-						.getRequestDispatcher("publicAndCustomer/editProfile.jsp?errCode=400&userID=" + userID);
+						.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=500&userID=" + userID);
 				error.forward(request, response);
 			}
-
-			System.out.println("Woots");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private String getParameter(List<FileItem> items, String name) {
-		String value = items.stream().filter(item -> item.getFieldName().equals(name)).findFirst()
-			.map(item -> item.getString())
-			.orElse(null);
-		
-		return value;
-	}
-	
-	private String getBase64Parameter(List<FileItem> items, String name) throws IOException {
-		FileItem fileItem = items.stream().filter(item -> item.getFieldName().equals(name))
-				.findFirst()
-				.orElse(null);
-
-		if (fileItem == null) {
-			return null;
-		}
-
-		byte[] bytes = IOUtils.toByteArray(fileItem.getInputStream());
-	    byte[] encodedBytes = Base64.getEncoder().encode(bytes);
-	    String base64String = new String(encodedBytes);
-	    return base64String;
 	}
 
 }

@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import model.User;
 import utils.DBConnection;
@@ -37,6 +38,20 @@ public class ProfilePage extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
+		HttpSession session = req.getSession(false);
+		if (session == null) {
+			res.sendRedirect(req.getContextPath() + "/publicAndCustomer/registrationPage.jsp");
+			return;
+		}
+		
+		String userIDFromSession = (String) session.getAttribute("userID");
+		if (userIDFromSession == null) {
+			res.sendRedirect(req.getContextPath() + "/publicAndCustomer/registrationPage.jsp");
+			return;
+		}
+		
 		try (Connection connection = DBConnection.getConnection()) {
 			String userID = request.getParameter("userID");
 			loadData(request, connection, userID);

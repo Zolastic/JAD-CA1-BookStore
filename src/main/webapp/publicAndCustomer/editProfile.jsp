@@ -12,10 +12,6 @@
 <body>
 	<%@ page import="java.util.*, model.*"%>
 	<%
-	if (session == null) {
-		response.sendRedirect(request.getContextPath() + "/publicAndCustomer/registrationPage.jsp");
-	}
-
 	User user = (User) request.getAttribute("user");
 	String image = user.getImage() == null ? request.getContextPath() + "/publicAndCustomer/img/defaultUserPFP.png" : "data:image/png;base64, " + user.getImage();
 	%>
@@ -27,7 +23,6 @@
 		<form id="upload-form" action="<%=request.getContextPath()%>/EditProfile" method="post"
 			enctype="multipart/form-data">
 			<input type="text" name="userID" id=""
-				userID""
 			value="<%=user.getUserID()%>" class="hidden"
 				placeholder=" " required />
 
