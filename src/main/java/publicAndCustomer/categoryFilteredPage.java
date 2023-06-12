@@ -59,9 +59,12 @@ public class categoryFilteredPage extends HttpServlet {
 				String searchInput = request.getParameter("searchInput");
 				if (genreID != null && searchInput != null) {
 
-						searchInput="%"+searchInput+"%";
-						allGenreBook = searchBookByTitle(connection, genreID, searchInput);
+						allGenreBook = searchBookByTitle(connection, genreID, ("%"+searchInput+"%"));
 						request.setAttribute("searchExecuted", "true");
+						request.setAttribute("allGenreBook", allGenreBook);
+						request.setAttribute("genreName", genreName);
+						request.setAttribute("validatedUserID", userID);
+						RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/categoryFilteredPage.jsp?action=searchBookByTitle&searchInput="+searchInput);
 
 				}
 
