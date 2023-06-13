@@ -11,22 +11,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dao.BookDAO;
-import model.Book;
+import dao.AuthorDAO;
+import model.Author;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class viewBooks
+ * Servlet implementation class ViewAuthorsServlet
  */
-@WebServlet("/admin/ViewBooks")
-public class ViewBooksServlet extends HttpServlet {
+@WebServlet("/admin/ViewAuthors")
+public class ViewAuthorsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private BookDAO bookDAO = new BookDAO();
+	private AuthorDAO authorDAO = new AuthorDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public ViewBooksServlet() {
+	public ViewAuthorsServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -41,7 +41,7 @@ public class ViewBooksServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 
 			loadData(request, connection);
-			request.getRequestDispatcher("viewBooks.jsp").forward(request, response);
+			request.getRequestDispatcher("viewAuthors.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -50,8 +50,8 @@ public class ViewBooksServlet extends HttpServlet {
 
 	private void loadData(HttpServletRequest request, Connection connection) throws SQLException {
 		String userInput = request.getParameter("userInput");
-		List<Book> books = bookDAO.searchBooks(connection, userInput);
-		request.setAttribute("books", books);
+		List<Author> authors = authorDAO.searchAuthors(connection, userInput);
+		request.setAttribute("authors", authors);
 	}
 
 	/**
