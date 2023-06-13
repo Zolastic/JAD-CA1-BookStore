@@ -18,6 +18,12 @@ import utils.DBConnection;
 /**
  * Servlet implementation class paymentSuccess
  */
+
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
 @WebServlet("/paymentSuccess")
 public class PaymentSuccess extends HttpServlet {
 	private static final long serialVersionUID = 1L;

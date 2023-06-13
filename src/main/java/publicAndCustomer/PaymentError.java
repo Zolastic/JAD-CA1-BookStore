@@ -18,6 +18,13 @@ import utils.DBConnection;
 /**
  * Servlet implementation class PaymentError
  */
+
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
+
 @WebServlet("/PaymentError")
 public class PaymentError extends HttpServlet {
 	private static final long serialVersionUID = 1L;

@@ -23,6 +23,12 @@ import utils.DBConnection;
 /**
  * Servlet implementation class ReviewHistory
  */
+
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
 @WebServlet("/ReviewHistory")
 public class ReviewHistory extends HttpServlet {
 	private static final long serialVersionUID = 1L;

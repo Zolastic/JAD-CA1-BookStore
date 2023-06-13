@@ -18,6 +18,12 @@ import utils.DBConnection;
 /**
  * Servlet implementation class allBooksPage
  */
+
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
 @WebServlet("/AllBooksPage")
 public class AllBooksPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;

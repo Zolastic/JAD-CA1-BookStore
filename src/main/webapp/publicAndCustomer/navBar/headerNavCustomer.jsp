@@ -1,10 +1,9 @@
-<!--
-  - Author(s): Soh Jian Min
-  - Date:6/6/2023
+<%--
+  - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
   - Description: JAD CA1
-  -->
+  --%>
 
 <%
 // HttpSession currentSession = request.getSession(false);

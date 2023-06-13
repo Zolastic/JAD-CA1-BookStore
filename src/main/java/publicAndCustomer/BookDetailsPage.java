@@ -1,5 +1,14 @@
 package publicAndCustomer;
 
+/**
+ * Servlet implementation class BookDetailsPage
+ */
+
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;

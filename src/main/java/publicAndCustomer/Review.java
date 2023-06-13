@@ -26,6 +26,13 @@ import utils.DBConnection;
 /**
  * Servlet implementation class Review
  */
+
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
+
 @WebServlet("/Review")
 public class Review extends HttpServlet {
 	private static final long serialVersionUID = 1L;

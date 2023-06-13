@@ -19,6 +19,12 @@ import utils.DBConnection;
 /**
  * Servlet implementation class TransactionHistoryPage
  */
+
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
 @WebServlet("/TransactionHistoryPage")
 public class TransactionHistoryPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;

@@ -31,6 +31,12 @@ import utils.DBConnection;
 /**
  * Servlet implementation class CheckoutPage
  */
+
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
 @WebServlet("/CheckoutPage")
 
 public class CheckoutPage extends HttpServlet {
