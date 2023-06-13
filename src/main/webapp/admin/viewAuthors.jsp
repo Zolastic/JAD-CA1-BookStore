@@ -42,7 +42,7 @@
 		<div class="h-64 flex flex-col justify-center items-center">
 			<h1 class="font-bold text-2xl my-2 tracking-wider">Author
 				Management System</h1>
-			<form action="<%=request.getContextPath()%>/admin/SearchAuthorsResults"
+			<form action="<%=request.getContextPath()%>/admin/ViewAuthors"
 				method="get" class="my-2">
 				<input id="userInput" name="userInput" type="text"
 					value="<%=userInput == null ? "" : userInput%>"

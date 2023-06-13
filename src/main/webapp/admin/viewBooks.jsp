@@ -42,7 +42,7 @@
 		<div class="h-64 flex flex-col justify-center items-center">
 			<h1 class="font-bold text-2xl my-2 tracking-wider">Book
 				Management System</h1>
-			<form action="<%=request.getContextPath()%>/admin/SearchBooksResults"
+			<form action="<%=request.getContextPath()%>/admin/ViewBooks"
 				method="get" class="my-2">
 				<input id="userInput" name="userInput" type="text" value="<%= userInput == null ? "" : userInput %>"
 					class="w-[444px] h-10 px-5 py-3 text-lg rounded-full border-2 border-blue-300 focus:border-l-blue-300 outline-none transition text-greyAccent placeholder:text-gray-300"
