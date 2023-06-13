@@ -176,7 +176,7 @@
 				items[i]
 						.addEventListener(
 								"click",
-								function() {
+								() => {
 									const bookID = this
 											.getAttribute("data-book-id");
 									const bookTitle = this
