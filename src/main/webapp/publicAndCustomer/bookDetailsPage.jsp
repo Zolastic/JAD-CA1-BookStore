@@ -291,7 +291,8 @@
 				</p>
 			</div>
 		</div>
-		<div class="flex items-center mx-5 border border-gray-100 px-5 pt-5 mb-20">
+		<div
+			class="flex items-center mx-5 border border-gray-100 px-5 pt-5 pb-5 mb-20">
 			<%
 			if (reviews.size() == 0) {
 			%>
@@ -302,9 +303,20 @@
 			<div class="mt-4 space-y-4 w-full">
 				<%
 				for (Map<String, Object> review : reviews) {
+					String userImg = (String) review.get("userImg");
 				%>
 				<div class="flex items-start space-x-4">
+					<%
+					if (userImg != null) {
+					%>
+					<img src="<%=userImg%>" class="rounded-full h-12 w-12">
+					<%
+					} else {
+					%>
 					<i class="fas fa-user-circle text-gray-400 text-3xl"></i>
+					<%
+					}
+					%>
 					<div>
 						<h1 class="font-semibold text-xl"><%=review.get("userName")%></h1>
 						<div class="flex items-center space-x-1">

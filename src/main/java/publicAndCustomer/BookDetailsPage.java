@@ -95,7 +95,7 @@ public class BookDetailsPage extends HttpServlet {
 
 	private List<Map<String, Object>> getBookReviews(Connection connection, String bookID) throws SQLException {
 		List<Map<String, Object>> reviews = new ArrayList<>();
-		String sqlStr = "SELECT review.*, users.name FROM review, users WHERE review.custID=users.userID AND bookID=?;";
+		String sqlStr = "SELECT review.*, users.name, users.img FROM review, users WHERE review.custID=users.userID AND bookID=?;";
 		PreparedStatement ps = connection.prepareStatement(sqlStr);
 		ps.setString(1, bookID);
 		ResultSet rs = ps.executeQuery();
@@ -103,6 +103,7 @@ public class BookDetailsPage extends HttpServlet {
 		while (rs.next()) {
 			Map<String, Object> review = new HashMap<>();
 			review.put("userName", rs.getString("name"));
+			review.put("userImg", rs.getString("img"));
 			review.put("review_text", rs.getString("review_text"));
 			review.put("ratingByEachCust", rs.getDouble("rating"));
 			review.put("ratingDate", rs.getString("ratingDate"));

@@ -1,6 +1,6 @@
 package model;
 
-public class Review {
+public class ReviewHistoryClass {
 	private Book book;
 	private String review_id;
 	private String custID;
@@ -8,7 +8,7 @@ public class Review {
 	private String review_text;
 	private double rating;
 	private String ratingDate;
-	public Review(Book book, String review_id, String custID, String bookID, String review_text, double rating,
+	public ReviewHistoryClass(Book book, String review_id, String custID, String bookID, String review_text, double rating,
 			String ratingDate) {
 		super();
 		this.book = book;

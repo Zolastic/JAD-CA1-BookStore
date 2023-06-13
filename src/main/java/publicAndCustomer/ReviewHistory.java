@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import model.Book;
-import model.Review;
+import model.ReviewHistoryClass;
 import utils.DBConnection;
 
 /**
@@ -43,7 +43,7 @@ public class ReviewHistory extends HttpServlet {
 			throws ServletException, IOException {
 		String userIDAvailable = request.getParameter("userIDAvailable");
 
-		List<Review> reviewHistory = new ArrayList<>();
+		List<ReviewHistoryClass> reviewHistory = new ArrayList<>();
 		String userID = null;
 		if (userIDAvailable != null && userIDAvailable.equals("true")) {
 			userID = (String) request.getSession().getAttribute("userID");
@@ -83,8 +83,8 @@ public class ReviewHistory extends HttpServlet {
 		return userID;
 	}
 
-	private List<Review> getReviewHistory(Connection connection, String custID) throws SQLException {
-		List<Review> reviewHistory = new ArrayList<>();
+	private List<ReviewHistoryClass> getReviewHistory(Connection connection, String custID) throws SQLException {
+		List<ReviewHistoryClass> reviewHistory = new ArrayList<>();
 
 		String query = "SELECT review.*, book.*, genre.genre_name, author.authorName, publisher.publisherName, "
 				+ "(SELECT CAST(AVG(IFNULL(rating, 0)) AS DECIMAL(2, 1)) FROM review WHERE bookID = book.book_id) AS average_rating " 
@@ -113,7 +113,7 @@ public class ReviewHistory extends HttpServlet {
 					resultSet.getInt("sold"), resultSet.getInt("inventory"), resultSet.getDouble("price"),
 					resultSet.getDouble("average_rating"));
 
-			Review review = new Review(book, reviewID, custID, bookID, reviewText, rating, ratingDate);
+			ReviewHistoryClass review = new ReviewHistoryClass(book, reviewID, custID, bookID, reviewText, rating, ratingDate);
 			reviewHistory.add(review);
 		}
 
