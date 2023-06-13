@@ -7,7 +7,7 @@
 <title>Admin: View Books</title>
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/admin/css/viewBooks.css">
+	href="<%=request.getContextPath()%>/admin/css/viewManagementSystem.css">
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 </head>
@@ -38,7 +38,7 @@
 	String pageURL = String.format("%s/admin/ViewBooks?%spage=", request.getContextPath(),
 			userInput == null ? "" : "userInput="+ userInput +"&");
 	%>
-	<header class="viewBooksHeader mt-16">
+	<header class="viewHeader mt-16">
 		<div class="h-64 flex flex-col justify-center items-center">
 			<h1 class="font-bold text-2xl my-2 tracking-wider">Book
 				Management System</h1>
@@ -51,7 +51,7 @@
 		</div>
 		<div class="flex justify-end items-end pb-3">
 			<a class="" href="<%=request.getContextPath()%>/admin/AddBook"><i
-				class="viewBooksIcons fa-solid fa-plus fa-2xl mx-3 hover:cursor-pointer"></i></a>
+				class="viewIcons fa-solid fa-plus fa-2xl mx-3 hover:cursor-pointer"></i></a>
 		</div>
 	</header>
 
@@ -67,10 +67,10 @@
 				if ((book.getImg()) == null) {
 				%> <img alt=""
 				src="<%=request.getContextPath()%>/admin/img/No_Image_Available.jpg"
-				class="viewBooksImg rounded-lg mx-10 object-contain"> <%
+				class="viewImg rounded-lg mx-10 object-contain"> <%
 		 } else {
 		 %> <img alt="" src="data:image/png;base64, <%=book.getImg()%>"
-						class="viewBooksImg rounded-lg mx-10 object-contain"> <%
+						class="viewImg rounded-lg mx-10 object-contain"> <%
 		 }
 		 %>
 			</a>
@@ -102,10 +102,10 @@
 			<div class="flex">
 				<a
 					href="<%=request.getContextPath()%>/admin/EditBook?bookID=<%=book.getBookID()%>"><i
-					class="viewBooksIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
+					class="viewIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
 				<a class="m-0 p-0 toggleButton" data-book-id="<%=book.getBookID()%>"
 					data-book-title="<%=book.getTitle()%>"> <i
-					class="viewBooksIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i>
+					class="viewIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i>
 				</a>
 			</div>
 		</div>
