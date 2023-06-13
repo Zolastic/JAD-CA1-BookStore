@@ -17,3 +17,7 @@
 .deleteAccountButton:hover {
 	background-color: #EF616B;
 }
+
+.editProfileErrorMsg {
+	color: #EF616B;
+}
