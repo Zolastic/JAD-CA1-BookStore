@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 
 import model.*;
 import utils.DBConnection;
+import utils.HttpServletRequestUploadWrapper;
 
 /**
  * Servlet implementation class EditBook
@@ -72,8 +73,8 @@ public class EditBookServlet extends HttpServlet {
 
 	private List<Genre> getGenres(Connection connection) throws SQLException {
 		try (Statement genreStatement = connection.createStatement();
-				ResultSet genreResultSet = genreStatement
-						.executeQuery("SELECT genre_id as genreId, genre_name as genreName, genre_img as image FROM genre;");) {
+				ResultSet genreResultSet = genreStatement.executeQuery(
+						"SELECT genre_id as genreId, genre_name as genreName, genre_img as image FROM genre;");) {
 
 			List<Genre> genres = new ArrayList<>();
 			while (genreResultSet.next()) {
@@ -162,33 +163,35 @@ public class EditBookServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String sqlStr = " UPDATE book SET title = ?, price = ?, authorID = ?, publisherID = ?, inventory = ?, \r\n"
-				+ " publication_date = ?, ISBN = ?, description = ?,\r\n" + " genre_id = ?, img = ?, sold = ?\r\n"
+		String sqlStrWithImage = " UPDATE book SET title = ?, price = ?, authorID = ?, publisherID = ?, inventory = ?, \r\n"
+				+ " publication_date = ?, ISBN = ?, description = ?,\r\n" + " genre_id = ?, sold = ?, img = ?\r\n"
 				+ " WHERE book_id = ?;";
 
-		try (Connection connection = DBConnection.getConnection();
-				PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			// Create a factory for disk-based file items
-	        FileItemFactory factory = new DiskFileItemFactory();
+		String sqlStrWithoutImage = " UPDATE book SET title = ?, price = ?, authorID = ?, publisherID = ?, inventory = ?, \r\n"
+				+ " publication_date = ?, ISBN = ?, description = ?,\r\n" + " genre_id = ?, sold = ?\r\n"
+				+ " WHERE book_id = ?;";
 
-	        // Create a new file upload handler
-	        ServletFileUpload upload = new ServletFileUpload(factory);
-	        List<FileItem> items = upload.parseRequest(request);
-	        
-	        String bookID = getParameter(items, "bookID");
-	        String title = getParameter(items, "title");
-			double price = Double.parseDouble(getParameter(items, "price"));
-			int author = Integer.parseInt(getParameter(items, "author"));
-			int publisher = Integer.parseInt(getParameter(items, "publisher"));
-			int quantity = Integer.parseInt(getParameter(items, "quantity"));
-			String pubDate = getParameter(items, "date");
-			String isbn = getParameter(items, "isbn");
-			String description = getParameter(items, "description");
-			int genreId = Integer.parseInt(getParameter(items, "genre"));
-			int sold = Integer.parseInt(getParameter(items, "sold"));
-			String image = getBase64Parameter(items, "image");
+		try (Connection connection = DBConnection.getConnection();) {
+			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
+
+			String bookID = requestWrapper.getParameter("bookID");
+			String title = requestWrapper.getParameter("title");
+			double price = Double.parseDouble(requestWrapper.getParameter("price"));
+			int author = Integer.parseInt(requestWrapper.getParameter("author"));
+			int publisher = Integer.parseInt(requestWrapper.getParameter("publisher"));
+			int quantity = Integer.parseInt(requestWrapper.getParameter("quantity"));
+			String pubDate = requestWrapper.getParameter("date");
+			String isbn = requestWrapper.getParameter("isbn");
+			String description = requestWrapper.getParameter("description");
+			int genreId = Integer.parseInt(requestWrapper.getParameter("genre"));
+			int sold = Integer.parseInt(requestWrapper.getParameter("sold"));
+			String image = requestWrapper.getBase64Parameter("image");
+			boolean noImage = image == null;
 			
+			String sqlUpdate = noImage ? sqlStrWithoutImage : sqlStrWithImage;
 			
+			PreparedStatement ps = connection.prepareStatement(sqlUpdate);
+
 			ps.setString(1, title);
 			ps.setDouble(2, price);
 			ps.setInt(3, author);
@@ -198,9 +201,16 @@ public class EditBookServlet extends HttpServlet {
 			ps.setString(7, isbn);
 			ps.setString(8, description);
 			ps.setInt(9, genreId);
-			ps.setString(10, image);
-			ps.setInt(11, sold);
-			ps.setString(12, bookID);
+			ps.setInt(10, sold);
+			
+			
+			if (noImage) {
+				ps.setString(11, bookID);
+			} else {
+				ps.setString(11, image);
+				ps.setString(12, bookID);
+			}
+
 
 			int affectedRows = ps.executeUpdate();
 			System.out.printf("affectedRows: " + affectedRows);
@@ -211,8 +221,7 @@ public class EditBookServlet extends HttpServlet {
 				RequestDispatcher success = request.getRequestDispatcher("editBook.jsp?bookID=" + bookID);
 				success.forward(request, response);
 			} else {
-				RequestDispatcher error = request
-						.getRequestDispatcher("editBook.jsp?errCode=400&bookID=" + bookID);
+				RequestDispatcher error = request.getRequestDispatcher("editBook.jsp?errCode=400&bookID=" + bookID);
 				error.forward(request, response);
 			}
 
@@ -222,28 +231,4 @@ public class EditBookServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-	
-	private String getParameter(List<FileItem> items, String name) {
-		String value = items.stream().filter(item -> item.getFieldName().equals(name)).findFirst()
-			.map(item -> item.getString())
-			.orElse(null);
-		
-		return value;
-	}
-	
-	private String getBase64Parameter(List<FileItem> items, String name) throws IOException {
-		FileItem fileItem = items.stream().filter(item -> item.getFieldName().equals(name))
-				.findFirst()
-				.orElse(null);
-
-		if (fileItem == null) {
-			return null;
-		}
-
-		byte[] bytes = IOUtils.toByteArray(fileItem.getInputStream());
-	    byte[] encodedBytes = Base64.getEncoder().encode(bytes);
-	    String base64String = new String(encodedBytes);
-	    return base64String;
-	}
-
 }
