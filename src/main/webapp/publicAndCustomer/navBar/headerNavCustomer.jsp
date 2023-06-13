@@ -46,8 +46,11 @@ String userID = (String) session.getAttribute("userID");
 			}
 			%>
 
-			<a href=""
-				class="bg-slate-600 text-white hover:bg-slate-800 transform hover:scale-110 px-3 py-2 text-sm font-bold">LOGOUT</a>
+			<form action="<%=request.getContextPath()%>/Logout" method="post">
+				<button type="submit" class="bg-slate-600 text-white hover:bg-slate-800 transform hover:scale-110 px-3 py-2 text-sm font-bold">
+					Log Out
+				</button>
+			</form>
 		</div>
 
 

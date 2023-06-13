@@ -3,11 +3,7 @@ package publicAndCustomer;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Base64;
-import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,14 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.IOUtils;
-
+import dao.UserDAO;
 import model.User;
 import utils.DBConnection;
+import utils.HttpServletRequestUploadWrapper;
 
 /**
  * Servlet implementation class EditProfilePage
@@ -62,74 +54,60 @@ public class EditProfileServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			String userID = request.getParameter("userID");
-			loadData(request, connection, userID);
-			request.getRequestDispatcher("publicAndCustomer/editProfile.jsp").forward(request, response);
+			loadData(request, response, connection, userID);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
 		}
 	}
 	
-	private void loadData(HttpServletRequest request, Connection connection, String userID) throws SQLException {
-		User user = getUserInfo(connection, userID);
+	private void loadData(HttpServletRequest request, HttpServletResponse response, Connection connection,
+			String userID) throws SQLException, ServletException, IOException {
+		User user = UserDAO.getUserInfo(connection, userID);
+
+		if (user == null) {
+			response.sendRedirect(request.getContextPath() + "/publicAndCustomer/registrationPage.jsp");
+			return;
+		}
 		request.setAttribute("user", user);
+		request.getRequestDispatcher("publicAndCustomer/editProfile.jsp").forward(request, response);
 	}
 	
-	private User getUserInfo(Connection connection, String userID) throws SQLException {
-		String sqlStr = "SELECT * FROM users WHERE userID = ?;\r\n";
-		try (Statement statement = connection.createStatement();
-				PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			ps.setString(1, userID);
-
-			ResultSet resultSet = ps.executeQuery();
-
-			if (resultSet.next()) {
-				String name = resultSet.getString("name");
-				String email = resultSet.getString("email");
-				String password = resultSet.getString("password");
-				String role = resultSet.getString("role");
-				String img = resultSet.getString("img");
-				resultSet.close();
-				User user = new User(userID, name, email, password, role, img);
-				return user;
-			}
-
-			throw new RuntimeException("User not found!!! userID: " + userID);
-		}
-
-	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String sqlStr = "UPDATE users SET name = ?, email = ?, img = ? WHERE userID = ?;";
+		String sql = "UPDATE users SET name = ?, email = ?, img = ? WHERE userID = ?;";
+		String sqlWithoutImage = "UPDATE users SET name = ?, email = ? WHERE userID = ?;";
 
-		try (Connection connection = DBConnection.getConnection();
-				PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			// Create a factory for disk-based file items
-	        FileItemFactory factory = new DiskFileItemFactory();
-
-	        // Create a new file upload handler
-	        ServletFileUpload upload = new ServletFileUpload(factory);
-	        List<FileItem> items = upload.parseRequest(request);
-	        
-	        String userID = getParameter(items, "userID");
-	        String name = getParameter(items, "name");
-	        String email = getParameter(items, "email");
-	        String image = getBase64Parameter(items, "image");
+		try (Connection connection = DBConnection.getConnection()) {
+			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
+	        String userID = requestWrapper.getParameter("userID");
+	        String name = requestWrapper.getParameter("name");
+	        String email = requestWrapper.getParameter("email");
+	        String image = requestWrapper.getBase64Parameter("image");
 	        System.out.println("image: " + image);
+			boolean noImage = image == null;
 			
+	        String sqlUpdate = noImage ? sqlWithoutImage : sql;
+	        
+	        PreparedStatement ps = connection.prepareStatement(sqlUpdate);
+	        		
 			ps.setString(1, name);
 			ps.setString(2, email);
-			ps.setString(3, image);
-			ps.setString(4, userID);
+			if (noImage) {
+				ps.setString(3, userID);
+			} else {
+				ps.setString(3, image);
+				ps.setString(4, userID);
+			}
 
 			int affectedRows = ps.executeUpdate();
 			System.out.printf("affectedRows: " + affectedRows);
 			// Load data for page
-			loadData(request, connection, userID);
+			loadData(request, response, connection, userID);
 
 			if (affectedRows > 0) {
 				RequestDispatcher success = request.getRequestDispatcher("publicAndCustomer/editProfile.jsp?userID=" + userID);
@@ -147,27 +125,4 @@ public class EditProfileServlet extends HttpServlet {
 		}
 	}
 	
-	private String getParameter(List<FileItem> items, String name) {
-		String value = items.stream().filter(item -> item.getFieldName().equals(name)).findFirst()
-			.map(item -> item.getString())
-			.orElse(null);
-		
-		return value;
-	}
-	
-	private String getBase64Parameter(List<FileItem> items, String name) throws IOException {
-		FileItem fileItem = items.stream().filter(item -> item.getFieldName().equals(name))
-				.findFirst()
-				.orElse(null);
-
-		if (fileItem == null) {
-			return null;
-		}
-
-		byte[] bytes = IOUtils.toByteArray(fileItem.getInputStream());
-	    byte[] encodedBytes = Base64.getEncoder().encode(bytes);
-	    String base64String = new String(encodedBytes);
-	    return base64String;
-	}
-
 }
