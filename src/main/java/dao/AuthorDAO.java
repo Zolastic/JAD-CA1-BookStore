@@ -34,4 +34,22 @@ public class AuthorDAO {
 			return authors;
 		}
 	}
+	
+	public Author getAuthor(Connection connection, String authorID) throws SQLException {
+		String sqlStr = "SELECT * FROM author WHERE authorID = ?;";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, authorID);
+
+			ResultSet resultSet = ps.executeQuery();
+
+			while (resultSet.next()) {
+				String authorName = resultSet.getString("authorName");
+				Author author = new Author(authorID, authorName);
+				return author;
+			}
+
+			throw new RuntimeException("Book not found!!! authorID: " + authorID);
+		}
+
+	}
 }

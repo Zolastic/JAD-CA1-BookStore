@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.AuthorDAO;
 import model.Author;
 import model.Book;
 import model.Genre;
@@ -28,6 +29,7 @@ import utils.DBConnection;
 @WebServlet("/admin/EditAuthor")
 public class EditAuthorServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private AuthorDAO authorDAO = new AuthorDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -55,26 +57,8 @@ public class EditAuthorServlet extends HttpServlet {
 	}
 
 	private void loadData(HttpServletRequest request, Connection connection, String authorID) throws SQLException {
-		Author author = getAuthor(connection, authorID);
+		Author author = authorDAO.getAuthor(connection, authorID);
 		request.setAttribute("author", author);
-	}
-
-	private Author getAuthor(Connection connection, String authorID) throws SQLException {
-		String sqlStr = "SELECT * FROM author WHERE authorID = ?;";
-		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			ps.setString(1, authorID);
-
-			ResultSet resultSet = ps.executeQuery();
-
-			while (resultSet.next()) {
-				String authorName = resultSet.getString("authorName");
-				Author author = new Author(authorID, authorName);
-				return author;
-			}
-
-			throw new RuntimeException("Book not found!!! authorID: " + authorID);
-		}
-
 	}
 
 	/**
