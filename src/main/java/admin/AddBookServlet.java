@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,16 +17,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.IOUtils;
-
 import model.Author;
 import model.Genre;
 import model.Publisher;
 import utils.DBConnection;
+import utils.HttpServletRequestUploadWrapper;
 
 /**
  * Servlet implementation class AddBook
@@ -116,23 +110,18 @@ public class AddBookServlet extends HttpServlet {
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		try (Connection conn = DBConnection.getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sqlStr)) {
-			// Create a factory for disk-based file items
-	        FileItemFactory factory = new DiskFileItemFactory();
-
-	        // Create a new file upload handler
-	        ServletFileUpload upload = new ServletFileUpload(factory);
-	        List<FileItem> items = upload.parseRequest(request);
+			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 	        
-	        String title = getParameter(items, "title");
-			double price = Double.parseDouble(getParameter(items, "price"));
-			int author = Integer.parseInt(getParameter(items, "author"));
-			int publisher = Integer.parseInt(getParameter(items, "publisher"));
-			int quantity = Integer.parseInt(getParameter(items, "quantity"));
-			String pubDate = getParameter(items, "date");
-			String isbn = getParameter(items, "isbn");
-			String description = getParameter(items, "description");
-			int genreId = Integer.parseInt(getParameter(items, "genre"));
-			String image = getBase64Parameter(items, "image");
+	        String title = requestWrapper.getParameter("title");
+			double price = Double.parseDouble(requestWrapper.getParameter("price"));
+			int author = Integer.parseInt(requestWrapper.getParameter("author"));
+			int publisher = Integer.parseInt(requestWrapper.getParameter("publisher"));
+			int quantity = Integer.parseInt(requestWrapper.getParameter("quantity"));
+			String pubDate = requestWrapper.getParameter("date");
+			String isbn = requestWrapper.getParameter("isbn");
+			String description = requestWrapper.getParameter("description");
+			int genreId = Integer.parseInt(requestWrapper.getParameter("genre"));
+			String image = requestWrapper.getBase64Parameter("image");
 	        
 			ps.setString(1, title);
 			ps.setDouble(2, price);
@@ -163,29 +152,6 @@ public class AddBookServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private String getParameter(List<FileItem> items, String name) {
-		String value = items.stream().filter(item -> item.getFieldName().equals(name)).findFirst()
-			.map(item -> item.getString())
-			.orElse(null);
-		
-		return value;
-	}
-	
-	private String getBase64Parameter(List<FileItem> items, String name) throws IOException {
-		FileItem fileItem = items.stream().filter(item -> item.getFieldName().equals(name))
-				.findFirst()
-				.orElse(null);
-
-		if (fileItem == null) {
-			return null;
-		}
-
-		byte[] bytes = IOUtils.toByteArray(fileItem.getInputStream());
-	    byte[] encodedBytes = Base64.getEncoder().encode(bytes);
-	    String base64String = new String(encodedBytes);
-	    return base64String;
 	}
 
 }
