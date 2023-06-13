@@ -1,3 +1,10 @@
+<%--
+  - Author(s): Soh Jian Min (P2238856)
+  - Copyright Notice:-
+  - @(#)
+  - Description: JAD CA1
+  --%>
+  
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.*"%>
@@ -5,7 +12,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://js.stripe.com/v3/"></script>
 <title>Payment Error</title>
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -41,7 +47,7 @@
 			</div>
 			<button
 				class="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-700 transform hover:scale-110"
-				onclick="window.location.href = '/CA1-assignment/cartPage?userIDAvailable=true';">Go
+				onclick="window.location.href = '/CA1-assignment/CartPage?userIDAvailable=true';">Go
 				to Cart</button>
 		</div>
 	</div>
@@ -50,8 +56,8 @@
 	%>
 	<script>
 		alert("Error loading page");
-		if (validatedUserID != null) {
-			window.location.href = "http://localhost:8080/publicAndCustomer/registrationPage.jsp";
+		if (<%=validatedUserID%> == null) {
+			window.location.href = "registrationPage.jsp";
 		}
 	</script>
 	<%

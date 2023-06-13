@@ -1,10 +1,9 @@
-<!--
-  - Author(s): Soh Jian Min
-  - Date:6/6/2023
+<%--
+  - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
   - Description: JAD CA1
-  -->
+  --%>
 
 <%
 // HttpSession currentSession = request.getSession(false);
@@ -21,24 +20,25 @@ String userID = (String) session.getAttribute("userID");
 		<div class="flex items-center justify-center">
 			<a href="/CA1-assignment/publicAndCustomer/home.jsp"
 				class="text-white hover:text-blue-900 px-3 py-2 text-sm font-bold">HOME</a>
-			<a href="/CA1-assignment/allBooksPage?userIDAvailable=true"
+			<a href="/CA1-assignment/AllBooksPage?userIDAvailable=true"
 				class="text-white hover:text-blue-900 px-3 py-2 text-sm font-bold">BOOK</a>
-			<a href="/CA1-assignment/categoryMenuPage?userIDAvailable=true"
+			<a href="/CA1-assignment/CategoryMenuPage?userIDAvailable=true"
 				class="text-white hover:text-blue-900 px-3 py-2 text-sm font-bold">CATEGORIES</a>
 		</div>
 
 
 		<div class="flex items-center mr-5">
 			<span class="text-white pr-5"> <a
-				href="/CA1-assignment/cartPage?userIDAvailable=true"> <i
+				href="/CA1-assignment/CartPage?userIDAvailable=true"> <i
 					class="fas fa-shopping-cart text-3xl transform hover:scale-110"></i>
 			</a>
 			</span> <span class="text-white pr-5 hover:cursor-pointer"> <a
 				href="<%=request.getContextPath()%>/ProfilePage?userID=<%= userID %>"><i
 					class="fas fa-user text-3xl transform hover:scale-110"></i></a>
 			</span>
+			
 			<%
-			if (((String) session.getAttribute("role")).equals("admin")) {
+			if (((String) session.getAttribute("role"))!=null&&((String) session.getAttribute("role")).equals("admin")) {
 			%>
 			<a href="<%=request.getContextPath()%>/admin/index.jsp"
 				class="bg-white text-black hover:bg-gray-400 hover:text-white transform hover:scale-110 px-3 py-2 text-sm font-bold mr-2">Admin</a>

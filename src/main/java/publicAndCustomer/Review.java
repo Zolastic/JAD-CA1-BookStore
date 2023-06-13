@@ -24,16 +24,23 @@ import model.Book;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class review
+ * Servlet implementation class Review
  */
-@WebServlet("/review")
-public class review extends HttpServlet {
+
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
+
+@WebServlet("/Review")
+public class Review extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public review() {
+	public Review() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -68,7 +75,7 @@ public class review extends HttpServlet {
 			}
 		} else {
 			if (userID != null) {
-				response.sendRedirect("CA1-assignment/transactionHistory?userIDAvailable=true");
+				response.sendRedirect("CA1-assignment/TransactionHistoryPage?userIDAvailable=true");
 			} else {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
@@ -131,7 +138,7 @@ public class review extends HttpServlet {
 
 		String transactionHistoryItemID = request.getParameter("transactionHistoryItemID");
 		if (custID == null || bookID == null || scrollPosition == null || transactionHistoryItemID == null) {
-			RequestDispatcher dispatcher = request.getRequestDispatcher("transactionHistory"
+			RequestDispatcher dispatcher = request.getRequestDispatcher("TransactionHistoryPage"
 					+ "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&success=false");
 			dispatcher.forward(request, response);
 		} else {
@@ -141,23 +148,23 @@ public class review extends HttpServlet {
 				if (review_id != null) {
 					int countUpdate = updateReviewState(connection, transactionHistoryItemID);
 					if (countUpdate == 1) {
-						RequestDispatcher dispatcher = request.getRequestDispatcher("transactionHistory"
+						RequestDispatcher dispatcher = request.getRequestDispatcher("TransactionHistoryPage"
 								+ "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&success=true");
 						dispatcher.forward(request, response);
 					} else {
-						RequestDispatcher dispatcher = request.getRequestDispatcher("transactionHistory"
+						RequestDispatcher dispatcher = request.getRequestDispatcher("TransactionHistoryPage"
 								+ "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&success=false");
 						dispatcher.forward(request, response);
 					}
 
 				} else {
-					RequestDispatcher dispatcher = request.getRequestDispatcher("transactionHistory"
+					RequestDispatcher dispatcher = request.getRequestDispatcher("TransactionHistoryPage"
 							+ "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&success=false");
 					dispatcher.forward(request, response);
 				}
 			} catch (SQLException e) {
 				System.err.println("Error: " + e);
-				RequestDispatcher dispatcher = request.getRequestDispatcher("transactionHistory"
+				RequestDispatcher dispatcher = request.getRequestDispatcher("TransactionHistoryPage"
 						+ "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&success=false");
 				dispatcher.forward(request, response);
 			}

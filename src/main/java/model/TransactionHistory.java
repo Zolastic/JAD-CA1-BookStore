@@ -1,6 +1,11 @@
 package model;
 import java.util.*;
 
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
 public class TransactionHistory {
     private String transactionHistoryID;
     private String transactionDate;

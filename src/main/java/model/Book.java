@@ -1,5 +1,10 @@
 package model;
 
+/**
+ * Author(s): Soh Jian Min (P2238856)
+ * Description: JAD CA1
+ */
+
 public class Book {
 	private String BookID;
 	private String ISBN;
