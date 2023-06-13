@@ -16,7 +16,8 @@
 	<%
 	List<Book> allGenreBook = (List<Book>) request.getAttribute("allGenreBook");
 	String genreName = (String) request.getAttribute("genreName");
-	String searchExecuted = (String) request.getAttribute("searchExecuted");
+	String action = request.getParameter("action");
+	String searchInput = request.getParameter("searchInput");
 	boolean err = false;
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	if (allGenreBook == null || genreName == null) {
@@ -51,11 +52,7 @@
 	}
 	int startIndex = (currentPage - 1) * booksPerPage;
 	int endIndex = Math.min(startIndex + booksPerPage, totalBooks);
-	if (searchExecuted == null) {
-		booksOnCurrentPage = allGenreBook.subList(startIndex, endIndex);
-	} else {
-		booksOnCurrentPage = allGenreBook;
-	}
+	booksOnCurrentPage = allGenreBook.subList(startIndex, endIndex);
 	%>
 	<div class="mx-20 mb-60">
 		<div class="flex items-center justify-between">
@@ -178,15 +175,13 @@
 			}
 			%>
 		</div>
-		<%
-		if (searchExecuted == null) {
-		%>
+
 		<div class="flex items-center justify-center mt-10">
 			<div class="flex space-x-4">
 				<a
 					href="<%=currentPage > 1
 		? ("/CA1-assignment/categoryFilteredPage?page=" + (currentPage - 1) + "&genreName=" + genreName + "&genreID="
-				+ request.getParameter("genreID") + (validatedUserID != null ? "&userIDAvailable=true" : ""))
+				+ request.getParameter("genreID") + (validatedUserID != null ? "&userIDAvailable=true" : "")+(action!=null&&action.equals("searchBookByTitle")?("&action=searchBookByTitle&searchInput="+searchInput):""))
 		: "#"%>"
 					class="bg-gray-200 text-gray-600 px-4 py-2 rounded <%=currentPage > 1 ? "" : "cursor-not-allowed opacity-50"%>">
 					<i class="fas fa-chevron-left"></i>
@@ -197,6 +192,8 @@
 					+ request.getParameter("genreID");
 					if (validatedUserID != null) {
 						pageLink += "&userIDAvailable=true";
+					}if(action!=null&&action.equals("searchBookByTitle")){
+						pageLink+=("&action=searchBookByTitle&searchInput="+searchInput);
 					}
 				%>
 				<a href="<%=pageLink%>"
@@ -210,16 +207,14 @@
 				<a
 					href="<%=currentPage < totalPages
 		? ("/CA1-assignment/categoryFilteredPage?page=" + (currentPage + 1) + "&genreName=" + genreName + "&genreID="
-				+ request.getParameter("genreID") + (validatedUserID != null ? "&userIDAvailable=true" : ""))
+				+ request.getParameter("genreID") + (validatedUserID != null ? "&userIDAvailable=true" : "")+(action!=null&&action.equals("searchBookByTitle")?("&action=searchBookByTitle&searchInput="+searchInput):""))
 		: "#"%>"
 					class="bg-gray-200 text-gray-600 px-4 py-2 rounded <%=currentPage < totalPages ? "" : "cursor-not-allowed opacity-50"%>">
 					<i class="fas fa-chevron-right"></i>
 				</a>
 			</div>
 		</div>
-		<%
-		}
-		%>
+
 
 
 

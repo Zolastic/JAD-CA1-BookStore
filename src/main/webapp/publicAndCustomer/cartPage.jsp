@@ -152,21 +152,21 @@
 						id="scrollPositionForSelect_<%=item.getBookID()%>" />
 				</form>
 
-
-				<div class="flex items-center h-30 m-6"
-					onclick="window.location.href = '<%=urlToBookDetails%>'">
-					<%
-					if (item.getImg() != null) {
-					%>
-					<img class="h-full object-contain" src="<%=item.getImg()%>">
-					<%
-					} else {
-					%>
-					<i class="fas fa-image fa-3x"></i>
-					<%
-					}
-					%>
-				</div>
+				<a href="<%=urlToBookDetails%>">
+					<div class="flex items-center h-30 m-6">
+						<%
+						if (item.getImg() != null) {
+						%>
+						<img class="h-full object-contain" src="<%=item.getImg()%>">
+						<%
+						} else {
+						%>
+						<i class="fas fa-image fa-3x"></i>
+						<%
+						}
+						%>
+					</div>
+				</a>
 
 				<div class="flex-1 mr-4">
 					<a href="<%=urlToBookDetails%>">

@@ -41,7 +41,7 @@ public class cartPage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	        throws ServletException, IOException {
 	    try (Connection connection = DBConnection.getConnection()) {
-	        String scrollPosition = request.getParameter("scrollPosition");
+	    	String scrollPosition = request.getParameter("scrollPosition");
 			String userIDAvailable = request.getParameter("userIDAvailable");
 			
 			String userID = null;

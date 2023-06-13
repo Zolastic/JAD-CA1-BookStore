@@ -52,10 +52,12 @@ public class allBooksPage extends HttpServlet {
 				String searchInput = request.getParameter("searchInput");
 				if (searchInput != null) {
 
-					searchInput = "%" + searchInput + "%";
-					allBooks = searchBookByTitle(connection, searchInput);
+					allBooks = searchBookByTitle(connection, ("%" + searchInput + "%"));
 					request.setAttribute("searchExecuted", "true");
-
+					request.setAttribute("allBooks", allBooks);
+					request.setAttribute("validatedUserID", userID);
+					RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/allBooksPage.jsp?action=searchBookByTitle&searchInput="+searchInput);
+					dispatcher.forward(request, response);
 				}
 
 			}
