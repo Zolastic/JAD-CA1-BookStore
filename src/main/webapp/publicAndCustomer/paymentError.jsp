@@ -40,7 +40,7 @@
 			</div>
 			<button
 				class="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-700 transform hover:scale-110"
-				onclick="window.location.href = '/CA1-assignment/cartPage?userIDAvailable=true';">Go
+				onclick="window.location.href = '/CA1-assignment/CartPage?userIDAvailable=true';">Go
 				to Cart</button>
 		</div>
 	</div>

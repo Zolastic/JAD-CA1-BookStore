@@ -15,8 +15,8 @@
 <body>
 	<%
 	List<Book> allBooks = (List<Book>) request.getAttribute("allBooks");
-	String action =  request.getParameter("action");
-	String searchInput=request.getParameter("searchInput");
+	String action = request.getParameter("action");
+	String searchInput = request.getParameter("searchInput");
 	boolean err = false;
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	if (allBooks == null) {
@@ -55,7 +55,7 @@
 	%>
 	<div class="mx-20 mb-60">
 		<div class="flex items-center justify-center m-5">
-			<form action="/CA1-assignment/allBooksPage" method="GET">
+			<form action="/CA1-assignment/AllBooksPage" method="GET">
 				<input type="hidden" name="action" value="searchBookByTitle">
 				<input type="text" name="searchInput"
 					placeholder="Search by Book Title in Category"
@@ -84,12 +84,8 @@
 				int filledStars = (int) rating;
 				boolean hasHalfStar = (rating - filledStars) >= 0.5;
 				int emptyStars = 5 - filledStars - (hasHalfStar ? 1 : 0);
-				String urlToBookDetails;
-				if (validatedUserID != null) {
-					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID() + "&userIDAvailable=true";
-				} else {
-					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID();
-				}
+
+				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
 			%>
 			<div
 				class="flex items-center justify-between border border-gray-300 rounded-lg my-4 p-5 shadow-lg w-full  transform hover:scale-110"
@@ -175,19 +171,23 @@
 			<div class="flex space-x-4">
 				<a
 					href="<%=currentPage > 1
-				? ("/CA1-assignment/allBooksPage?page=" + (currentPage - 1)
-						+ (validatedUserID != null ? "&userIDAvailable=true" : "")+(action!=null&&action.equals("searchBookByTitle")?("&action=searchBookByTitle&searchInput="+searchInput):""))
+				? ("/CA1-assignment/AllBooksPage?page=" + (currentPage - 1)
+						+ (validatedUserID != null ? "&userIDAvailable=true" : "")
+						+ (action != null && action.equals("searchBookByTitle")
+								? ("&action=searchBookByTitle&searchInput=" + searchInput)
+								: ""))
 				: "#"%>"
 					class="bg-gray-200 text-gray-600 px-4 py-2 rounded <%=currentPage > 1 ? "" : "cursor-not-allowed opacity-50"%>">
 					<i class="fas fa-chevron-left"></i>
 				</a>
 				<%
 				for (int i = 1; i <= totalPages; i++) {
-					String pageLink = "/CA1-assignment/allBooksPage?page=" + i;
+					String pageLink = "/CA1-assignment/AllBooksPage?page=" + i;
 					if (validatedUserID != null) {
 						pageLink += "&userIDAvailable=true";
-					}if(action!=null&&action.equals("searchBookByTitle")){
-						pageLink+=("&action=searchBookByTitle&searchInput="+searchInput);
+					}
+					if (action != null && action.equals("searchBookByTitle")) {
+						pageLink += ("&action=searchBookByTitle&searchInput=" + searchInput);
 					}
 				%>
 				<a href="<%=pageLink%>"
@@ -200,8 +200,11 @@
 				%>
 				<a
 					href="<%=currentPage < totalPages
-				? ("/CA1-assignment/allBooksPage?page=" + (currentPage + 1)
-						+ (validatedUserID != null ? "&userIDAvailable=true" : "")+(action!=null&&action.equals("searchBookByTitle")?("&action=searchBookByTitle&searchInput="+searchInput):""))
+				? ("/CA1-assignment/AllBooksPage?page=" + (currentPage + 1)
+						+ (validatedUserID != null ? "&userIDAvailable=true" : "")
+						+ (action != null && action.equals("searchBookByTitle")
+								? ("&action=searchBookByTitle&searchInput=" + searchInput)
+								: ""))
 				: "#"%>"
 					class="bg-gray-200 text-gray-600 px-4 py-2 rounded <%=currentPage < totalPages ? "" : "cursor-not-allowed opacity-50"%>">
 					<i class="fas fa-chevron-right"></i>

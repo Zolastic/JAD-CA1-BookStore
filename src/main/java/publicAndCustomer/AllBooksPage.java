@@ -18,14 +18,14 @@ import utils.DBConnection;
 /**
  * Servlet implementation class allBooksPage
  */
-@WebServlet("/allBooksPage")
-public class allBooksPage extends HttpServlet {
+@WebServlet("/AllBooksPage")
+public class AllBooksPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public allBooksPage() {
+	public AllBooksPage() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

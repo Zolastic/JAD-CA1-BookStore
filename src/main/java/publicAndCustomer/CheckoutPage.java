@@ -29,18 +29,18 @@ import org.json.JSONObject;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class checkoutPage
+ * Servlet implementation class CheckoutPage
  */
-@WebServlet("/checkoutPage")
+@WebServlet("/CheckoutPage")
 
-public class checkoutPage extends HttpServlet {
+public class CheckoutPage extends HttpServlet {
 	private static final String STRIPE_SECRET_KEY = "sk_test_51NHoftHrRFi94qYrcY4Yxv3NiAwj1ea5D7zuxCZtQ0kT9beLlwCh8GbjFKSgPz3s9K8QJ0U5mjet6H8vRL4VZBLq001eDbwLUL";
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public checkoutPage() {
+	public CheckoutPage() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -186,106 +186,124 @@ public class checkoutPage extends HttpServlet {
 		UUID uuid = UUID.randomUUID();
 		return (uuid.toString());
 	}
+
 	private String insertTransactionHistory(Connection connection, double subtotal, String custID, String address)
-	        throws SQLException {
-	    String transactionHistoryUUID = uuidGenerator();
-	    
-	    String sql = "INSERT INTO transaction_history (transaction_historyID, transactionDate, subtotal, custID, address) VALUES (?, ?, ?, ?, ?)";
-	    String transactionDate = getCurrentDateTime();
-	    PreparedStatement statement = connection.prepareStatement(sql);
-	    
-	    statement.setString(1, transactionHistoryUUID);
-	    statement.setString(2, transactionDate);
-	    statement.setDouble(3, subtotal);
-	    statement.setString(4, custID);
-	    statement.setString(5, address);
+			throws SQLException {
+		String transactionHistoryUUID = uuidGenerator();
 
-	    int rowsAffected = statement.executeUpdate();
-	    
-	    statement.close();
-	    
-	    if (rowsAffected == 1) {
-	        return transactionHistoryUUID;
-	    } else {
-	        return null;
-	    }
+		String sql = "INSERT INTO transaction_history (transaction_historyID, transactionDate, subtotal, custID, address) VALUES (?, ?, ?, ?, ?)";
+		String transactionDate = getCurrentDateTime();
+		PreparedStatement statement = connection.prepareStatement(sql);
+
+		statement.setString(1, transactionHistoryUUID);
+		statement.setString(2, transactionDate);
+		statement.setDouble(3, subtotal);
+		statement.setString(4, custID);
+		statement.setString(5, address);
+
+		int rowsAffected = statement.executeUpdate();
+
+		statement.close();
+
+		if (rowsAffected == 1) {
+			return transactionHistoryUUID;
+		} else {
+			return null;
+		}
 	}
-	
+
 	private String getCurrentDateTime() {
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    Date currentDate = new Date();
-	    return dateFormat.format(currentDate);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date currentDate = new Date();
+		return dateFormat.format(currentDate);
 	}
 
-	private Boolean insertTransactionHistoryItems(Connection connection, List<Book> checkoutItems, String transactionHistoryUUID) throws SQLException {
-	    Boolean success = true;
-	    
-	    String sql = "INSERT INTO transaction_history_items (transaction_historyID, transaction_history_itemID, bookID, Qty) VALUES (?, ?, ?, ?)";
+	private Boolean insertTransactionHistoryItems(Connection connection, List<Book> checkoutItems,
+			String transactionHistoryUUID) throws SQLException {
+		Boolean success = true;
 
-	    PreparedStatement statement = connection.prepareStatement(sql);
-	    
-	    for (Book book : checkoutItems) {
-	        String transactionHistoryItemUUID = uuidGenerator();
-	        
-	        statement.setString(1, transactionHistoryUUID);
-	        statement.setString(2, transactionHistoryItemUUID);
-	        statement.setString(3, book.getBookID());
-	        statement.setInt(4, book.getQuantity());
+		String sql = "INSERT INTO transaction_history_items (transaction_historyID, transaction_history_itemID, bookID, Qty) VALUES (?, ?, ?, ?)";
 
-	        int rowsAffected = statement.executeUpdate();
-	        
-	        if (rowsAffected != 1) {
-	            success = false;
-	            break;
-	        }
-	    }
-	    
-	    statement.close();
-	    
-	    return success;
+		PreparedStatement statement = connection.prepareStatement(sql);
+
+		for (Book book : checkoutItems) {
+			String transactionHistoryItemUUID = uuidGenerator();
+
+			statement.setString(1, transactionHistoryUUID);
+			statement.setString(2, transactionHistoryItemUUID);
+			statement.setString(3, book.getBookID());
+			statement.setInt(4, book.getQuantity());
+
+			int rowsAffected = statement.executeUpdate();
+
+			if (rowsAffected != 1) {
+				success = false;
+				break;
+			}
+		}
+
+		statement.close();
+
+		return success;
 	}
-
 
 	private int deleteFromCart(Connection connection, List<Book> checkoutItems, String custID) throws SQLException {
-	    int count = 0;
-	    
-	    String cartID = getCartID(connection, custID);
-	    
-	    if (cartID != null) {
-	        for (Book book : checkoutItems) {
-	            String deleteQuery = "DELETE FROM cart_items WHERE cartID=? AND BookID=?";
-	            PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
-	            deleteStatement.setString(1, cartID);
-	            deleteStatement.setString(2, book.getBookID());
-	            
-	            int rowsDeleted = deleteStatement.executeUpdate();
-	            count += rowsDeleted;
-	            
-	            deleteStatement.close();
-	        }
-	    }
-	    
-	    return count;
-	}
-	private String getCartID(Connection connection, String customerID) throws SQLException {
-	    String cartID = null;
-	    
-	    String selectQuery = "SELECT cartID FROM cart WHERE custID=?";
-	    PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
-	    selectStatement.setString(1, customerID);
-	    
-	    ResultSet resultSet = selectStatement.executeQuery();
-	    
-	    if (resultSet.next()) {
-	        cartID = resultSet.getString("cartID");
-	    }
-	    
-	    resultSet.close();
-	    selectStatement.close();
-	    
-	    return cartID;
+		int count = 0;
+
+		String cartID = getCartID(connection, custID);
+
+		if (cartID != null) {
+			for (Book book : checkoutItems) {
+				String deleteQuery = "DELETE FROM cart_items WHERE cartID=? AND BookID=?";
+				PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
+				deleteStatement.setString(1, cartID);
+				deleteStatement.setString(2, book.getBookID());
+
+				int rowsDeleted = deleteStatement.executeUpdate();
+				count += rowsDeleted;
+
+				deleteStatement.close();
+			}
+		}
+
+		return count;
 	}
 
+	private int detuctInventory(Connection connection, List<Book> checkoutItems) throws SQLException {
+		int count = 0;
+		for (Book book : checkoutItems) {
+			String updateQuery = "UPDATE book SET inventory = inventory - ? WHERE book_id=?";
+			PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+			updateStatement.setInt(1, book.getQuantity());
+			updateStatement.setString(2, book.getBookID());
+
+			int rowsDeleted = updateStatement.executeUpdate();
+			count += rowsDeleted;
+
+			updateStatement.close();
+		}
+
+		return count;
+	}
+
+	private String getCartID(Connection connection, String customerID) throws SQLException {
+		String cartID = null;
+
+		String selectQuery = "SELECT cartID FROM cart WHERE custID=?";
+		PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
+		selectStatement.setString(1, customerID);
+
+		ResultSet resultSet = selectStatement.executeQuery();
+
+		if (resultSet.next()) {
+			cartID = resultSet.getString("cartID");
+		}
+
+		resultSet.close();
+		selectStatement.close();
+
+		return cartID;
+	}
 
 	protected void paymentIntent(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -294,7 +312,7 @@ public class checkoutPage extends HttpServlet {
 		String paymentMethodId = request.getParameter("paymentMethodId");
 		String subtotal = request.getParameter("subtotal");
 		String address = request.getParameter("address");
-		
+
 		String userID = (String) request.getSession().getAttribute("userID");
 		double amountInDollars = Double.parseDouble(subtotal);
 		long amount = Math.round(amountInDollars * 100);
@@ -330,7 +348,7 @@ public class checkoutPage extends HttpServlet {
 					}
 				}
 			}
-			if (userID != null && address != null || checkoutItemsArrayString.size()!=0) {
+			if (userID != null && address != null || checkoutItemsArrayString.size() != 0) {
 				try {
 					checkoutItems = getCheckoutItems(connection, userID, checkoutItemsArrayString);
 
@@ -353,15 +371,16 @@ public class checkoutPage extends HttpServlet {
 
 								if (refund.getStatus().equals("succeeded")) {
 									clearCheckoutItemsCookie(response);
-									response.sendRedirect("paymentError?userIDAvailable=true");
+									response.sendRedirect("PaymentError?userIDAvailable=true");
 								} else {
 									clearCheckoutItemsCookie(response);
-									response.sendRedirect("paymentError?error=RefundFailed&userIDAvailable=true");
+									response.sendRedirect("PaymentError?error=RefundFailed&userIDAvailable=true");
 								}
 							} else {
 								deleteFromCart(connection, checkoutItems, userID);
+								detuctInventory(connection, checkoutItems);
 								clearCheckoutItemsCookie(response);
-								response.sendRedirect("paymentSuccess?userIDAvailable=true");
+								response.sendRedirect("PaymentSuccess?userIDAvailable=true");
 							}
 						} else {
 							RefundCreateParams refundParams = new RefundCreateParams.Builder()
@@ -371,10 +390,10 @@ public class checkoutPage extends HttpServlet {
 
 							if (refund.getStatus().equals("succeeded")) {
 								clearCheckoutItemsCookie(response);
-								response.sendRedirect("paymentError?userIDAvailable=true");
+								response.sendRedirect("PaymentError?userIDAvailable=true");
 							} else {
 								clearCheckoutItemsCookie(response);
-								response.sendRedirect("paymentError?error=RefundFailed&userIDAvailable=true");
+								response.sendRedirect("PaymentError?error=RefundFailed&userIDAvailable=true");
 							}
 						}
 					} else {
@@ -386,30 +405,30 @@ public class checkoutPage extends HttpServlet {
 
 							if (refund.getStatus().equals("succeeded")) {
 								clearCheckoutItemsCookie(response);
-								response.sendRedirect("paymentError?userIDAvailable=true");
+								response.sendRedirect("PaymentError?userIDAvailable=true");
 							} else {
 								clearCheckoutItemsCookie(response);
-								response.sendRedirect("paymentError?error=RefundFailed&userIDAvailable=true");
+								response.sendRedirect("PaymentError?error=RefundFailed&userIDAvailable=true");
 							}
 						} else {
 							clearCheckoutItemsCookie(response);
-							response.sendRedirect("paymentError?userIDAvailable=true");
+							response.sendRedirect("PaymentError?userIDAvailable=true");
 						}
 					}
 				} catch (StripeException e) {
 					System.err.println("Error: " + e.getMessage());
 					clearCheckoutItemsCookie(response);
-					response.sendRedirect("paymentError?userIDAvailable=true");
+					response.sendRedirect("PaymentError?userIDAvailable=true");
 				}
 			} else {
 				clearCheckoutItemsCookie(response);
-				response.sendRedirect("paymentError?userIDAvailable=true");
+				response.sendRedirect("PaymentError?userIDAvailable=true");
 			}
 
 		} catch (SQLException e1) {
 			System.err.println("Error: " + e1.getMessage());
 			clearCheckoutItemsCookie(response);
-			response.sendRedirect("paymentError?userIDAvailable=true");
+			response.sendRedirect("PaymentError?userIDAvailable=true");
 		}
 	}
 
@@ -418,7 +437,6 @@ public class checkoutPage extends HttpServlet {
 		checkoutItemsCookie.setMaxAge(0);
 		response.addCookie(checkoutItemsCookie);
 	}
-
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse

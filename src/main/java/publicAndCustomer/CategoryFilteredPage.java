@@ -20,16 +20,16 @@ import model.Genre;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class categoryFilteredPage
+ * Servlet implementation class CategoryFilteredPage
  */
-@WebServlet("/categoryFilteredPage")
-public class categoryFilteredPage extends HttpServlet {
+@WebServlet("/CategoryFilteredPage")
+public class CategoryFilteredPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public categoryFilteredPage() {
+	public CategoryFilteredPage() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

@@ -131,13 +131,13 @@
 				if (item.getSelected() != 1) {
 					allSelected = false;
 				}
-				String urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + item.getBookID() + "&userIDAvailable=true";
+				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + item.getBookID();
 			%>
 			<div
 				class="flex items-center border border-gray-300 rounded-lg my-2 p-5 shadow-lg">
 
 				<form id="selectCartItemForm_<%=item.getBookID()%>"
-					action="/CA1-assignment/cartPage" method="post">
+					action="/CA1-assignment/CartPage" method="post">
 					<div
 						onclick="selectCartItem('selectCartItemForm_<%=item.getBookID()%>', 'scrollPositionForSelect_<%=item.getBookID()%>')">
 						<input type="checkbox" class="selectCheckbox mr-2 w-4 h-4"
@@ -179,7 +179,7 @@
 						$<%=String.format("%.2f", item.getPrice())%>
 					</p>
 					<form id="quantityForm_<%=item.getBookID()%>"
-						action="/CA1-assignment/cartPage" method="post">
+						action="/CA1-assignment/CartPage" method="post">
 						<button id="minusBtn"
 							class="text-gray-500 hover:text-black focus:outline-none"
 							onclick="updateQuantity(-1, <%=item.getBookID()%>)">
@@ -206,7 +206,7 @@
 					</form>
 
 					<form id="deleteCartItemForm_<%=item.getBookID()%>"
-						action="/CA1-assignment/cartPage" method="post">
+						action="/CA1-assignment/CartPage" method="post">
 						<button id="deleteBtn"
 							class="hover:text-red-600 text-red-800 focus:outline-none mx-3"
 							onclick="deleteCartItem('deleteCartItemForm_<%=item.getBookID()%>', 'scrollPositionForDelete_<%=item.getBookID()%>')">
@@ -227,7 +227,7 @@
 			<div
 				class="fixed bottom-0 left-0 w-full h-50 p-4 px-10 bg-white border border-t border-gray-200 shadow-lg">
 				<div class="flex justify-between items-center">
-					<form id="selectAllCartItemForm" action="/CA1-assignment/cartPage"
+					<form id="selectAllCartItemForm" action="/CA1-assignment/CartPage"
 						method="post">
 						<input type="checkbox" id="select-all"
 							onchange="selectAllCartItem()" class="mr-2 w-4 h-4"
@@ -245,7 +245,7 @@
 							Subtotal: $<%=String.format("%.2f", subtotal)%>
 						</p>
 						<div class="flex justify-end my-2">
-							<form id="checkoutForm" action="/CA1-assignment/cartPage"
+							<form id="checkoutForm" action="/CA1-assignment/CartPage"
 								method="post">
 								<button
 									class="px-4 p-2 bg-slate-600 hover:bg-slate-700 hover:scale-110 text-white rounded hover:bg-blue-600"

@@ -52,7 +52,7 @@
 
 		<h1 class="text-2xl font-bold mb-4">Rate the Book</h1>
 		<div class="border border-gray-300 mb-5"></div>
-		<form action="review" method="post">
+		<form action="Review" method="post">
 			<input type="hidden" name="action" value="submitReview"> <input
 				type="hidden" name="bookID" value="<%=bookDetails.getBookID()%>">
 			<input type="hidden" name="custID" value="<%=custID%>"> <input
@@ -113,7 +113,7 @@
 		== null) {
 			window.location.href = "registrationPage.jsp";
 		} else {
-			window.location.href = "/CA1-assignment/transactionHistory?userIDAvailable=true";
+			window.location.href = "/CA1-assignment/TransactionHistoryPage?userIDAvailable=true";
 		}
 	</script>
 	<%

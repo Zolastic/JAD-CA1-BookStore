@@ -17,16 +17,16 @@ import model.TransactionHistoryItem;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class transactionHistory
+ * Servlet implementation class TransactionHistoryPage
  */
-@WebServlet("/transactionHistory")
-public class transactionHistory extends HttpServlet {
+@WebServlet("/TransactionHistoryPage")
+public class TransactionHistoryPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public transactionHistory() {
+	public TransactionHistoryPage() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -69,18 +69,17 @@ public class transactionHistory extends HttpServlet {
 	private List<TransactionHistory> getTransactionHistories(Connection connection, String userID) throws SQLException {
 		List<TransactionHistory> transactionHistories = new ArrayList<>();
 
-		String query = "SELECT transaction_history.*, transaction_history_items.*, \r\n"
-				+ "book.*, genre.genre_name, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName,\r\n"
-				+ "publisher.publisherName\r\n" + "FROM transaction_history \r\n"
-				+ "JOIN transaction_history_items ON transaction_history.transaction_historyID = transaction_history_items.transaction_historyID \r\n"
+		String query = "SELECT transaction_history.*, transaction_history_items.*,book.*, genre.genre_name,CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating,author.authorName, publisher.publisherName\r\n"
+				+ "FROM transaction_history\r\n"
+				+ "JOIN transaction_history_items ON transaction_history.transaction_historyID = transaction_history_items.transaction_historyID\r\n"
 				+ "JOIN book ON transaction_history_items.bookID = book.book_id\r\n"
-				+ "JOIN genre ON genre.genre_id = book.genre_id \r\n"
+				+ "JOIN genre ON genre.genre_id = book.genre_id\r\n"
 				+ "LEFT JOIN review ON review.bookID = book.book_id\r\n"
-				+ "JOIN author ON book.authorID = author.authorID \r\n"
-				+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n"
-				+ "WHERE transaction_history.custID = ? GROUP BY \r\n"
-				+ "transaction_history.transaction_historyID, \r\n"
-				+ "transaction_history_items.transaction_history_itemID, \r\n" + "book.book_id";
+				+ "JOIN author ON book.authorID = author.authorID\r\n"
+				+ "JOIN publisher ON book.publisherID = publisher.publisherID\r\n"
+				+ "WHERE transaction_history.custID = ?\r\n"
+				+ "GROUP BY transaction_history.transaction_historyID, transaction_history_items.transaction_history_itemID, book.book_id\r\n"
+				+ "ORDER BY transaction_history.transactionDate DESC\r\n";
 
 
 			PreparedStatement statement = connection.prepareStatement(query);

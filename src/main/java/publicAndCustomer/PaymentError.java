@@ -16,16 +16,16 @@ import javax.servlet.http.HttpServletResponse;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class paymentError
+ * Servlet implementation class PaymentError
  */
-@WebServlet("/paymentError")
-public class paymentError extends HttpServlet {
+@WebServlet("/PaymentError")
+public class PaymentError extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public paymentError() {
+	public PaymentError() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

@@ -24,20 +24,28 @@
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div class="flex items-center justify-between">
 		<h1 class="text-3xl font-bold m-5">Transaction History</h1>
+		<%
+		if (transactionHistories.size() != 0) {
+		%>
 		<span class="cursor-pointer text-gray-500 hover:text-gray-700"
-			onclick="goBack()"> <i class="fas fa-times fa-2x m-5 pt-2 mr-10"></i>
+			onclick="goBack()"> <i
+			class="fas fa-times fa-2x m-5 pt-2 mr-10"></i>
 		</span>
+		<%
+		}
+		%>
 	</div>
 
 	<%
 	if (transactionHistories.size() == 0) {
 	%>
-	<div class="fixed inset-0 flex items-center justify-center mt-10">
-		<p>No Transaction History</p>
-		<button
-			class="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-700 transform hover:scale-110"
-			onclick="goBack()">Back</button>
-	</div>
+<div class="fixed inset-0 flex flex-col items-center justify-center mt-10">
+  <p class="mb-4">No Transaction History</p>
+  <button class="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-700 transform hover:scale-110" onclick="goBack()">
+    Back
+  </button>
+</div>
+
 	<%
 	} else {
 	for (TransactionHistory transactionHistory : transactionHistories) {
@@ -57,8 +65,7 @@
 		<div>
 			<%
 			for (TransactionHistoryItem transactionItem : transactionHistoryItems) {
-				String urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + transactionItem.getBook().getBookID()
-				+ "&userIDAvailable=true";
+				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + transactionItem.getBook().getBookID();
 			%>
 			<div
 				class="flex items-center justify-between p-4 px-3 border-b border-gray-300">
@@ -103,7 +110,7 @@
 			<%
 			if (transactionItem.getReviewed() == 0) {
 			%>
-			<form action="/CA1-assignment/review" method="post"
+			<form action="/CA1-assignment/Review" method="post"
 				id="review_<%=transactionItem.getBook().getBookID()%>">
 				<input type="hidden" name="bookID"
 					value="<%=transactionItem.getBook().getBookID()%>"> <input
@@ -138,8 +145,21 @@
 	<%
 	}
 	}
+	} else {
+	%>
+	<script>
+			if (
+		<%=validatedUserID%>
+			== null) {
+				window.location.href = "registrationPage.jsp";
+			} else {
+				window.location.href = "/CA1-assignment/ProfilePage?userID="+<%=validatedUserID%>;
+			}
+		</script>
+	<%
 	}
 	%>
+
 	<script>
     window.addEventListener('load', () => {
         if (!isNaN(<%=scrollPosition%>)) {

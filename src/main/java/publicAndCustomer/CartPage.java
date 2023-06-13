@@ -19,16 +19,16 @@ import model.Book;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class cartPage
+ * Servlet implementation class CartPage
  */
-@WebServlet("/cartPage")
-public class cartPage extends HttpServlet {
+@WebServlet("/CartPage")
+public class CartPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public cartPage() {
+	public CartPage() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -283,7 +283,7 @@ public class cartPage extends HttpServlet {
 	        checkoutItemsCookie.setMaxAge(5 * 60 * 60);
 	        response.addCookie(checkoutItemsCookie);
 
-	        response.sendRedirect("checkoutPage?userIDAvailable=true");
+	        response.sendRedirect("CheckoutPage?userIDAvailable=true");
 	    }
 	}
 

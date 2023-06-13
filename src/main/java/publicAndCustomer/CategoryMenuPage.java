@@ -19,16 +19,16 @@ import javax.servlet.http.HttpServletResponse;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class categoryMenuPage
+ * Servlet implementation class CategoryMenuPage
  */
-@WebServlet("/categoryMenuPage")
-public class categoryMenuPage extends HttpServlet {
+@WebServlet("/CategoryMenuPage")
+public class CategoryMenuPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public categoryMenuPage() {
+	public CategoryMenuPage() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

@@ -57,7 +57,7 @@
 			<div class="w-1/5 h-40 mb-5">
 				<div
 					class="flex items-center justify-center h-full border border-slate-700 border-2 shadow-lg rounded-3xl m-4 p-0 transform hover:scale-110">
-					<form action="/CA1-assignment/categoryFilteredPage">
+					<form action="/CA1-assignment/CategoryFilteredPage">
 						<button type="submit">
 							<div
 								class="flex flex-col items-center justify-center bg-white rounded-lg p-4 h-30 w-30">

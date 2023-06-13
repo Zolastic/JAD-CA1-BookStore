@@ -19,13 +19,13 @@ import utils.DBConnection;
  * Servlet implementation class paymentSuccess
  */
 @WebServlet("/paymentSuccess")
-public class paymentSuccess extends HttpServlet {
+public class PaymentSuccess extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public paymentSuccess() {
+    public PaymentSuccess() {
         super();
         // TODO Auto-generated constructor stub
     }

@@ -72,12 +72,12 @@
 	<%
 	String urlToAllBooks;
 	if (validatedUserID == null) {
-		urlToAllBooks="/CA1-assignment/allBooksPage";
+		urlToAllBooks="/CA1-assignment/AllBooksPage";
 	%>
 	<%@include file="navBar/headerNavPublic.html"%>
 	<%
 	} else {
-		urlToAllBooks="/CA1-assignment/allBooksPage?userIDAvailable=true";
+		urlToAllBooks="/CA1-assignment/AllBooksPage?userIDAvailable=true";
 	%>
 	<%@include file="navBar/headerNavCustomer.jsp"%>
 	<%
@@ -121,12 +121,7 @@
 			%><div class="flex justify-between w-full mt-4">
 				<%
 				}
-				String urlToBookDetails;
-				if (validatedUserID != null) {
-				urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID() + "&userIDAvailable=true";
-				} else {
-				urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID();
-				}
+				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
 				%>
 				<div
 					class="m-4 p-6 bg-white border border-black rounded-lg w-80 shadow-lg transform hover:scale-110"
