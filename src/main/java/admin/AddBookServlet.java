@@ -77,7 +77,7 @@ public class AddBookServlet extends HttpServlet {
 				
 				List<Author> authors = new ArrayList<>();
 				while (resultSet.next()) {
-					int authorId = resultSet.getInt("authorID");
+					String authorId = resultSet.getString("authorID");
 					String authorName = resultSet.getString("authorName");
 					authors.add(new Author(authorId, authorName));
 				}

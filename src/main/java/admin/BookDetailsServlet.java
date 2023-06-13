@@ -65,8 +65,7 @@ public class BookDetailsServlet extends HttpServlet {
 				+ "LEFT JOIN review ON review.bookID = book.book_id \r\n"
 				+ "JOIN author ON book.authorID = author.authorID \r\n"
 				+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n" + "WHERE book.book_id = ?;";
-		try (Statement statement = connection.createStatement();
-				PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
 			ps.setString(1, bookID);
 
 			ResultSet resultSet = ps.executeQuery();
