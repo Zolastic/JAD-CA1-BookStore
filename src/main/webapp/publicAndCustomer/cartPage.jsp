@@ -268,7 +268,7 @@
 	%>
 	<script>
     alert("Error loading page");
-    window.location.href = "http://localhost:8080/CA1-assignment/publicAndCustomer/home.jsp";
+    window.location.href = "home.jsp";
   </script>
 	<%
 	}

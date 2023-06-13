@@ -5,7 +5,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://js.stripe.com/v3/"></script>
 <title>Payment Error</title>
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -50,8 +49,8 @@
 	%>
 	<script>
 		alert("Error loading page");
-		if (validatedUserID != null) {
-			window.location.href = "http://localhost:8080/publicAndCustomer/registrationPage.jsp";
+		if (<%=validatedUserID%> == null) {
+			window.location.href = "registrationPage.jsp";
 		}
 	</script>
 	<%

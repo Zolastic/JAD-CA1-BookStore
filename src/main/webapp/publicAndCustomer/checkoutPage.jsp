@@ -154,9 +154,9 @@
 	<script>
 		alert("Error loading page");
 		if (<%=validatedUserID%> != null) {
-			window.location.href = "http://localhost:8080/CA1-assignment/cartPage?userIDAvailable=true";
+			window.location.href = "/CA1-assignment/cartPage?userIDAvailable=true";
 		} else {
-			window.location.href = "http://localhost:8080/CA1-assignment/cartPage";
+			window.location.href = "/CA1-assignment/cartPage";
 		}
 	</script>
 	<%

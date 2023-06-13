@@ -51,22 +51,40 @@ public class transactionHistory extends HttpServlet {
 				dispatcher.forward(request, response);
 				return;
 			}
-			String query = "SELECT transaction_history.*, transaction_history_items.*, \r\n"
-					+ "book.*, genre.genre_name, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName,\r\n"
-					+ "publisher.publisherName\r\n" + "FROM transaction_history \r\n"
-					+ "JOIN transaction_history_items ON transaction_history.transaction_historyID = transaction_history_items.transaction_historyID \r\n"
-					+ "JOIN book ON transaction_history_items.bookID = book.book_id\r\n"
-					+ "JOIN genre ON genre.genre_id = book.genre_id \r\n"
-					+ "LEFT JOIN review ON review.bookID = book.book_id\r\n"
-					+ "JOIN author ON book.authorID = author.authorID \r\n"
-					+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n"
-					+ "WHERE transaction_history.custID = ? GROUP BY \r\n"
-					+ "transaction_history.transaction_historyID, \r\n"
-					+ "transaction_history_items.transaction_history_itemID, \r\n" + "book.book_id";
+			transactionHistories = getTransactionHistories(connection,userID);
+		} catch (Exception e) {
+			System.err.println("Error: " + e);
+		}
+
+		request.setAttribute("transactionHistories", transactionHistories);
+		request.setAttribute("validatedUserID", userID);
+		String dispatcherURL = "publicAndCustomer/transactionHistory.jsp";
+		if (scrollPosition != null) {
+			dispatcherURL += "?scrollPosition=" + scrollPosition;
+		}
+		RequestDispatcher dispatcher = request.getRequestDispatcher(dispatcherURL);
+		dispatcher.forward(request, response);
+	}
+
+	private List<TransactionHistory> getTransactionHistories(Connection connection, String userID) throws SQLException {
+		List<TransactionHistory> transactionHistories = new ArrayList<>();
+
+		String query = "SELECT transaction_history.*, transaction_history_items.*, \r\n"
+				+ "book.*, genre.genre_name, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName,\r\n"
+				+ "publisher.publisherName\r\n" + "FROM transaction_history \r\n"
+				+ "JOIN transaction_history_items ON transaction_history.transaction_historyID = transaction_history_items.transaction_historyID \r\n"
+				+ "JOIN book ON transaction_history_items.bookID = book.book_id\r\n"
+				+ "JOIN genre ON genre.genre_id = book.genre_id \r\n"
+				+ "LEFT JOIN review ON review.bookID = book.book_id\r\n"
+				+ "JOIN author ON book.authorID = author.authorID \r\n"
+				+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n"
+				+ "WHERE transaction_history.custID = ? GROUP BY \r\n"
+				+ "transaction_history.transaction_historyID, \r\n"
+				+ "transaction_history_items.transaction_history_itemID, \r\n" + "book.book_id";
+
 
 			PreparedStatement statement = connection.prepareStatement(query);
 			statement.setString(1, userID);
-
 			ResultSet resultSet = statement.executeQuery();
 
 			while (resultSet.next()) {
@@ -108,35 +126,24 @@ public class transactionHistory extends HttpServlet {
 				transactionHistoryItems.add(transactionHistoryItem);
 				transactionHistory.setTransactionHistoryItems(transactionHistoryItems);
 			}
+		
+	return transactionHistories;
 
-			connection.close();
-		} catch (Exception e) {
-			System.err.println("Error: " + e);
-		}
-
-		request.setAttribute("transactionHistories", transactionHistories);
-		request.setAttribute("validatedUserID", userID);
-		String dispatcherURL="publicAndCustomer/transactionHistory.jsp";
-		if(scrollPosition!=null) {
-			dispatcherURL+="?scrollPosition="+scrollPosition;
-		}
-		RequestDispatcher dispatcher = request.getRequestDispatcher(dispatcherURL);
-		dispatcher.forward(request, response);
 	}
-	
+
 	private String validateUserID(Connection connection, String userID) throws SQLException {
-	    if (userID != null) {
-	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-	        PreparedStatement ps = connection.prepareStatement(sqlStr);
-	        ps.setString(1, userID);
-	        ResultSet rs = ps.executeQuery();
-	        rs.next();
-	        int rowCount = rs.getInt(1);
-	        if (rowCount < 1) {
-	            userID = null;
-	        }
-	    }
-	    return userID;
+		if (userID != null) {
+			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
+			PreparedStatement ps = connection.prepareStatement(sqlStr);
+			ps.setString(1, userID);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			int rowCount = rs.getInt(1);
+			if (rowCount < 1) {
+				userID = null;
+			}
+		}
+		return userID;
 	}
 
 	/**

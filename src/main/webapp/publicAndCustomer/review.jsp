@@ -111,9 +111,9 @@
 		if (
 	<%=custID%>
 		== null) {
-			window.location.href = "http://localhost:8080/CA1-assignment/publicAndCustomer/registrationPage.jsp";
+			window.location.href = "registrationPage.jsp";
 		} else {
-			window.location.href = "http://localhost:8080/CA1-assignment/CA1-assignment/transactionHistory?userIDAvailable=true";
+			window.location.href = "/CA1-assignment/transactionHistory?userIDAvailable=true";
 		}
 	</script>
 	<%
