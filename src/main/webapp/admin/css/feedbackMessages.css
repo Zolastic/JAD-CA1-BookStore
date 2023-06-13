@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+.errorMessage {
+	color: #EF616B;
+}
+
+.successMessage {
+	color: #91C691;
+}

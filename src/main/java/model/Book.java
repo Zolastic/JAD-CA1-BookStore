@@ -24,7 +24,6 @@ public class Book {
 	
 	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
 			String description, String genreName, String img, int sold, int inventory, double price, double rating) {
-		super();
 		BookID = bookID;
 		ISBN = iSBN;
 		Title = title;
@@ -81,6 +80,12 @@ public class Book {
 		Rating = rating;
 		Quantity = quantity;
 		Selected = selected;
+	}
+	
+
+	public Book(String bookID, String title) {
+		BookID = bookID;
+		Title = title;
 	}
 
 	public int getSelected() {

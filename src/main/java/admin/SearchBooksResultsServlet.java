@@ -18,8 +18,8 @@ import utils.DBConnection;
 /**
  * Servlet implementation class SearchResultsServlet
  */
-@WebServlet("/admin/SearchResults")
-public class SearchResultsServlet extends HttpServlet {
+@WebServlet("/admin/SearchBooksResults")
+public class SearchBooksResultsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private BookDAO bookDAO = new BookDAO();
@@ -27,7 +27,7 @@ public class SearchResultsServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public SearchResultsServlet() {
+	public SearchBooksResultsServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

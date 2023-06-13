@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Admin: Book Details</title>
+<title>Admin: Author Details</title>
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/admin/css/bookDetails.css">
@@ -15,73 +15,46 @@
 	<%@ page import="java.util.*, model.*"%>
 	<%@include file="./navbar.jsp"%>
 	<%
-	Book book = (Book) request.getAttribute("book");
+	Author author = (Author) request.getAttribute("author");
+	List<Book> books = (List<Book>) request.getAttribute("books");
 	%>
 
 	<div class="flex rounded-lg shadow-lg bg-gray-50 pt-3 pb-96 mt-28">
-		<%
-		if ((book.getImg()) == null) {
-		%>
-		<img alt=""
-			src="<%=request.getContextPath()%>/admin/img/No_Image_Available.jpg"
-			class="viewBooksImg rounded-lg mx-10 object-contain">
-		<%
-		} else {
-		%>
-		<img alt="" src="data:image/png;base64, <%=book.getImg()%>"
-			class="viewBooksImg rounded-lg mx-10 object-contain">
-		<%
-		}
-		%>
 		<div class="flex flex-col ml-10">
-			<h1 class="text-3xl font-bold tracking-wide"><%=book.getTitle()%>
-				(<%=book.getISBN()%>)
+			<h1 class="text-3xl font-bold tracking-wide"><%=author.getName()%>
 			</h1>
-			<p class="mt-5 text-lg font-semibold"><%=book.getDescription()%></p>
-			<p class="mt-5 text-lg font-semibold">
-				Price: $<%=book.getPrice()%></p>
-
-			<h3 class="mt-5 -mb-1">Book Details:</h3>
-			<p class="mt-1 text-sm">
-				Author: <span class="mx-2"><%=book.getAuthor()%></span>
-			</p>
-			<p class="mt-1 text-sm">
-				Publisher: <span class="mx-2"><%=book.getPublisher()%></span>
-			</p>
-			<p class="mt-1 text-sm">
-				Publication Date: <span class="mx-2"><%=book.getPublication_date()%></span>
-			</p>
-
-			<h3 class="mt-5 -mb-1">Book Stats:</h3>
+			<h3 class="mt-5 -mb-1">
+				Books
+				<%=author.getName()%>
+				has in the store:
+			</h3>
 			<%
-			if (book.getRating() > 0) {
+			if (books.size() > 0) {
+
+				for (Book book : books) {
 			%>
-			<p class="mt-1 text-sm">
-				Rating:
-				<%=book.getRating()%></p>
-			<%
-			} else {
-			%>
-			<p class="mt-1 text-sm">Rating: no ratings</p>
+			<a
+				href="<%=request.getContextPath()%>/admin/BookDetails?bookID=<%=book.getBookID()%>"
+				class="mt-1 text-sm"><span class="mx-2"><%=book.getTitle()%></span>
+			</a>
 			<%
 			}
+			} else {
+				%>
+					<p class="mt-2 text-sm">This author has no books in the store</p>
+				<%
+			}
 			%>
-			<p class="mt-1 text-sm">
-				Sold:
-				<%=book.getSold()%></p>
-			<p class="mt-1 text-sm">
-				Quantity:
-				<%=book.getInventory()%></p>
 
 		</div>
 		<div class="flex-grow"></div>
 		<div class="flex">
 			<a
-				href="<%=request.getContextPath()%>/admin/EditBook?bookID=<%=book.getBookID()%>"><i
-				class="bookDetialsIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
-			<a class="m-0 p-0 toggleButton" data-book-id="<%=book.getBookID()%>"
-				data-book-title="<%=book.getTitle()%>"> <i
-				class="bookDetialsIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i>
+				href="<%=request.getContextPath()%>/admin/EditAuthor?authorID=<%=author.getId()%>"><i
+				class="viewBooksIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
+			<a class="m-0 p-0 toggleButton" data-author-id="<%=author.getId()%>"
+				data-author-name="<%=author.getName()%>"> <i
+				class="viewBooksIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i>
 			</a>
 		</div>
 	</div>
@@ -92,17 +65,17 @@
 		<div class="bg-white p-8 rounded shadow-lg rounded-lg">
 			<h2 class="text-2xl m-0 p-0">Are you sure you want</h2>
 			<h2 class="text-2xl m-0 p-0">
-				to Delete <span id="bookTitle" class="m-0 p-0 text-2xl font-bold"></span>
+				to Delete <span id="authorTitle" class="m-0 p-0 text-2xl font-bold"></span>
 			</h2>
 			<div class="flex mt-5">
 				<form id="deleteForm" method="post"
-					action="<%=request.getContextPath()%>/admin/DeleteBook">
-					<input type="hidden" id="bookID" name="bookID" value="">
+					action="<%=request.getContextPath()%>/admin/DeleteAuthor">
+					<input type="hidden" id="authorID" name="authorID" value="">
 					<button type="submit"
 						class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-purple-200">
 						<span
 							class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0 text-black hover:cursor-pointer">
-							Delete Book </span>
+							Delete Author </span>
 					</button>
 				</form>
 				<a id="closeButton"
@@ -118,15 +91,21 @@
 	<script>
 		const items = document.getElementsByClassName('toggleButton');
 		for (let i = 0; i < items.length; i++) {
-			items[i].addEventListener("click", function() {
-				const bookID = this.getAttribute("data-book-id");
-				const bookTitle = this.getAttribute("data-book-title");
+			items[i]
+					.addEventListener(
+							"click",
+							function() {
+								const authorID = this
+										.getAttribute("data-author-id");
+								const authorName = this
+										.getAttribute("data-author-name");
 
-				document.getElementById("bookTitle").textContent = bookTitle;
-				document.getElementById("bookID").value = bookID;
+								document.getElementById("authorTitle").textContent = authorName;
+								document.getElementById("authorID").value = authorID;
 
-				document.getElementById("modal").classList.toggle("hidden");
-			});
+								document.getElementById("modal").classList
+										.toggle("hidden");
+							});
 		}
 		document.getElementById("closeButton").addEventListener("click",
 				function() {
