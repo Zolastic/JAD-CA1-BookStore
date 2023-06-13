@@ -21,7 +21,13 @@
 	if (bookDetails != null && custID != null && scrollPosition != null) {
 	%>
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
-	<div class="container p-2 px-10 py-8">
+	<div class="p-10 my-10 mx-64 border border-gray-500 rounded-2xl shadow-lg">
+		<div class="flex items-center justify-end">
+			<span class="cursor-pointer text-gray-500 hover:text-gray-700"
+				onclick="goBack()"> <i
+				class="fas fa-times fa"></i>
+			</span>
+		</div>
 		<h1 class="text-2xl font-bold mb-4">Book Details</h1>
 		<div class="border border-gray-300 mb-2"></div>
 		<div class="flex items-center mb-4">
@@ -55,33 +61,35 @@
 				name="scrollPosition" value="<%=scrollPosition%>">
 
 			<div class="flex items-center">
-				<i class="far fa-sad-tear text-gray-600"></i>
+				<i class="far fa-sad-tear text-yellow-400 fa-2x"></i>
 				<div class="w-72 mx-2">
 					<input type="range" name="rating" min="0.0" max="5.0" step="0.1"
 						value="0.0"
-						class="w-full bg-gray-300 rounded-lg appearance-none h-4"
+						class="w-full bg-gradient-to-r from-gray-100 to-gray-300 rounded-lg appearance-none h-4"
 						onchange="updateRangeValue(this)">
+
 				</div>
-				<i class="far fa-grin-hearts text-gray-600"></i>
-				<p id="rangeValue" class="ml-2">0.0</p>
+				<i class="far fa-grin-hearts text-yellow-400 fa-2x"></i>
+				<p id="rangeValue"
+					class="ml-2 bg-rose-900 p-1 text-white rounded-lg">0.0</p>
 			</div>
 
 
 
 			<div class="mb-4 mt-5">
-				<label for="review_text" class="block mb-2">Review Description:</label>
+				<label for="review_text" class="block mb-2">Review
+					Description:</label>
 				<textarea name="review_text" id="review_text" rows="4"
 					maxlength="500" required class="w-full bg-gray-100 rounded-lg"></textarea>
-					<div class="flex justify-end">
-				<p class="word-count">
-					<span id="wordCount">0</span>/500 words
-				</p>
+				<div class="flex justify-end">
+					<p class="wordCount">0/500 words</p>
 				</div>
 			</div>
-<div class="flex justify-center">
-			<button type="submit"
-				class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded">Submit
-				Review</button></div>
+			<div class="flex justify-center">
+				<button type="submit"
+					class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded">Submit
+					Review</button>
+			</div>
 		</form>
 	</div>
 	<script>
@@ -90,8 +98,11 @@
 		}
 		reviewTextarea.addEventListener('input', function() {
 			const wordCount = reviewTextarea.value.split(/\s+/).length;
-			wordCountElement.textContent = wordCount;
+			wordCountElement.textContent = wordCount + "/500 words";
 		});
+		function goBack() {
+			window.history.back();
+		}
 	</script>
 	<%
 	} else {

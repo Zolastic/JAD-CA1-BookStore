@@ -40,10 +40,10 @@ public class transactionHistory extends HttpServlet {
 		String userIDAvailable = request.getParameter("userIDAvailable");
 		String scrollPosition = request.getParameter("scrollPosition");
 		List<TransactionHistory> transactionHistories = new ArrayList<>();
-		String userID = "3";
-//		if (userIDAvailable != null && userIDAvailable.equals("true")) {
-//			userID = (String) request.getSession().getAttribute("userID");
-//		}
+		String userID = null;
+		if (userIDAvailable != null && userIDAvailable.equals("true")) {
+			userID = (String) request.getSession().getAttribute("userID");
+		}
 		try (Connection connection = DBConnection.getConnection()) {
 			userID = validateUserID(connection, userID);
 			if (userID == null) {

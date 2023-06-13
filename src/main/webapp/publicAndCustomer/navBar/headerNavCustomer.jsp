@@ -37,6 +37,7 @@ String userID = (String) session.getAttribute("userID");
 				href="<%=request.getContextPath()%>/ProfilePage?userID=<%= userID %>"><i
 					class="fas fa-user text-3xl transform hover:scale-110"></i></a>
 			</span>
+			
 			<%
 			if (((String) session.getAttribute("role")).equals("admin")) {
 			%>

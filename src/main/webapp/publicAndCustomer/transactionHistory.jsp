@@ -22,7 +22,13 @@
 	if (validatedUserID != null && transactionHistories != null) {
 	%>
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
-	<h1 class="text-3xl font-bold m-5">Transaction History</h1>
+	<div class="flex items-center justify-between">
+		<h1 class="text-3xl font-bold m-5">Transaction History</h1>
+		<span class="cursor-pointer text-gray-500 hover:text-gray-700"
+			onclick="goBack()"> <i class="fas fa-times fa-2x m-5 pt-2 mr-10"></i>
+		</span>
+	</div>
+
 	<%
 	if (transactionHistories.size() == 0) {
 	%>
