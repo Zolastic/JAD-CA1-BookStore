@@ -22,9 +22,9 @@
 </head>
 <body>
 	<%
-	List<ReviewHistoryClass> reviewHistory = (List<ReviewHistoryClass>) request.getAttribute("reviewHistory");
+	List<ReviewHistoryClass> reviewHistories = (List<ReviewHistoryClass>) request.getAttribute("reviewHistory");
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
-	if (validatedUserID != null && reviewHistory != null) {
+	if (validatedUserID != null && reviewHistories != null) {
 	%>
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div class="flex items-center justify-between">
@@ -36,8 +36,9 @@
 	</div>
 
 	<%
-	if (reviewHistory.size() == 0) {
+	if (reviewHistories.size() == 0) {
 	%>
+	<!-- If there is no review history yet -->
 	<div
 		class="fixed inset-0 flex flex-col items-center justify-center mt-10">
 		<p>No Review History</p>
@@ -47,15 +48,16 @@
 	</div>
 	<%
 	} else {
-	for (ReviewHistoryClass review : reviewHistory) {
+	for (ReviewHistoryClass reviewHistory : reviewHistories) {
 	%>
+	<!-- show all review histories-->
 	<div>
 		<div
 			class="shadow-lg m-5 px-5 py-8 border border-gray-200 rounded-2xl mb-10">
 			<div class="px-10">
 				<div class="flex items-center space-x-1">
 					<%
-					double ratingCust = (double) review.getRating();
+					double ratingCust = (double) reviewHistory.getRating();
 					int filledStarsCust = (int) ratingCust;
 					boolean hasHalfStarCust = (ratingCust - filledStarsCust) >= 0.5;
 					int emptyStarsCust = 5 - filledStarsCust - (hasHalfStarCust ? 1 : 0);
@@ -78,14 +80,14 @@
 					}
 					%>
 					<p class="text-sm text-gray-500">
-						(<%=String.format("%.1f", review.getRating())%>/5.0)
+						(<%=String.format("%.1f", reviewHistory.getRating())%>/5.0)
 					</p>
 				</div>
-				<p class="text-xs text-gray-500"><%=review.getRatingDate()%></p>
-				<p class="text-gray-600"><%=review.getReview_text()%></p>
+				<p class="text-xs text-gray-500"><%=reviewHistory.getRatingDate()%></p>
+				<p class="text-gray-600"><%=reviewHistory.getReview_text()%></p>
 			</div>
 			<%
-			Book book = review.getBook();
+			Book book = reviewHistory.getBook();
 			%>
 			<div class="w-full mt-2">
 				<div class="p-4 rounded shadow mx-10">

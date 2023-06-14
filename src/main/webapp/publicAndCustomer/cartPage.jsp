@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="model.Book"%>
@@ -23,6 +23,7 @@
 <%@ include file="../../tailwind-css.jsp"%>
 </head>
 <body>
+	<%@ include file="modal.jsp"%>
 	<%
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	List<Book> cartItems = (List<Book>) request.getAttribute("cartItems");
@@ -34,7 +35,7 @@
 	String err = request.getParameter("error");
 	if (err != null) {
 		if (err.equals("true")) {
-			out.print("<script>alert('Internal Server Error')</script>");
+			out.print("<script>showModal('Internal Server Error')</script>");
 		}
 	}
 	if (cartID != null && validatedUserID != null) {
@@ -82,7 +83,7 @@
             document.getElementById('selectedCartItems').value = selectedCartItemsString;
             document.getElementById('checkoutForm').submit();
         } else {
-            alert("Please select more than one book to proceed with checkout.");
+        	showModal("Please select more than one book to proceed with checkout.");
         }
         
         event.preventDefault();
@@ -119,13 +120,14 @@
     
     </script>
 
-
+	<!-- Show Cart Details only if user is logged in -->
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div class="mx-10 mb-60">
 		<h1 class="text-3xl font-bold italic my-6">
 			<i class="fas fa-shopping-cart text-blue-950 mr-2"></i>Your Cart
 		</h1>
 		<div class="flex flex-col mb-5">
+			<!-- if cart is empty -->
 			<%
 			if (cartItems == null || cartItems.isEmpty()) {
 			%>
@@ -185,6 +187,7 @@
 					<p class="text-lg font-bold mr-6">
 						$<%=String.format("%.2f", item.getPrice())%>
 					</p>
+					<!-- Form action to update cart items quantity -->
 					<form id="quantityForm_<%=item.getBookID()%>"
 						action="/CA1-assignment/CartPage" method="post">
 						<button id="minusBtn"
@@ -211,7 +214,7 @@
 							type="hidden" id="inventory_<%=item.getBookID()%>"
 							value="<%=item.getInventory()%>">
 					</form>
-
+					<!-- Form action to delete cart item -->
 					<form id="deleteCartItemForm_<%=item.getBookID()%>"
 						action="/CA1-assignment/CartPage" method="post">
 						<button id="deleteBtn"
@@ -227,10 +230,12 @@
 					</form>
 				</div>
 			</div>
+			<!-- Calculate subtotal -->
 			<%
 			subtotal += (item.getSelected() == 1) ? (item.getPrice() * item.getQuantity()) : 0;
 			}
 			%>
+			<!-- Fixed bottom div for select all and subtotal with their form action -->
 			<div
 				class="fixed bottom-0 left-0 w-full h-50 p-4 px-10 bg-white border border-t border-gray-200 shadow-lg">
 				<div class="flex justify-between items-center">
@@ -255,7 +260,7 @@
 							<form id="checkoutForm" action="/CA1-assignment/CartPage"
 								method="post">
 								<button
-									class="px-4 p-2 bg-slate-600 hover:bg-slate-700 hover:scale-110 text-white rounded hover:bg-blue-600"
+									class="px-4 p-2 bg-slate-600 hover:bg-slate-800 hover:scale-110 text-white rounded hover:bg-blue-600"
 									onclick="submitCheckoutForm()">Checkout</button>
 								<input type="hidden" id="selectedCartItems"
 									name="selectedCartItems" value=""> <input type="hidden"
@@ -273,14 +278,17 @@
 	<%
 	} else {
 	%>
+	<!-- If user is not logged in or have no cart -->
 	<script>
-    alert("Error loading page");
-    window.location.href = "home.jsp";
-  </script>
+	var closeButton = document.getElementById("close");
+	showModal("Error loading page");
+	closeButton.addEventListener("click", function() {
+		window.location.href = "home.jsp";
+	});
+	</script>
+
 	<%
 	}
 	%>
-
-
 </body>
 </html>

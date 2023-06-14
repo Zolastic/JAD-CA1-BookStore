@@ -55,11 +55,10 @@ public class Review extends HttpServlet {
 		String scrollPosition = request.getParameter("scrollPosition");
 		String userID = request.getParameter("custID");
 		String transactionHistoryItemID = request.getParameter("transactionHistoryItemID");
-
 		Book bookDetails = null;
-
 		if (bookID != null && userID != null && scrollPosition != null || transactionHistoryItemID != null) {
 			try (Connection connection = DBConnection.getConnection()) {
+				// Validate userID
 				userID = validateUserID(connection, userID);
 				if (userID == null) {
 					RequestDispatcher dispatcher = request
@@ -68,7 +67,6 @@ public class Review extends HttpServlet {
 					return;
 				}
 				bookDetails = getBookDetails(connection, bookID);
-
 				connection.close();
 			} catch (SQLException e) {
 				System.err.println("Error: " + e);
@@ -90,6 +88,7 @@ public class Review extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
+	// Function to validate user id
 	private String validateUserID(Connection connection, String userID) throws SQLException {
 		if (userID != null) {
 			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
@@ -105,6 +104,7 @@ public class Review extends HttpServlet {
 		return userID;
 	}
 
+	// Function to get book details
 	private Book getBookDetails(Connection connection, String bookID) throws SQLException {
 		Book bookDetails = null;
 		String simpleProc = "{call getBookDetails(?)}";
@@ -112,7 +112,6 @@ public class Review extends HttpServlet {
 		cs.setString(1, bookID);
 		cs.execute();
 		ResultSet resultSetForBookDetails = cs.getResultSet();
-
 		if (resultSetForBookDetails.next()) {
 			bookDetails = new Book(resultSetForBookDetails.getString("book_id"),
 					resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
@@ -123,10 +122,10 @@ public class Review extends HttpServlet {
 					resultSetForBookDetails.getInt("inventory"), resultSetForBookDetails.getDouble("price"), 1,
 					resultSetForBookDetails.getDouble("average_rating"));
 		}
-
 		return bookDetails;
 	}
 
+	// Function to do all logic to submit review
 	protected void submitReview(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String scrollPosition = request.getParameter("scrollPosition");
@@ -135,7 +134,6 @@ public class Review extends HttpServlet {
 		String review_text = request.getParameter("review_text");
 		String ratingString = request.getParameter("rating");
 		double rating = Double.parseDouble(ratingString);
-
 		String transactionHistoryItemID = request.getParameter("transactionHistoryItemID");
 		if (custID == null || bookID == null || scrollPosition == null || transactionHistoryItemID == null) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("TransactionHistoryPage"
@@ -144,7 +142,6 @@ public class Review extends HttpServlet {
 		} else {
 			try (Connection connection = DBConnection.getConnection()) {
 				String review_id = insertReview(connection, custID, bookID, review_text, rating);
-
 				if (review_id != null) {
 					int countUpdate = updateReviewState(connection, transactionHistoryItemID);
 					if (countUpdate == 1) {
@@ -156,7 +153,6 @@ public class Review extends HttpServlet {
 								+ "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&success=false");
 						dispatcher.forward(request, response);
 					}
-
 				} else {
 					RequestDispatcher dispatcher = request.getRequestDispatcher("TransactionHistoryPage"
 							+ "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&success=false");
@@ -168,30 +164,24 @@ public class Review extends HttpServlet {
 						+ "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&success=false");
 				dispatcher.forward(request, response);
 			}
-
 		}
 	}
 
+	// Function to insert a review 
 	private String insertReview(Connection connection, String custID, String bookID, String review_text, double rating)
 			throws SQLException {
-
 		String review_id = uuidGenerator();
-
 		String sql = "INSERT INTO review (review_id, custID, bookID, review_text, rating, ratingDate) VALUES (?, ?, ?, ?, ?, ?)";
 		String ratingDate = getCurrentDate();
 		PreparedStatement statement = connection.prepareStatement(sql);
-		
 		statement.setString(1, review_id);
 		statement.setString(2, custID);
 		statement.setString(3, bookID);
 		statement.setString(4, review_text);
 		statement.setDouble(5, rating);
 		statement.setString(6, ratingDate);
-
 		int rowsAffected = statement.executeUpdate();
-
 		statement.close();
-
 		if (rowsAffected == 1) {
 			return review_id;
 		} else {
@@ -199,26 +189,24 @@ public class Review extends HttpServlet {
 		}
 	}
 
+	// Function to update user's review state for the transaction history item
 	private int updateReviewState(Connection connection, String transactionHistoryItemID) throws SQLException {
-
-
 		String sql = "UPDATE transaction_history_items SET reviewed=1 WHERE transaction_history_itemID=?";
 		PreparedStatement statement = connection.prepareStatement(sql);
-
 		statement.setString(1, transactionHistoryItemID);
-
 		int rowsAffected = statement.executeUpdate();
-
 		statement.close();
 		return rowsAffected;
 	}
 
+	// Get current DATE
 	private String getCurrentDate() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date currentDate = new Date();
 		return dateFormat.format(currentDate);
 	}
 
+	// To generate a UUID
 	private String uuidGenerator() {
 		UUID uuid = UUID.randomUUID();
 		return (uuid.toString());
@@ -230,6 +218,7 @@ public class Review extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		// Check for action
 		String action = request.getParameter("action");
 		if (action != null && action.equals("submitReview")) {
 			submitReview(request, response);

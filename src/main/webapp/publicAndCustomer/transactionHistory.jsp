@@ -35,8 +35,7 @@
 		if (transactionHistories.size() != 0) {
 		%>
 		<span class="cursor-pointer text-gray-500 hover:text-gray-700"
-			onclick="goBack()"> <i
-			class="fas fa-times fa-2x m-5 pt-2 mr-10"></i>
+			onclick="goBack()"> <i class="fas fa-times fa-2x m-5 pt-2 mr-10"></i>
 		</span>
 		<%
 		}
@@ -46,6 +45,7 @@
 	<%
 	if (transactionHistories.size() == 0) {
 	%>
+	<!-- If user have no transaction history -->
 <div class="fixed inset-0 flex flex-col items-center justify-center mt-10">
   <p class="mb-4">No Transaction History</p>
   <button class="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-700 transform hover:scale-110" onclick="goBack()">
@@ -57,6 +57,7 @@
 	} else {
 	for (TransactionHistory transactionHistory : transactionHistories) {
 	%>
+	<!-- Show all transaction histories, one history one div -->
 	<div class="m-5 shadow-lg p-2 mb-5 border border-gray-300">
 		<div class="flex items-center m-2">
 			<p class="italic text-lg">
@@ -70,6 +71,7 @@
 		List<TransactionHistoryItem> transactionHistoryItems = transactionHistory.getTransactionHistoryItems();
 		%>
 		<div>
+		<!-- Show the transaction history items -->
 			<%
 			for (TransactionHistoryItem transactionItem : transactionHistoryItems) {
 				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + transactionItem.getBook().getBookID();

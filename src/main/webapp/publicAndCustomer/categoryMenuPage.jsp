@@ -28,8 +28,8 @@
 		err = true;
 	%>
 	<div class="fixed inset-0 flex items-center justify-center">
-		<div class="bg-yellow-200 px-4 py-2 rounded-lg">
-			<i class="fas fa-exclamation-triangle mr-2"></i> Error Loading Page
+		<div class="bg-yellow-100 p-5 rounded-lg">
+			<i class="fas fa-exclamation-triangle text-yellow-700 mr-2"></i> Error Loading Page
 		</div>
 	</div>
 	<%
@@ -47,6 +47,7 @@
 
 	if (!err) {
 	%>
+	<!-- Show all the available category allow selection to view all books under the category -->
 	<div class="mx-10 mb-60">
 
 		<h1 class="text-4xl text-center font-bold italic my-10">Select A

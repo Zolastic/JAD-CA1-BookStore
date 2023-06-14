@@ -30,9 +30,10 @@
 	if (allGenreBook == null || genreName == null) {
 		err = true;
 	%>
+	<!-- Error Loading Page -->
 	<div class="fixed inset-0 flex items-center justify-center">
-		<div class="bg-yellow-200 px-4 py-2 rounded-lg">
-			<i class="fas fa-exclamation-triangle mr-2"></i> Error Loading Page
+		<div class="bg-yellow-100 p-5 rounded-lg">
+			<i class="fas fa-exclamation-triangle text-yellow-700 mr-2"></i> Error Loading Page
 		</div>
 	</div>
 	<%
@@ -61,6 +62,7 @@
 	int endIndex = Math.min(startIndex + booksPerPage, totalBooks);
 	booksOnCurrentPage = allGenreBook.subList(startIndex, endIndex);
 	%>
+	<!-- Allow searching books that is under the genre -->
 	<div class="mx-20 mb-60">
 		<div class="flex items-center justify-between">
 			<h1 class="text-4xl font-bold italic my-10"><%=genreName%></h1>
@@ -89,6 +91,7 @@
 		<%
 		if (booksOnCurrentPage.size() > 0) {
 		%>
+		<!-- Show MAX 10 books per page -->
 		<div class="flex flex-wrap justify-center w-full">
 			<%
 			for (Book book : booksOnCurrentPage) {
@@ -177,7 +180,7 @@
 			}
 			%>
 		</div>
-
+		<!-- Pagination -->
 		<div class="flex items-center justify-center mt-10">
 			<div class="flex space-x-4">
 				<a
@@ -223,6 +226,7 @@
 		<%
 		} else {
 		%>
+		<!-- If no books in genre -->
 		<div class="flex items-center justify-center">
 			<div class="flex flex-col items-center">
 				<h2 class="text-lg mt-20 pt-10">No results</h2>
