@@ -146,9 +146,6 @@ public class AddBookServlet extends HttpServlet {
 				RequestDispatcher error = request.getRequestDispatcher("add-book.jsp?errCode=400");
 				error.forward(request, response);
 			}
-
-			System.out.println("Woots");
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
