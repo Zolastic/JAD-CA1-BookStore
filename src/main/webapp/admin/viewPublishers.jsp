@@ -51,7 +51,7 @@
 			</form>
 		</div>
 		<div class="flex justify-end items-end pb-3">
-			<a class="" href="<%=request.getContextPath()%>/admin/addAuthor.jsp"><i
+			<a class="" href="<%=request.getContextPath()%>/admin/addPublisher.jsp"><i
 				class="viewIcons fa-solid fa-plus fa-2xl mx-3 hover:cursor-pointer"></i></a>
 		</div>
 	</header>
@@ -64,7 +64,7 @@
 		<div class="flex py-3 my-5 mx-10 rounded-lg shadow-lg bg-gray-50">
 			<div class="flex flex-col ml-10">
 				<a class="hover:cursor-pointer hover:text-amber-900"
-					href="<%=request.getContextPath()%>/admin/AuthorDetails?authorID=<%=publisher.getId()%>"><h1
+					href="<%=request.getContextPath()%>/admin/PublisherDetails?publisherID=<%=publisher.getId()%>"><h1
 						class="text-3xl font-bold"><%=publisher.getName()%></h1></a>
 
 
@@ -122,7 +122,7 @@
 				</h2>
 				<div class="flex mt-5">
 					<form id="deleteForm" method="post"
-						action="<%=request.getContextPath()%>/admin/DeleteAuthor">
+						action="<%=request.getContextPath()%>/admin/DeletePublisher">
 						<input type="hidden" id="publisherID" name="publisherID" value="">
 						<button type="submit"
 							class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-purple-200">

@@ -1,0 +1,19 @@
+@charset "UTF-8";
+
+.objectDetailsIcons {
+	color: #926B6A;
+}
+
+
+
+.objectDetailsIcons:hover {
+	color: #F7CAC9;
+}
+
+.objectDetailsLinks {
+	color: #57687c;
+}
+
+.objectDetailsLinks:hover {
+	color: #926B6A;
+}
