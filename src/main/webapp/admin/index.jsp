@@ -7,7 +7,7 @@
 <title>Admin: Homepage</title>
 <%@include file="../tailwind-css.jsp"%>
 </head>
-<body>
+<body class="flex flex-col justify-center items-center">
 	<%@include file="./navbar.jsp"%>
 	<div class="flex justify-center items-center mt-28">
 		<h1 class="font-bold text-3xl">Admin Centre</h1>
@@ -19,11 +19,23 @@
 			<span
 			class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0 text-black">
 				View Books</span>
-		</a> <a href="<%=request.getContextPath()%>/admin/AddBook"
+		</a> <a href="<%=request.getContextPath()%>/admin/ViewAuthors"
 			class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-purple-200">
 			<span
 			class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0 text-black">
-				Add Books </span>
+				View Authors</span>
+		</a>
+		<a href="<%=request.getContextPath()%>/admin/ViewPublishers"
+			class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-purple-200">
+			<span
+			class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0 text-black">
+				View Publishers</span>
+		</a>
+		<a href="<%=request.getContextPath()%>/admin/ViewGenres"
+			class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-purple-200">
+			<span
+			class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0 text-black">
+				View Genres</span>
 		</a>
 	</main>
 
