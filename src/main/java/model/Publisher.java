@@ -1,19 +1,19 @@
 package model;
 
 public class Publisher {
-	private int id;
+	private String id;
 	private String name;
 
-	public Publisher(int id, String name) {
-		this.id = id;
+	public Publisher(String publisherID, String name) {
+		this.id = publisherID;
 		this.name = name;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

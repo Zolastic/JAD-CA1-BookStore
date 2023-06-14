@@ -93,7 +93,7 @@ public class AddBookServlet extends HttpServlet {
 				
 				List<Publisher> publishers = new ArrayList<>();
 				while (resultSet.next()) {
-					int publisherId = resultSet.getInt("publisherID");
+					String publisherId = resultSet.getString("publisherID");
 					String publisherName = resultSet.getString("publisherName");
 					publishers.add(new Publisher(publisherId, publisherName));
 				}
@@ -146,9 +146,6 @@ public class AddBookServlet extends HttpServlet {
 				RequestDispatcher error = request.getRequestDispatcher("add-book.jsp?errCode=400");
 				error.forward(request, response);
 			}
-
-			System.out.println("Woots");
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

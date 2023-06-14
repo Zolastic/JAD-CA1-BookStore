@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Admin: Author Details</title>
+<title>Admin: Publisher Details</title>
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/admin/css/objectDetails.css">
@@ -15,17 +15,17 @@
 	<%@ page import="java.util.*, model.*"%>
 	<%@include file="./navbar.jsp"%>
 	<%
-	Author author = (Author) request.getAttribute("author");
+	Publisher publisher = (Publisher) request.getAttribute("publisher");
 	List<Book> books = (List<Book>) request.getAttribute("books");
 	%>
 
 	<div class="flex rounded-lg shadow-lg bg-gray-50 pt-3 pb-96 mt-28">
 		<div class="flex flex-col ml-10">
-			<h1 class="text-3xl font-bold tracking-wide"><%=author.getName()%>
+			<h1 class="text-3xl font-bold tracking-wide"><%=publisher.getName()%>
 			</h1>
 			<h3 class="mt-5 -mb-1">
 				Books
-				<%=author.getName()%>
+				<%=publisher.getName()%>
 				has in the store:
 			</h3>
 			<%
@@ -40,9 +40,9 @@
 			<%
 			}
 			} else {
-				%>
-					<p class="mt-2 text-sm">This author has no books in the store</p>
-				<%
+			%>
+			<p class="mt-2 text-sm">This publisher has no books in the store</p>
+			<%
 			}
 			%>
 
@@ -50,10 +50,11 @@
 		<div class="flex-grow"></div>
 		<div class="flex">
 			<a
-				href="<%=request.getContextPath()%>/admin/EditAuthor?authorID=<%=author.getId()%>"><i
+				href="<%=request.getContextPath()%>/admin/EditPublisher?publisherID=<%=publisher.getId()%>"><i
 				class="objectDetailsIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
-			<a class="m-0 p-0 toggleButton" data-author-id="<%=author.getId()%>"
-				data-author-name="<%=author.getName()%>"> <i
+			<a class="m-0 p-0 toggleButton"
+				data-publisher-id="<%=publisher.getId()%>"
+				data-publisher-name="<%=publisher.getName()%>"> <i
 				class="objectDetailsIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i>
 			</a>
 		</div>
@@ -65,17 +66,18 @@
 		<div class="bg-white p-8 rounded shadow-lg rounded-lg">
 			<h2 class="text-2xl m-0 p-0">Are you sure you want</h2>
 			<h2 class="text-2xl m-0 p-0">
-				to Delete <span id="authorTitle" class="m-0 p-0 text-2xl font-bold"></span>
+				to Delete <span id="publisherTitle"
+					class="m-0 p-0 text-2xl font-bold"></span>
 			</h2>
 			<div class="flex mt-5">
 				<form id="deleteForm" method="post"
-					action="<%=request.getContextPath()%>/admin/DeleteAuthor">
-					<input type="hidden" id="authorID" name="authorID" value="">
+					action="<%=request.getContextPath()%>/admin/DeletePublisher">
+					<input type="hidden" id="publisherID" name="publisherID" value="">
 					<button type="submit"
 						class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-purple-200">
 						<span
 							class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0 text-black hover:cursor-pointer">
-							Delete Author </span>
+							Delete Publisher </span>
 					</button>
 				</form>
 				<a id="closeButton"
@@ -95,13 +97,13 @@
 					.addEventListener(
 							"click",
 							function() {
-								const authorID = this
-										.getAttribute("data-author-id");
-								const authorName = this
-										.getAttribute("data-author-name");
+								const publisherID = this
+										.getAttribute("data-publisher-id");
+								const publisherName = this
+										.getAttribute("data-publisher-name");
 
-								document.getElementById("authorTitle").textContent = authorName;
-								document.getElementById("authorID").value = authorID;
+								document.getElementById("publisherTitle").textContent = publisherName;
+								document.getElementById("publisherID").value = publisherID;
 
 								document.getElementById("modal").classList
 										.toggle("hidden");

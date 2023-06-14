@@ -7,7 +7,7 @@
 <title>Admin: View Authors</title>
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/admin/css/viewBooks.css">
+	href="<%=request.getContextPath()%>/admin/css/viewManagementSystem.css">
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 </head>
@@ -30,19 +30,19 @@
 
 	List<Author> authorsPerPage = authors.subList(startIndex, endIndex);
 
-	int totalBooks = authors.size();
-	int totalPages = (int) Math.ceil((double) totalBooks / itemsPerPage);
+	int totalAuthors = authors.size();
+	int totalPages = (int) Math.ceil((double) totalAuthors / itemsPerPage);
 
 	String userInput = request.getParameter("userInput");
 
-	String pageURL = String.format("%s/admin/ViewBooks?%spage=", request.getContextPath(),
+	String pageURL = String.format("%s/admin/ViewAuthors?%spage=", request.getContextPath(),
 			userInput == null ? "" : "userInput=" + userInput + "&");
 	%>
-	<header class="viewBooksHeader mt-16">
+	<header class="viewHeader mt-16">
 		<div class="h-64 flex flex-col justify-center items-center">
 			<h1 class="font-bold text-2xl my-2 tracking-wider">Author
 				Management System</h1>
-			<form action="<%=request.getContextPath()%>/admin/SearchAuthorsResults"
+			<form action="<%=request.getContextPath()%>/admin/ViewAuthors"
 				method="get" class="my-2">
 				<input id="userInput" name="userInput" type="text"
 					value="<%=userInput == null ? "" : userInput%>"
@@ -52,7 +52,7 @@
 		</div>
 		<div class="flex justify-end items-end pb-3">
 			<a class="" href="<%=request.getContextPath()%>/admin/addAuthor.jsp"><i
-				class="viewBooksIcons fa-solid fa-plus fa-2xl mx-3 hover:cursor-pointer"></i></a>
+				class="viewIcons fa-solid fa-plus fa-2xl mx-3 hover:cursor-pointer"></i></a>
 		</div>
 	</header>
 
@@ -73,10 +73,10 @@
 			<div class="flex">
 				<a
 					href="<%=request.getContextPath()%>/admin/EditAuthor?authorID=<%=author.getId()%>"><i
-					class="viewBooksIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
+					class="viewIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
 				<a class="m-0 p-0 toggleButton" data-author-id="<%=author.getId()%>"
 					data-author-name="<%=author.getName()%>"> <i
-					class="viewBooksIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i>
+					class="viewIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i>
 				</a>
 			</div>
 		</div>
@@ -85,7 +85,7 @@
 		} else {
 		%>
 		<div class="flex justify-center items-center mt-5">
-			<h1 class="text-xl font-semibold">There is no such book in the
+			<h1 class="text-xl font-semibold">There is no such author in the
 				store!</h1>
 		</div>
 		<%

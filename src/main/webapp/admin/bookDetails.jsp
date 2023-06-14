@@ -7,7 +7,7 @@
 <title>Admin: Book Details</title>
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/admin/css/bookDetails.css">
+	href="<%=request.getContextPath()%>/admin/css/objectDetails.css">
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 </head>
@@ -78,10 +78,10 @@
 		<div class="flex">
 			<a
 				href="<%=request.getContextPath()%>/admin/EditBook?bookID=<%=book.getBookID()%>"><i
-				class="bookDetialsIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
+				class="objectDetailsIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
 			<a class="m-0 p-0 toggleButton" data-book-id="<%=book.getBookID()%>"
 				data-book-title="<%=book.getTitle()%>"> <i
-				class="bookDetialsIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i>
+				class="objectDetailsIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i>
 			</a>
 		</div>
 	</div>
