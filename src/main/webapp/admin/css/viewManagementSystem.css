@@ -1,0 +1,33 @@
+@charset "UTF-8";
+
+.viewHeader {
+	background: linear-gradient(#57687C, #2C3E50);
+}
+
+.viewHeader h1 {
+	color: #B4C7DD;
+}
+
+.viewImg {
+	width: 180px;
+	height: 320px;
+}
+
+.viewIcons {
+	color: #926b6a;
+}
+
+.paginationEnabled {
+	background-color: #2C3E50;
+	color: #b4c7dd;
+}
+
+.paginationEnabled:hover {
+	background-color: #57687c;
+	color: #F2F2F2;
+}
+
+.paginationDisabled{
+	background-color: #57687c;
+	color: #b4c7dd;
+}
