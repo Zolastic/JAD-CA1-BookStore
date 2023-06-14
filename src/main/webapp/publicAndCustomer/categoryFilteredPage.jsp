@@ -1,3 +1,10 @@
+<%--
+  - Author(s): Soh Jian Min (P2238856)
+  - Copyright Notice:-
+  - @(#)
+  - Description: JAD CA1
+  --%>
+  
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>
@@ -57,7 +64,7 @@
 	<div class="mx-20 mb-60">
 		<div class="flex items-center justify-between">
 			<h1 class="text-4xl font-bold italic my-10"><%=genreName%></h1>
-			<form action="/CA1-assignment/categoryFilteredPage" method="GET">
+			<form action="/CA1-assignment/CategoryFilteredPage" method="GET">
 				<input type="hidden" name="action" value="searchBookByTitle">
 				<input type="hidden" name="genreID"
 					value="<%=request.getParameter("genreID")%>"> <input
@@ -89,12 +96,7 @@
 				int filledStars = (int) rating;
 				boolean hasHalfStar = (rating - filledStars) >= 0.5;
 				int emptyStars = 5 - filledStars - (hasHalfStar ? 1 : 0);
-				String urlToBookDetails;
-				if (validatedUserID != null) {
-					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID() + "&userIDAvailable=true";
-				} else {
-					urlToBookDetails = "/CA1-assignment/bookDetailsPage?bookID=" + book.getBookID();
-				}
+				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
 			%>
 			<div
 				class="flex items-center justify-between border border-gray-300 rounded-lg my-4 p-5 shadow-lg w-full  transform hover:scale-110"
@@ -180,7 +182,7 @@
 			<div class="flex space-x-4">
 				<a
 					href="<%=currentPage > 1
-		? ("/CA1-assignment/categoryFilteredPage?page=" + (currentPage - 1) + "&genreName=" + genreName + "&genreID="
+		? ("/CA1-assignment/CategoryFilteredPage?page=" + (currentPage - 1) + "&genreName=" + genreName + "&genreID="
 				+ request.getParameter("genreID") + (validatedUserID != null ? "&userIDAvailable=true" : "")+(action!=null&&action.equals("searchBookByTitle")?("&action=searchBookByTitle&searchInput="+searchInput):""))
 		: "#"%>"
 					class="bg-gray-200 text-gray-600 px-4 py-2 rounded <%=currentPage > 1 ? "" : "cursor-not-allowed opacity-50"%>">
@@ -188,7 +190,7 @@
 				</a>
 				<%
 				for (int i = 1; i <= totalPages; i++) {
-					String pageLink = "/CA1-assignment/categoryFilteredPage?page=" + i + "&genreName=" + genreName + "&genreID="
+					String pageLink = "/CA1-assignment/CategoryFilteredPage?page=" + i + "&genreName=" + genreName + "&genreID="
 					+ request.getParameter("genreID");
 					if (validatedUserID != null) {
 						pageLink += "&userIDAvailable=true";
@@ -206,7 +208,7 @@
 				%>
 				<a
 					href="<%=currentPage < totalPages
-		? ("/CA1-assignment/categoryFilteredPage?page=" + (currentPage + 1) + "&genreName=" + genreName + "&genreID="
+		? ("/CA1-assignment/CategoryFilteredPage?page=" + (currentPage + 1) + "&genreName=" + genreName + "&genreID="
 				+ request.getParameter("genreID") + (validatedUserID != null ? "&userIDAvailable=true" : "")+(action!=null&&action.equals("searchBookByTitle")?("&action=searchBookByTitle&searchInput="+searchInput):""))
 		: "#"%>"
 					class="bg-gray-200 text-gray-600 px-4 py-2 rounded <%=currentPage < totalPages ? "" : "cursor-not-allowed opacity-50"%>">

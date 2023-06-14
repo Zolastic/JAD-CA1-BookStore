@@ -1,3 +1,10 @@
+<%--
+  - Author(s): Soh Jian Min (P2238856)
+  - Copyright Notice:-
+  - @(#)
+  - Description: JAD CA1
+  --%>
+  
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>
@@ -170,12 +177,34 @@
 					Author:
 					<%=bookDetails.getAuthor()%></p>
 
-				<p class="text-lg mb-4">
+				<p class="text-lg mb-2">
 					Published By
 					<%=bookDetails.getPublisher()%>, At
 					<%=bookDetails.getPublication_date()%></p>
 				<p class="text-lg mb-4">
 					Price: $<%=bookDetails.getPrice()%></p>
+
+				<%
+				if (bookDetails.getInventory() <= 10) {
+				%>
+
+				<p class="mb-4 text-red-500">
+					<%=bookDetails.getInventory()%>
+					Left!
+				</p>
+				<%
+				} else {
+				%>
+				<p class="mb-1 text-green-600">
+					<%=bookDetails.getInventory()%>
+					Left!
+				</p>
+				<%
+				}
+				%>
+
+
+
 				<div class="flex items-center mb-4">
 					<h2 class="text-1xl mr-3">Quantity:</h2>
 					<div
@@ -199,17 +228,33 @@
 				</div>
 
 				<div class="mr-4">
-					<form action="/CA1-assignment/bookDetailsPage" method="post">
+					<form action="/CA1-assignment/BookDetailsPage" method="post">
 						<input type="hidden" name="bookID" value="<%=bookID%>"> <input
 							type="hidden" name="quantity"
 							value="<%=bookDetails.getQuantity()%>"> <input
 							type="hidden" name="validatedUserID" value="<%=validatedUserID%>">
 						<input type="hidden" name="action" value="addToCart">
+						<%
+						if (bookDetails.getQuantity() != 0) {
+						%>
 						<button type="submit"
 							class="bg-slate-500 hover:bg-slate-700 transform hover:scale-110 text-white px-4 py-2 rounded w-full">
 							<i class="fas fa-shopping-cart text-white-500 mr-2"></i> Add to
 							Cart <i class="fas fa-shopping-cart text-white-500 ml-2"></i>
 						</button>
+						<%
+						} else {
+						%>
+						<button
+							class="bg-slate-500 hover:bg-slate-700 transform hover:scale-110 text-white px-4 py-2 rounded w-full"
+							disabled>
+							<i class="fas fa-shopping-cart text-white-500 mr-2"></i> Add to
+							Cart <i class="fas fa-shopping-cart text-white-500 ml-2"></i>
+						</button>
+
+						<%
+						}
+						%>
 					</form>
 
 				</div>
@@ -253,7 +298,8 @@
 				</p>
 			</div>
 		</div>
-		<div class="flex items-center mx-5 border border-gray-100 p-5 mb-20">
+		<div
+			class="flex items-center mx-5 border border-gray-100 px-5 pt-5 pb-5 mb-20">
 			<%
 			if (reviews.size() == 0) {
 			%>
@@ -261,20 +307,31 @@
 			<%
 			} else {
 			%>
-			<div class="mt-4 space-y-4">
+			<div class="mt-4 space-y-4 w-full">
 				<%
 				for (Map<String, Object> review : reviews) {
+					String userImg = (String) review.get("userImg");
 				%>
 				<div class="flex items-start space-x-4">
+					<%
+					if (userImg != null) {
+					%>
+					<img src="<%=userImg%>" class="rounded-full h-12 w-12">
+					<%
+					} else {
+					%>
 					<i class="fas fa-user-circle text-gray-400 text-3xl"></i>
+					<%
+					}
+					%>
 					<div>
 						<h1 class="font-semibold text-xl"><%=review.get("userName")%></h1>
 						<div class="flex items-center space-x-1">
 							<%
 							double ratingCust = (double) review.get("ratingByEachCust");
-							int filledStarsCust = (int) rating;
-							boolean hasHalfStarCust = (rating - filledStars) >= 0.5;
-							int emptyStarsCust = 5 - filledStars - (hasHalfStar ? 1 : 0);
+							int filledStarsCust = (int) ratingCust;
+							boolean hasHalfStarCust = (ratingCust - filledStarsCust) >= 0.5;
+							int emptyStarsCust = 5 - filledStarsCust - (hasHalfStarCust ? 1 : 0);
 							%>
 							<%
 							for (int i = 0; i < filledStarsCust; i++) {
@@ -303,6 +360,7 @@
 
 					</div>
 				</div>
+				<div class="my-2 border border-gray-100 w-full"></div>
 				<%
 				}
 				%>

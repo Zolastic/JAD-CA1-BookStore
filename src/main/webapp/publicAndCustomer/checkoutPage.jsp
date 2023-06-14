@@ -1,3 +1,10 @@
+<%--
+  - Author(s): Soh Jian Min (P2238856)
+  - Copyright Notice:-
+  - @(#)
+  - Description: JAD CA1
+  --%>
+  
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="com.stripe.Stripe"%>
@@ -75,7 +82,7 @@
 		</div>
 
 		<div class="mt-2">
-			<form id="payment-form" action="/CA1-assignment/checkoutPage"
+			<form id="payment-form" action="/CA1-assignment/CheckoutPage"
 				method="post">
 				<div class="p-2 rounded shadow my-8">
 					<h2 class="text-lg font-bold ">Address Details</h2>
@@ -154,9 +161,9 @@
 	<script>
 		alert("Error loading page");
 		if (<%=validatedUserID%> != null) {
-			window.location.href = "http://localhost:8080/CA1-assignment/cartPage?userIDAvailable=true";
+			window.location.href = "/CA1-assignment/CartPage?userIDAvailable=true";
 		} else {
-			window.location.href = "http://localhost:8080/CA1-assignment/cartPage";
+			window.location.href = "/CA1-assignment/CartPage";
 		}
 	</script>
 	<%
