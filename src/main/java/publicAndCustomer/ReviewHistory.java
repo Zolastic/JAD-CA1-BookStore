@@ -48,32 +48,33 @@ public class ReviewHistory extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String userIDAvailable = request.getParameter("userIDAvailable");
-
-		List<ReviewHistoryClass> reviewHistory = new ArrayList<>();
+		List<ReviewHistoryClass> reviewHistories = new ArrayList<>();
 		String userID = null;
 		if (userIDAvailable != null && userIDAvailable.equals("true")) {
 			userID = (String) request.getSession().getAttribute("userID");
 		}
 		try (Connection connection = DBConnection.getConnection()) {
+			// To validate the user
 			userID = validateUserID(connection, userID);
 			if (userID == null) {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
 				return;
 			} else {
-				reviewHistory = getReviewHistory(connection, userID);
+				reviewHistories = getReviewHistories(connection, userID);
 			}
 
 		} catch (Exception e) {
 			System.err.println("Error: " + e);
 		}
-		request.setAttribute("reviewHistory", reviewHistory);
+		request.setAttribute("reviewHistories", reviewHistories);
 		request.setAttribute("validatedUserID", userID);
 		String dispatcherURL = "publicAndCustomer/reviewHistory.jsp";
 		RequestDispatcher dispatcher = request.getRequestDispatcher(dispatcherURL);
 		dispatcher.forward(request, response);
 	}
 
+	// Function to validate user id
 	private String validateUserID(Connection connection, String userID) throws SQLException {
 		if (userID != null) {
 			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
@@ -89,9 +90,9 @@ public class ReviewHistory extends HttpServlet {
 		return userID;
 	}
 
-	private List<ReviewHistoryClass> getReviewHistory(Connection connection, String custID) throws SQLException {
-		List<ReviewHistoryClass> reviewHistory = new ArrayList<>();
-
+	// Get all review history of the user
+	private List<ReviewHistoryClass> getReviewHistories(Connection connection, String custID) throws SQLException {
+		List<ReviewHistoryClass> reviewHistories = new ArrayList<>();
 		String query = "SELECT review.*, book.*, genre.genre_name, author.authorName, publisher.publisherName, "
 				+ "(SELECT CAST(AVG(IFNULL(rating, 0)) AS DECIMAL(2, 1)) FROM review WHERE bookID = book.book_id) AS average_rating " 
 				+ "FROM review "
@@ -99,19 +100,15 @@ public class ReviewHistory extends HttpServlet {
 				+ "JOIN author ON book.authorID = author.authorID "
 				+ "JOIN publisher ON book.publisherID = publisher.publisherID " + "WHERE review.custID = ? "
 				+ "ORDER BY review.ratingDate DESC";
-
 		PreparedStatement statement = connection.prepareStatement(query);
 		statement.setString(1, custID);
-
 		ResultSet resultSet = statement.executeQuery();
-
 		while (resultSet.next()) {
 			String reviewID = resultSet.getString("review_id");
 			String bookID = resultSet.getString("book_id");
 			String reviewText = resultSet.getString("review_text");
 			double rating = resultSet.getDouble("rating");
 			String ratingDate = resultSet.getString("ratingDate");
-
 			Book book = new Book(resultSet.getString("book_id"), resultSet.getString("ISBN"),
 					resultSet.getString("title"), resultSet.getString("authorName"),
 					resultSet.getString("publisherName"), resultSet.getString("publication_date"),
@@ -120,10 +117,9 @@ public class ReviewHistory extends HttpServlet {
 					resultSet.getDouble("average_rating"));
 
 			ReviewHistoryClass review = new ReviewHistoryClass(book, reviewID, custID, bookID, reviewText, rating, ratingDate);
-			reviewHistory.add(review);
+			reviewHistories.add(review);
 		}
-
-		return reviewHistory;
+		return reviewHistories;
 	}
 
 	/**
@@ -132,7 +128,6 @@ public class ReviewHistory extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

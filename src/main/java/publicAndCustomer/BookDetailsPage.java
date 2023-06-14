@@ -37,27 +37,23 @@ public class BookDetailsPage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String bookID = request.getParameter("bookID");
-
 		String userID = null;
-
 		userID = (String) request.getSession().getAttribute("userID");
-
 		Book bookDetails = null;
 		List<Map<String, Object>> reviews = new ArrayList<>();
-
 		if (bookID != null) {
 			try (Connection connection = DBConnection.getConnection()) {
+				// Validate the userID
 				userID = validateUserID(connection, userID);
-
+				// Get the book details
 				bookDetails = getBookDetails(connection, bookID);
+				// Get the reviews of the book
 				reviews = getBookReviews(connection, bookID);
-
 				connection.close();
 			} catch (SQLException e) {
 				System.err.println("Error: " + e);
 			}
 		}
-
 		request.setAttribute("bookDetails", bookDetails);
 		request.setAttribute("reviews", reviews);
 		request.setAttribute("validatedUserID", userID);
@@ -65,6 +61,7 @@ public class BookDetailsPage extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
+	// Function to validate user id
 	private String validateUserID(Connection connection, String userID) throws SQLException {
 		if (userID != null) {
 			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
@@ -80,6 +77,7 @@ public class BookDetailsPage extends HttpServlet {
 		return userID;
 	}
 
+	// Function to get specific book details
 	private Book getBookDetails(Connection connection, String bookID) throws SQLException {
 		Book bookDetails = null;
 		String simpleProc = "{call getBookDetails(?)}";
@@ -102,6 +100,7 @@ public class BookDetailsPage extends HttpServlet {
 		return bookDetails;
 	}
 
+	// Get all reviews of a book
 	private List<Map<String, Object>> getBookReviews(Connection connection, String bookID) throws SQLException {
 		List<Map<String, Object>> reviews = new ArrayList<>();
 		String sqlStr = "SELECT review.*, users.name, users.img FROM review, users WHERE review.custID=users.userID AND bookID=?;";
@@ -122,6 +121,7 @@ public class BookDetailsPage extends HttpServlet {
 		return reviews;
 	}
 
+	// Function to add book to user's cart
 	protected void addToCart(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String validatedUserID = request.getParameter("validatedUserID");
@@ -201,9 +201,8 @@ public class BookDetailsPage extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		// Check for actions
 		String action = request.getParameter("action");
-
 		if (action != null && action.equals("addToCart")) {
 			addToCart(request, response);
 		} else {

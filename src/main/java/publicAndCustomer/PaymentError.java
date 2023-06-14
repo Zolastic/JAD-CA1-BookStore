@@ -45,15 +45,15 @@ public class PaymentError extends HttpServlet {
 			throws ServletException, IOException {
 		try (Connection connection = DBConnection.getConnection()) {
 			String error = request.getParameter("error");
-
+			// To better confirm user comes from appropriate link before checking, and in the previous page userID is available
 			String userIDAvailable = request.getParameter("userIDAvailable");
-
 			String userID = null;
 			if (userIDAvailable != null) {
 				if (userIDAvailable.equals("true")) {
 					userID = (String) request.getSession().getAttribute("userID");
 				}
 			}
+			// validate user
 			userID = validateUserID(connection, userID);
 			if (userID == null) {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
@@ -78,6 +78,7 @@ public class PaymentError extends HttpServlet {
 
 	}
 
+	// Function to validate user id
 	private String validateUserID(Connection connection, String userID) throws SQLException {
 		if (userID != null) {
 			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";

@@ -33,7 +33,6 @@ public class AllBooksPage extends HttpServlet {
 	 */
 	public AllBooksPage() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -42,6 +41,7 @@ public class AllBooksPage extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		String url=null;
 		String userIDAvailable = request.getParameter("userIDAvailable");
 		String userID = null;
 		if (userIDAvailable != null) {
@@ -49,51 +49,39 @@ public class AllBooksPage extends HttpServlet {
 				userID = (String) request.getSession().getAttribute("userID");
 			}
 		}
-
 		List<Book> allBooks = new ArrayList<>();
 		try (Connection connection = DBConnection.getConnection()) {
 			String action = request.getParameter("action");
-
+			// If the user is searching for a book
 			if (action != null && action.equals("searchBookByTitle")) {
 				String searchInput = request.getParameter("searchInput");
 				if (searchInput != null) {
-
+					// Function to search to show the search results
 					allBooks = searchBookByTitle(connection, ("%" + searchInput + "%"));
+					// Validate the user id
+					userID = validateUserID(connection, userID);
 					request.setAttribute("searchExecuted", "true");
 					request.setAttribute("allBooks", allBooks);
 					request.setAttribute("validatedUserID", userID);
-					RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/allBooksPage.jsp?action=searchBookByTitle&searchInput="+searchInput);
-					dispatcher.forward(request, response);
+					url = "publicAndCustomer/allBooksPage.jsp?action=searchBookByTitle&searchInput="+searchInput;
 				}
-
 			}
-//			else if (action != null && action.equals("searchBookByISBN")) {
-//				String searchInput = request.getParameter("searchInput");
-//				if (genreID != null && searchInput != null) {
-//					if (searchInput.length() != 0) {
-//						allGenreBook = searchBookByISBN(connection, genreID, searchInput);
-//					}
-//
-//				}
-//
-//			} 
 			else {
 				userID = validateUserID(connection, userID);
-
 				allBooks = getAllBooks(connection);
+				request.setAttribute("allBooks", allBooks);
+				request.setAttribute("validatedUserID", userID);
+				url="publicAndCustomer/allBooksPage.jsp";
 			}
-
 			connection.close();
 		} catch (SQLException e) {
 			System.err.println("Error: " + e);
 		}
-
-		request.setAttribute("allBooks", allBooks);
-		request.setAttribute("validatedUserID", userID);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/allBooksPage.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher(url);
 		dispatcher.forward(request, response);
 	}
 
+	// Function to validate user id
 	private String validateUserID(Connection connection, String userID) throws SQLException {
 		if (userID != null) {
 			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
@@ -109,6 +97,7 @@ public class AllBooksPage extends HttpServlet {
 		return userID;
 	}
 
+	// Get all the books from db
 	private List<Book> getAllBooks(Connection connection) throws SQLException {
 		List<Book> allBooks = new ArrayList<>();
 		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName\r\n"
@@ -129,6 +118,7 @@ public class AllBooksPage extends HttpServlet {
 		return allBooks;
 	}
 
+	// Get the search results
 	private List<Book> searchBookByTitle(Connection connection, String searchInput) throws SQLException {
 		List<Book> searchResults = new ArrayList<>();
 		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName\r\n"
@@ -157,7 +147,6 @@ public class AllBooksPage extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 
