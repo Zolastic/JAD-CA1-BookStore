@@ -63,7 +63,7 @@
 			<form action="/CA1-assignment/AllBooksPage" method="GET">
 				<input type="hidden" name="action" value="searchBookByTitle">
 				<input type="text" name="searchInput"
-					placeholder="Search by Book Title in Category"
+					placeholder="Search by Book Title"
 					class="p-2 rounded-l-lg border border-gray-600 w-72">
 				<%
 				if (validatedUserID != null) {

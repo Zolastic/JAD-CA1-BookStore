@@ -28,10 +28,8 @@ import utils.DBConnection;
  */
 
 /**
- * Author(s): Soh Jian Min (P2238856)
- * Description: JAD CA1
+ * Author(s): Soh Jian Min (P2238856) Description: JAD CA1
  */
-
 
 @WebServlet("/Review")
 public class Review extends HttpServlet {
@@ -90,43 +88,49 @@ public class Review extends HttpServlet {
 
 	// Function to validate user id
 	private String validateUserID(Connection connection, String userID) {
-	    if (userID != null) {
-	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-	        try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	            ps.setString(1, userID);
-	            try (ResultSet rs = ps.executeQuery()) {
-	                if (rs.next()) {
-	                    int rowCount = rs.getInt(1);
-	                    if (rowCount < 1) {
-	                        userID = null;
-	                    }
-	                }
-	            }
-	        } catch (SQLException e) {
-	        	userID=null;
-	            System.err.println("Error: " + e.getMessage());
-	        }
-	    }
-	    return userID;
+		if (userID != null) {
+			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
+			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+				ps.setString(1, userID);
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						int rowCount = rs.getInt(1);
+						if (rowCount < 1) {
+							userID = null;
+						}
+					}
+				}
+			} catch (SQLException e) {
+				userID = null;
+				System.err.println("Error: " + e.getMessage());
+			}
+		}
+		return userID;
 	}
 
 	// Function to get book details
-	private Book getBookDetails(Connection connection, String bookID) throws SQLException {
+	private Book getBookDetails(Connection connection, String bookID) {
 		Book bookDetails = null;
 		String simpleProc = "{call getBookDetails(?)}";
-		CallableStatement cs = connection.prepareCall(simpleProc);
-		cs.setString(1, bookID);
-		cs.execute();
-		ResultSet resultSetForBookDetails = cs.getResultSet();
-		if (resultSetForBookDetails.next()) {
-			bookDetails = new Book(resultSetForBookDetails.getString("book_id"),
-					resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
-					resultSetForBookDetails.getString("authorName"), resultSetForBookDetails.getString("publisherName"),
-					resultSetForBookDetails.getString("publication_date"),
-					resultSetForBookDetails.getString("description"), resultSetForBookDetails.getString("genre_name"),
-					resultSetForBookDetails.getString("img"), resultSetForBookDetails.getInt("sold"),
-					resultSetForBookDetails.getInt("inventory"), resultSetForBookDetails.getDouble("price"), 1,
-					resultSetForBookDetails.getDouble("average_rating"));
+		try (CallableStatement cs = connection.prepareCall(simpleProc)) {
+			cs.setString(1, bookID);
+			cs.execute();
+			try (ResultSet resultSetForBookDetails = cs.getResultSet()) {
+				if (resultSetForBookDetails.next()) {
+					bookDetails = new Book(resultSetForBookDetails.getString("book_id"),
+							resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
+							resultSetForBookDetails.getString("authorName"),
+							resultSetForBookDetails.getString("publisherName"),
+							resultSetForBookDetails.getString("publication_date"),
+							resultSetForBookDetails.getString("description"),
+							resultSetForBookDetails.getString("genre_name"), resultSetForBookDetails.getString("img"),
+							resultSetForBookDetails.getInt("sold"), resultSetForBookDetails.getInt("inventory"),
+							resultSetForBookDetails.getDouble("price"), 1,
+							resultSetForBookDetails.getDouble("average_rating"));
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
 		}
 		return bookDetails;
 	}
@@ -173,36 +177,42 @@ public class Review extends HttpServlet {
 		}
 	}
 
-	// Function to insert a review 
-	private String insertReview(Connection connection, String custID, String bookID, String review_text, double rating)
-			throws SQLException {
+	// Function to insert a review
+	private String insertReview(Connection connection, String custID, String bookID, String review_text, double rating){
 		String review_id = uuidGenerator();
 		String sql = "INSERT INTO review (review_id, custID, bookID, review_text, rating, ratingDate) VALUES (?, ?, ?, ?, ?, ?)";
 		String ratingDate = getCurrentDate();
-		PreparedStatement statement = connection.prepareStatement(sql);
-		statement.setString(1, review_id);
-		statement.setString(2, custID);
-		statement.setString(3, bookID);
-		statement.setString(4, review_text);
-		statement.setDouble(5, rating);
-		statement.setString(6, ratingDate);
-		int rowsAffected = statement.executeUpdate();
-		statement.close();
-		if (rowsAffected == 1) {
-			return review_id;
-		} else {
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setString(1, review_id);
+			statement.setString(2, custID);
+			statement.setString(3, bookID);
+			statement.setString(4, review_text);
+			statement.setDouble(5, rating);
+			statement.setString(6, ratingDate);
+			int rowsAffected = statement.executeUpdate();
+			statement.close();
+			if (rowsAffected == 1) {
+				return review_id;
+			} else {
+				return null;
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
 			return null;
 		}
 	}
 
 	// Function to update user's review state for the transaction history item
-	private int updateReviewState(Connection connection, String transactionHistoryItemID) throws SQLException {
-		String sql = "UPDATE transaction_history_items SET reviewed=1 WHERE transaction_history_itemID=?";
-		PreparedStatement statement = connection.prepareStatement(sql);
-		statement.setString(1, transactionHistoryItemID);
-		int rowsAffected = statement.executeUpdate();
-		statement.close();
-		return rowsAffected;
+	private int updateReviewState(Connection connection, String transactionHistoryItemID) {
+	    String sql = "UPDATE transaction_history_items SET reviewed=1 WHERE transaction_history_itemID=?";
+	    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+	        statement.setString(1, transactionHistoryItemID);
+	        int rowsAffected = statement.executeUpdate();
+	        return rowsAffected;
+	    } catch (SQLException e) {
+	        System.err.println("Error: " + e.getMessage());
+	        return 0;
+	    }
 	}
 
 	// Get current DATE

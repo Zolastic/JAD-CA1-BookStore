@@ -71,7 +71,7 @@ public class TransactionHistoryPage extends HttpServlet {
 	}
 
 	// To get all transaction history of the user
-	private List<TransactionHistory> getTransactionHistories(Connection connection, String userID) throws SQLException {
+	private List<TransactionHistory> getTransactionHistories(Connection connection, String userID) {
 		List<TransactionHistory> transactionHistories = new ArrayList<>();
 		String query = "SELECT transaction_history.*, transaction_history_items.*,book.*, genre.genre_name,CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating,author.authorName, publisher.publisherName\r\n"
 				+ "FROM transaction_history\r\n"
@@ -84,65 +84,69 @@ public class TransactionHistoryPage extends HttpServlet {
 				+ "WHERE transaction_history.custID = ?\r\n"
 				+ "GROUP BY transaction_history.transaction_historyID, transaction_history_items.transaction_history_itemID, book.book_id\r\n"
 				+ "ORDER BY transaction_history.transactionDate DESC\r\n";
-		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setString(1, userID);
-		ResultSet resultSet = statement.executeQuery();
-		while (resultSet.next()) {
-			String transactionHistoryID = resultSet.getString("transaction_history.transaction_historyID");
-			TransactionHistory transactionHistory = null;
-			for (TransactionHistory history : transactionHistories) {
-				if (history.getTransactionHistoryID().equals(transactionHistoryID)) {
-					transactionHistory = history;
-					break;
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setString(1, userID);
+			ResultSet resultSet = statement.executeQuery();
+			while (resultSet.next()) {
+				String transactionHistoryID = resultSet.getString("transaction_history.transaction_historyID");
+				TransactionHistory transactionHistory = null;
+				for (TransactionHistory history : transactionHistories) {
+					if (history.getTransactionHistoryID().equals(transactionHistoryID)) {
+						transactionHistory = history;
+						break;
+					}
 				}
+				if (transactionHistory == null) {
+					transactionHistory = new TransactionHistory(transactionHistoryID,
+							resultSet.getString("transaction_history.transactionDate"),
+							resultSet.getDouble("transaction_history.subtotal"),
+							resultSet.getString("transaction_history.custID"),
+							resultSet.getString("transaction_history.address"), new ArrayList<>());
+					transactionHistories.add(transactionHistory);
+				}
+				TransactionHistoryItem transactionHistoryItem = new TransactionHistoryItem(
+						resultSet.getString("transaction_history_items.transaction_history_itemID"),
+						resultSet.getString("transaction_history_items.bookID"),
+						resultSet.getInt("transaction_history_items.qty"),
+						resultSet.getInt("transaction_history_items.reviewed"));
+				Book book = new Book(resultSet.getString("book.book_id"), resultSet.getString("book.ISBN"),
+						resultSet.getString("book.title"), resultSet.getString("author.authorName"),
+						resultSet.getString("publisher.publisherName"), resultSet.getString("book.publication_date"),
+						resultSet.getString("book.description"), resultSet.getString("genre.genre_name"),
+						resultSet.getString("book.img"), resultSet.getInt("book.sold"),
+						resultSet.getInt("book.inventory"), resultSet.getDouble("book.price"),
+						resultSet.getDouble("average_rating"));
+				transactionHistoryItem.setBook(book);
+				List<TransactionHistoryItem> transactionHistoryItems = transactionHistory.getTransactionHistoryItems();
+				transactionHistoryItems.add(transactionHistoryItem);
+				transactionHistory.setTransactionHistoryItems(transactionHistoryItems);
 			}
-			if (transactionHistory == null) {
-				transactionHistory = new TransactionHistory(transactionHistoryID,
-						resultSet.getString("transaction_history.transactionDate"),
-						resultSet.getDouble("transaction_history.subtotal"),
-						resultSet.getString("transaction_history.custID"),
-						resultSet.getString("transaction_history.address"), new ArrayList<>());
-				transactionHistories.add(transactionHistory);
-			}
-			TransactionHistoryItem transactionHistoryItem = new TransactionHistoryItem(
-					resultSet.getString("transaction_history_items.transaction_history_itemID"),
-					resultSet.getString("transaction_history_items.bookID"),
-					resultSet.getInt("transaction_history_items.qty"),
-					resultSet.getInt("transaction_history_items.reviewed"));
-			Book book = new Book(resultSet.getString("book.book_id"), resultSet.getString("book.ISBN"),
-					resultSet.getString("book.title"), resultSet.getString("author.authorName"),
-					resultSet.getString("publisher.publisherName"), resultSet.getString("book.publication_date"),
-					resultSet.getString("book.description"), resultSet.getString("genre.genre_name"),
-					resultSet.getString("book.img"), resultSet.getInt("book.sold"), resultSet.getInt("book.inventory"),
-					resultSet.getDouble("book.price"), resultSet.getDouble("average_rating"));
-			transactionHistoryItem.setBook(book);
-			List<TransactionHistoryItem> transactionHistoryItems = transactionHistory.getTransactionHistoryItems();
-			transactionHistoryItems.add(transactionHistoryItem);
-			transactionHistory.setTransactionHistoryItems(transactionHistoryItems);
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
 		}
 		return transactionHistories;
 	}
 
 	// Function to validate user id
 	private String validateUserID(Connection connection, String userID) {
-	    if (userID != null) {
-	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-	        try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	            ps.setString(1, userID);
-	            try (ResultSet rs = ps.executeQuery()) {
-	                if (rs.next()) {
-	                    int rowCount = rs.getInt(1);
-	                    if (rowCount < 1) {
-	                        userID = null;
-	                    }
-	                }
-	            }
-	        } catch (SQLException e) {
-	        	userID=null;
-	            System.err.println("Error: " + e.getMessage());
-	        }
-	    }
-	    return userID;
+		if (userID != null) {
+			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
+			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+				ps.setString(1, userID);
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						int rowCount = rs.getInt(1);
+						if (rowCount < 1) {
+							userID = null;
+						}
+					}
+				}
+			} catch (SQLException e) {
+				userID = null;
+				System.err.println("Error: " + e.getMessage());
+			}
+		}
+		return userID;
 	}
 
 	/**
