@@ -52,7 +52,7 @@ public class OTPServlet extends HttpServlet {
 			
 			ResultSet otpResultSet = otpPS.executeQuery();
 			if (!otpResultSet.next()) {
-				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401").forward(request, response);
+				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401&type=OTP").forward(request, response);
 				return;
 			}
 			
