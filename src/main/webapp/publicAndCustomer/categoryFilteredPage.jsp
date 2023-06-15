@@ -26,6 +26,7 @@
 	String action = request.getParameter("action");
 	String searchInput = request.getParameter("searchInput");
 	boolean err = false;
+	int totalPages=(int) request.getAttribute("totalPages");
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	if (allGenreBook == null || genreName == null) {
 		err = true;
@@ -50,17 +51,10 @@
 	}
 
 	if (!err) {
-	List<Book> booksOnCurrentPage = null;
-	int booksPerPage = 10;
-	int totalBooks = allGenreBook.size();
-	int totalPages = (int) Math.ceil((double) totalBooks / booksPerPage);
 	int currentPage = 1;
 	if (request.getParameter("page") != null) {
 		currentPage = Integer.parseInt(request.getParameter("page"));
 	}
-	int startIndex = (currentPage - 1) * booksPerPage;
-	int endIndex = Math.min(startIndex + booksPerPage, totalBooks);
-	booksOnCurrentPage = allGenreBook.subList(startIndex, endIndex);
 	%>
 	<!-- Allow searching books that is under the genre -->
 	<div class="mx-20 mb-60">
@@ -89,12 +83,12 @@
 		</div>
 
 		<%
-		if (booksOnCurrentPage.size() > 0) {
+		if (allGenreBook.size() > 0) {
 		%>
 		<!-- Show MAX 10 books per page -->
 		<div class="flex flex-wrap justify-center w-full">
 			<%
-			for (Book book : booksOnCurrentPage) {
+			for (Book book : allGenreBook) {
 				double rating = book.getRating();
 				int filledStars = (int) rating;
 				boolean hasHalfStar = (rating - filledStars) >= 0.5;
@@ -110,7 +104,7 @@
 					<%
 					if (book.getImg() != null) {
 					%>
-					<img class="h-full object-contain" src="<%=book.getImg()%>">
+					<img class="h-full object-contain" src="data:image/png;base64, <%=book.getImg()%>">
 					<%
 					} else {
 					%>

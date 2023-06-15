@@ -51,7 +51,7 @@
 						<%
 						if (item.getImg() != null) {
 						%>
-						<img class="h-full object-contain" src="<%=item.getImg()%>">
+						<img class="h-full object-contain" src="data:image/png;base64, <%=item.getImg()%>">
 						<%
 						} else {
 						%>

@@ -85,7 +85,7 @@
 							if (transactionItem.getBook().getImg() != null) {
 							%>
 							<img class="h-full object-contain"
-								src="<%=transactionItem.getBook().getImg()%>">
+								src="data:image/png;base64, <%=transactionItem.getBook().getImg()%>">
 							<%
 							} else {
 							%>
