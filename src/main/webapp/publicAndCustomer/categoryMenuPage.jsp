@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Genre"%>
@@ -29,7 +29,8 @@
 	%>
 	<div class="fixed inset-0 flex items-center justify-center">
 		<div class="bg-yellow-100 p-5 rounded-lg">
-			<i class="fas fa-exclamation-triangle text-yellow-700 mr-2"></i> Error Loading Page
+			<i class="fas fa-exclamation-triangle text-yellow-700 mr-2"></i>
+			Error Loading Page
 		</div>
 	</div>
 	<%
@@ -69,27 +70,34 @@
 						<button type="submit">
 							<div
 								class="flex flex-col items-center justify-center bg-white rounded-lg p-4 h-30 w-30">
-								<%
-								if (imageSrc != null) {
-								%>
-								<img src="<%=imageSrc%>" alt="<%=categoryName%>"
-									class="h-full w-full object-cover rounded-lg" />
-								<%
-								} else {
-								%>
-								<i class="fas <%=placeholderIcon%> text-4xl"></i>
-								<%
-								}
-								%>
+								<div class="h-20 w-20">
+									<%
+									if (imageSrc != null) {
+									%>
+									<img src="data:image/png;base64, <%=imageSrc%>"
+										alt="<%=categoryName%>"
+										class="h-20 w-20 object-cover rounded-lg" />
+									<%
+									} else {
+									%>
+									<i class="fas <%=placeholderIcon%> text-4xl"></i>
+									<%
+									}
+									%>
+								</div>
 								<p class="text-center mt-2"><%=categoryName%></p>
 							</div>
 						</button>
 						<input type="hidden" name="genreID" value="<%=category.getId()%>" />
-						<input type="hidden" name="genreName" value="<%=category.getName() %>" />
-						<%if (validatedUserID!=null){
-							%>
+						<input type="hidden" name="genreName"
+							value="<%=category.getName()%>" />
+						<%
+						if (validatedUserID != null) {
+						%>
 						<input type="hidden" name="userIDAvailable" value="true" />
-						<% }%>
+						<%
+						}
+						%>
 					</form>
 				</div>
 			</div>

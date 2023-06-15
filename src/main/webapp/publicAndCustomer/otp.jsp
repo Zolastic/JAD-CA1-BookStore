@@ -52,11 +52,6 @@ String otpImage = (String) request.getAttribute("otpImage");
 				href="<%=request.getContextPath()%>/publicAndCustomer/registrationPage.jsp?"
 				class="loginLinks">Log In</a>
 		</div>
-		<div class="field-wrapper flex justify-center mt-5">
-			<button type="submit"
-				class="loginButton p-4 text-amber-800 bg-pink-200 hover:bg-pink-250 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Verify
-				OTP!</button>
-		</div>
 	</form>
 
 	<form action="<%=request.getContextPath()%>/ResendOTP" method="post">

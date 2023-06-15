@@ -62,64 +62,76 @@ public class BookDetailsPage extends HttpServlet {
 	}
 
 	// Function to validate user id
-	private String validateUserID(Connection connection, String userID) throws SQLException {
-		if (userID != null) {
-			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-			PreparedStatement ps = connection.prepareStatement(sqlStr);
-			ps.setString(1, userID);
-			ResultSet rs = ps.executeQuery();
-			rs.next();
-			int rowCount = rs.getInt(1);
-			if (rowCount < 1) {
-				userID = null;
-			}
-		}
-		return userID;
+	private String validateUserID(Connection connection, String userID) {
+	    if (userID != null) {
+	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
+	        try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+	            ps.setString(1, userID);
+	            try (ResultSet rs = ps.executeQuery()) {
+	                if (rs.next()) {
+	                    int rowCount = rs.getInt(1);
+	                    if (rowCount < 1) {
+	                        userID = null;
+	                    }
+	                }
+	            }
+	        } catch (SQLException e) {
+	        	userID=null;
+	            System.err.println("Error: " + e.getMessage());
+	        }
+	    }
+	    return userID;
 	}
 
 	// Function to get specific book details
-	private Book getBookDetails(Connection connection, String bookID) throws SQLException {
-		Book bookDetails = null;
-		String simpleProc = "{call getBookDetails(?)}";
-		CallableStatement cs = connection.prepareCall(simpleProc);
-		cs.setString(1, bookID);
-		cs.execute();
-		ResultSet resultSetForBookDetails = cs.getResultSet();
-
-		if (resultSetForBookDetails.next()) {
-			bookDetails = new Book(resultSetForBookDetails.getString("book_id"),
-					resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
-					resultSetForBookDetails.getString("authorName"), resultSetForBookDetails.getString("publisherName"),
-					resultSetForBookDetails.getString("publication_date"),
-					resultSetForBookDetails.getString("description"), resultSetForBookDetails.getString("genre_name"),
-					resultSetForBookDetails.getString("img"), resultSetForBookDetails.getInt("sold"),
-					resultSetForBookDetails.getInt("inventory"), resultSetForBookDetails.getDouble("price"), 1,
-					resultSetForBookDetails.getDouble("average_rating"));
-		}
-
-		return bookDetails;
+	private Book getBookDetails(Connection connection, String bookID) {
+	    Book bookDetails = null;
+	    String simpleProc = "{call getBookDetails(?)}";
+	    try (CallableStatement cs = connection.prepareCall(simpleProc)) {
+	        cs.setString(1, bookID);
+	        cs.execute();
+	        try (ResultSet resultSetForBookDetails = cs.getResultSet()) {
+	            if (resultSetForBookDetails.next()) {
+	                bookDetails = new Book(resultSetForBookDetails.getString("book_id"),
+	                        resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
+	                        resultSetForBookDetails.getString("authorName"), resultSetForBookDetails.getString("publisherName"),
+	                        resultSetForBookDetails.getString("publication_date"),
+	                        resultSetForBookDetails.getString("description"), resultSetForBookDetails.getString("genre_name"),
+	                        resultSetForBookDetails.getString("img"), resultSetForBookDetails.getInt("sold"),
+	                        resultSetForBookDetails.getInt("inventory"), resultSetForBookDetails.getDouble("price"), 1,
+	                        resultSetForBookDetails.getDouble("average_rating"));
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error: " + e.getMessage());
+	    }
+	    return bookDetails;
 	}
+
 
 	// Get all reviews of a book
-	private List<Map<String, Object>> getBookReviews(Connection connection, String bookID) throws SQLException {
-		List<Map<String, Object>> reviews = new ArrayList<>();
-		String sqlStr = "SELECT review.*, users.name, users.img FROM review, users WHERE review.custID=users.userID AND bookID=?;";
-		PreparedStatement ps = connection.prepareStatement(sqlStr);
-		ps.setString(1, bookID);
-		ResultSet rs = ps.executeQuery();
-
-		while (rs.next()) {
-			Map<String, Object> review = new HashMap<>();
-			review.put("userName", rs.getString("name"));
-			review.put("userImg", rs.getString("img"));
-			review.put("review_text", rs.getString("review_text"));
-			review.put("ratingByEachCust", rs.getDouble("rating"));
-			review.put("ratingDate", rs.getString("ratingDate"));
-			reviews.add(review);
-		}
-
-		return reviews;
+	private List<Map<String, Object>> getBookReviews(Connection connection, String bookID) {
+	    List<Map<String, Object>> reviews = new ArrayList<>();
+	    String sqlStr = "SELECT review.*, users.name, users.img FROM review, users WHERE review.custID=users.userID AND bookID=?;";
+	    try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+	        ps.setString(1, bookID);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            while (rs.next()) {
+	                Map<String, Object> review = new HashMap<>();
+	                review.put("userName", rs.getString("name"));
+	                review.put("userImg", rs.getString("img"));
+	                review.put("review_text", rs.getString("review_text"));
+	                review.put("ratingByEachCust", rs.getDouble("rating"));
+	                review.put("ratingDate", rs.getString("ratingDate"));
+	                reviews.add(review);
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error: " + e.getMessage());
+	    }
+	    return reviews;
 	}
+
 
 	// Function to add book to user's cart
 	protected void addToCart(HttpServletRequest request, HttpServletResponse response)
@@ -191,7 +203,7 @@ public class BookDetailsPage extends HttpServlet {
 
 					connection.close();
 				} catch (SQLException e) {
-					System.out.println("Error: " + e);
+					System.out.println("Error: " + e.getMessage());
 					String referer = (request.getHeader("Referer") + "&addToCart=failed");
 					response.sendRedirect(referer);
 				}

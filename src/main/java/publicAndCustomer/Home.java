@@ -95,21 +95,25 @@ public class Home extends HttpServlet {
 	}
 
 	// Validate the userID
-	private String validateUserID(Connection connection, Object sessionUserID) throws SQLException {
-	    String userID = (String) sessionUserID;
-	    String validatedUserID = null;
-
-	    String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-	    PreparedStatement ps = connection.prepareStatement(sqlStr);
-	        ps.setString(1, userID);
-	        ResultSet rs = ps.executeQuery();
-			rs.next();
-			int rowCount = rs.getInt(1);
-			if (rowCount < 1) {
-				userID = null;
-			}
-		
-		return userID;
+	private String validateUserID(Connection connection, String userID) {
+	    if (userID != null) {
+	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
+	        try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+	            ps.setString(1, userID);
+	            try (ResultSet rs = ps.executeQuery()) {
+	                if (rs.next()) {
+	                    int rowCount = rs.getInt(1);
+	                    if (rowCount < 1) {
+	                        userID = null;
+	                    }
+	                }
+	            }
+	        } catch (SQLException e) {
+	        	userID=null;
+	            System.err.println("Error: " + e.getMessage());
+	        }
+	    }
+	    return userID;
 	}
 
 	/**

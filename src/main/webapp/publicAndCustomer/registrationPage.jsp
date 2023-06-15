@@ -31,12 +31,12 @@ if (registrationType != null) {
 <body class="loginPageBody flex justify-center items-center">
 	<div class="containerZ main w-screen h-screen flex">
 		<div
-			class="cardZ flex w-2/3 h-3/5 justify-between mx-auto my-20 rounded-md overflow-hidden">
-			<div class="left  w-1/2 h-full flex-wrap py-7">
+			class="cardZ flex w-2/3 h-4/5 justify-between mx-auto my-20 rounded-md ">
+			<div class="flex items-center justify-center left w-1/2 h-auto flex-wrap py-7 rounded-l-md">
 				<img
 					src="<%=request.getContextPath()%>/publicAndCustomer/img/personReadingBook.png"
 					alt="loginPhoto"
-					class="registrationPageFloatingImage w-3/5 mx-auto" />
+					class="registrationPageFloatingImage mx-auto h-3/4 w-3/4 object-contain" />
 				<h1 class="text-center mt-2 text-white font-semibold text-xl">
 					Discover different dimensions with Inkwell.</h1>
 			</div>
