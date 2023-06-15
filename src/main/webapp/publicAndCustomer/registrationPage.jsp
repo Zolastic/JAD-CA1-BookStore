@@ -5,11 +5,17 @@
 <head>
 <meta charset="ISO-8859-1">
 <%
-String signUpState = request.getParameter("signUp");
-if (signUpState != null) {
+String registrationType = request.getParameter("type");
+if (registrationType != null) {
+	if (registrationType.equals("SignUp")) {
 %>
 <title>Inkwell: Sign Up</title>
 <%
+} else if (registrationType.equals("OTP")) {
+%>
+<title>Inkwell: OTP</title>
+<%
+}
 } else {
 %>
 <title>Inkwell: Login</title>
@@ -35,10 +41,16 @@ if (signUpState != null) {
 					Discover different dimensions with Inkwell.</h1>
 			</div>
 			<%
-			if (signUpState != null) {
+			if (registrationType != null) {
+				if (registrationType.equals("SignUp")) {
 			%>
 			<%@include file="./signUp.jsp"%>
 			<%
+			} else if (registrationType.equals("OTP")) {
+			%>
+			<%@include file="./otp.jsp"%>
+			<%
+			}
 			} else {
 			%>
 			<%@include file="./login.jsp"%>
