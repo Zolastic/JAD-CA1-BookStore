@@ -50,7 +50,7 @@ public class OTPManagement {
 		TimeProvider timeProvider = new SystemTimeProvider();
 		CodeGenerator codeGenerator = new DefaultCodeGenerator(HashingAlgorithm.SHA1, 6);
 
-		long currentBucket = Math.floorDiv(timeProvider.getTime(), 30);
+		long currentBucket = Math.floorDiv(timeProvider.getTime(), 300);
 		String otp = codeGenerator.generate(secret, currentBucket);
 		
 		return otp;
@@ -63,7 +63,7 @@ public class OTPManagement {
 				   .issuer("Inkwell")
 				   .algorithm(HashingAlgorithm.SHA1)
 				   .digits(6)
-				   .period(30)
+				   .period(300)
 				   .build();
 		
 		QrGenerator generator = new ZxingPngQrGenerator();
