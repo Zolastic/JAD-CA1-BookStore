@@ -36,7 +36,7 @@
 		<div class="field-wrapper flex justify-center my-2">
 			<span class="mr-1">Don't have an account?</span>
 			<a
-				href="<%=request.getContextPath()%>/publicAndCustomer/registrationPage.jsp?signUp=true"
+				href="<%=request.getContextPath()%>/publicAndCustomer/registrationPage.jsp?type=SignUp"
 				class="loginLinks">Sign Up!</a>
 		</div>
 		<div class="field-wrapper flex justify-center mt-5">

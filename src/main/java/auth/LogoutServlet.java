@@ -1,4 +1,4 @@
-package logout;
+package auth;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
