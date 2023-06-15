@@ -132,8 +132,8 @@
 					<%
 					if (bookDetails.getImg() != null) {
 					%>
-					<div class="flex items-center h-full">
-						<img class="max-w-full max-h-full" src="<%=bookDetails.getImg()%>">
+					<div class="flex items-center h-64 w-64">
+						<img class="object-contain" src="data:image/png;base64, <%=bookDetails.getImg()%>">
 					</div>
 					<%
 					} else {
@@ -216,8 +216,6 @@
 				}
 				%>
 
-
-
 				<div class="flex items-center mb-4">
 					<h2 class="text-1xl mr-3">Quantity:</h2>
 					<div
@@ -259,8 +257,7 @@
 						<%
 						} else {
 						%>
-						<button
-							class="bg-gray-500 text-white px-4 py-2 rounded w-full"
+						<button class="bg-gray-500 text-white px-4 py-2 rounded w-full"
 							disabled>
 							<i class="fas fa-shopping-cart text-white-500 mr-2"></i> Add to
 							Cart <i class="fas fa-shopping-cart text-white-500 ml-2"></i>
@@ -329,17 +326,19 @@
 					String userImg = (String) review.get("userImg");
 				%>
 				<div class="flex items-start space-x-4">
-					<%
-					if (userImg != null) {
-					%>
-					<img src="<%=userImg%>" class="rounded-full h-12 w-12">
-					<%
-					} else {
-					%>
-					<i class="fas fa-user-circle text-gray-400 text-3xl"></i>
-					<%
-					}
-					%>
+					<div class="h-8 w-8">
+						<%
+						if (userImg != null) {
+						%>
+						<img src="data:image/png;base64, <%=userImg%>" class="rounded-full object-contain">
+						<%
+						} else {
+						%>
+						<i class="fas fa-user-circle text-gray-400 text-3xl"></i>
+						<%
+						}
+						%>
+					</div>
 					<div>
 						<h1 class="font-semibold text-xl"><%=review.get("userName")%></h1>
 						<div class="flex items-center space-x-1">
