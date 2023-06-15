@@ -82,7 +82,7 @@ public class CategoryMenuPage extends HttpServlet {
 					}
 				}
 			} catch (SQLException e) {
-				userID=null;
+				userID = null;
 				System.err.println("Error: " + e.getMessage());
 			}
 		}
@@ -90,15 +90,19 @@ public class CategoryMenuPage extends HttpServlet {
 	}
 
 	// Get all the genre
-	private List<Genre> getAllGenres(Connection connection) throws SQLException {
+	private List<Genre> getAllGenres(Connection connection) {
 		List<Genre> allGenre = new ArrayList<>();
-		Statement stmt = connection.createStatement();
-		String sqlStr = "SELECT * FROM genre;";
-		ResultSet rs = stmt.executeQuery(sqlStr);
+		try (Statement stmt = connection.createStatement()) {
+			String sqlStr = "SELECT * FROM genre;";
+			ResultSet rs = stmt.executeQuery(sqlStr);
 
-		while (rs.next()) {
-			Genre genre = new Genre(rs.getString("genre_id"), rs.getString("genre_name"), rs.getString("genre_img"));
-			allGenre.add(genre);
+			while (rs.next()) {
+				Genre genre = new Genre(rs.getString("genre_id"), rs.getString("genre_name"),
+						rs.getString("genre_img"));
+				allGenre.add(genre);
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
 		}
 
 		return allGenre;

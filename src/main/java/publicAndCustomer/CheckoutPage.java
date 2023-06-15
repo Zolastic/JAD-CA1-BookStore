@@ -88,10 +88,8 @@ public class CheckoutPage extends HttpServlet {
 							Map<String, Object> bookItem = new HashMap<>();
 							String bookID = jsonObject.getString("bookID");
 							int quantity = jsonObject.getInt("quantity");
-
 							bookItem.put("bookID", bookID);
 							bookItem.put("quantity", quantity);
-
 							checkoutItemsArrayString.add(bookItem);
 						}
 						if (checkoutItemsString != null) {
@@ -115,24 +113,24 @@ public class CheckoutPage extends HttpServlet {
 
 	// Function to validate user id
 	private String validateUserID(Connection connection, String userID) {
-	    if (userID != null) {
-	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-	        try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	            ps.setString(1, userID);
-	            try (ResultSet rs = ps.executeQuery()) {
-	                if (rs.next()) {
-	                    int rowCount = rs.getInt(1);
-	                    if (rowCount < 1) {
-	                        userID = null;
-	                    }
-	                }
-	            }
-	        } catch (SQLException e) {
-	        	userID=null;
-	            System.err.println("Error: " + e.getMessage());
-	        }
-	    }
-	    return userID;
+		if (userID != null) {
+			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
+			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+				ps.setString(1, userID);
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						int rowCount = rs.getInt(1);
+						if (rowCount < 1) {
+							userID = null;
+						}
+					}
+				}
+			} catch (SQLException e) {
+				userID = null;
+				System.err.println("Error: " + e.getMessage());
+			}
+		}
+		return userID;
 	}
 
 	// Get all the checkout items details
@@ -145,23 +143,26 @@ public class CheckoutPage extends HttpServlet {
 			int quantity = (int) itemMap.get("quantity");
 
 			String simpleProc = "{call getBookDetails(?)}";
-			CallableStatement cs = connection.prepareCall(simpleProc);
-			cs.setString(1, bookID);
-			cs.execute();
-			ResultSet resultSetForBookDetails = cs.getResultSet();
-
-			if (resultSetForBookDetails.next()) {
-				Book book = new Book(resultSetForBookDetails.getString("book_id"),
-						resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
-						resultSetForBookDetails.getString("authorName"),
-						resultSetForBookDetails.getString("publisherName"),
-						resultSetForBookDetails.getString("publication_date"),
-						resultSetForBookDetails.getString("description"),
-						resultSetForBookDetails.getString("genre_name"), resultSetForBookDetails.getString("img"),
-						resultSetForBookDetails.getInt("sold"), resultSetForBookDetails.getInt("inventory"),
-						resultSetForBookDetails.getDouble("price"), quantity,
-						resultSetForBookDetails.getDouble("average_rating"));
-				checkoutItems.add(book);
+			try (CallableStatement cs = connection.prepareCall(simpleProc)) {
+				cs.setString(1, bookID);
+				cs.execute();
+				try (ResultSet resultSetForBookDetails = cs.getResultSet()) {
+					if (resultSetForBookDetails.next()) {
+						Book book = new Book(resultSetForBookDetails.getString("book_id"),
+								resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
+								resultSetForBookDetails.getString("authorName"),
+								resultSetForBookDetails.getString("publisherName"),
+								resultSetForBookDetails.getString("publication_date"),
+								resultSetForBookDetails.getString("description"),
+								resultSetForBookDetails.getString("genre_name"),
+								resultSetForBookDetails.getString("img"), resultSetForBookDetails.getInt("sold"),
+								resultSetForBookDetails.getInt("inventory"), resultSetForBookDetails.getDouble("price"),
+								quantity, resultSetForBookDetails.getDouble("average_rating"));
+						checkoutItems.add(book);
+					}
+				}
+			} catch (SQLException e) {
+				System.err.println("Error: " + e.getMessage());
 			}
 		}
 
@@ -181,21 +182,25 @@ public class CheckoutPage extends HttpServlet {
 
 		String sql = "INSERT INTO transaction_history (transaction_historyID, transactionDate, subtotal, custID, address) VALUES (?, ?, ?, ?, ?)";
 		String transactionDate = getCurrentDateTime();
-		PreparedStatement statement = connection.prepareStatement(sql);
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-		statement.setString(1, transactionHistoryUUID);
-		statement.setString(2, transactionDate);
-		statement.setDouble(3, subtotal);
-		statement.setString(4, custID);
-		statement.setString(5, address);
+			statement.setString(1, transactionHistoryUUID);
+			statement.setString(2, transactionDate);
+			statement.setDouble(3, subtotal);
+			statement.setString(4, custID);
+			statement.setString(5, address);
 
-		int rowsAffected = statement.executeUpdate();
+			int rowsAffected = statement.executeUpdate();
 
-		statement.close();
+			statement.close();
 
-		if (rowsAffected == 1) {
-			return transactionHistoryUUID;
-		} else {
+			if (rowsAffected == 1) {
+				return transactionHistoryUUID;
+			} else {
+				return null;
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
 			return null;
 		}
 	}
@@ -211,28 +216,25 @@ public class CheckoutPage extends HttpServlet {
 	private Boolean insertTransactionHistoryItems(Connection connection, List<Book> checkoutItems,
 			String transactionHistoryUUID) throws SQLException {
 		Boolean success = true;
-
 		String sql = "INSERT INTO transaction_history_items (transaction_historyID, transaction_history_itemID, bookID, Qty) VALUES (?, ?, ?, ?)";
 
-		PreparedStatement statement = connection.prepareStatement(sql);
-
-		for (Book book : checkoutItems) {
-			String transactionHistoryItemUUID = uuidGenerator();
-
-			statement.setString(1, transactionHistoryUUID);
-			statement.setString(2, transactionHistoryItemUUID);
-			statement.setString(3, book.getBookID());
-			statement.setInt(4, book.getQuantity());
-
-			int rowsAffected = statement.executeUpdate();
-
-			if (rowsAffected != 1) {
-				success = false;
-				break;
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			for (Book book : checkoutItems) {
+				String transactionHistoryItemUUID = uuidGenerator();
+				statement.setString(1, transactionHistoryUUID);
+				statement.setString(2, transactionHistoryItemUUID);
+				statement.setString(3, book.getBookID());
+				statement.setInt(4, book.getQuantity());
+				int rowsAffected = statement.executeUpdate();
+				if (rowsAffected != 1) {
+					success = false;
+					break;
+				}
 			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
+			success = false;
 		}
-
-		statement.close();
 
 		return success;
 	}
@@ -244,12 +246,14 @@ public class CheckoutPage extends HttpServlet {
 		if (cartID != null) {
 			for (Book book : checkoutItems) {
 				String deleteQuery = "DELETE FROM cart_items WHERE cartID=? AND BookID=?";
-				PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
-				deleteStatement.setString(1, cartID);
-				deleteStatement.setString(2, book.getBookID());
-				int rowsDeleted = deleteStatement.executeUpdate();
-				count += rowsDeleted;
-				deleteStatement.close();
+				try (PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
+					deleteStatement.setString(1, cartID);
+					deleteStatement.setString(2, book.getBookID());
+					int rowsDeleted = deleteStatement.executeUpdate();
+					count += rowsDeleted;
+				} catch (SQLException e) {
+					System.err.println("Error: " + e.getMessage());
+				}
 			}
 		}
 		return count;
@@ -257,32 +261,35 @@ public class CheckoutPage extends HttpServlet {
 
 	// Update Book's inventory and sold
 	private int updateBooks(Connection connection, List<Book> checkoutItems) throws SQLException {
-		int count = 0;
-		for (Book book : checkoutItems) {
-			String updateQuery = "UPDATE book SET inventory = inventory - ? AND sold=sold+? WHERE book_id=?";
-			PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
-			updateStatement.setInt(1, book.getQuantity());
-			updateStatement.setInt(2, book.getQuantity());
-			updateStatement.setString(3, book.getBookID());
-			int rowsDeleted = updateStatement.executeUpdate();
-			count += rowsDeleted;
-			updateStatement.close();
-		}
-		return count;
+	    int count = 0;
+	    for (Book book : checkoutItems) {
+	        String updateQuery = "UPDATE book SET inventory = (inventory - ?), sold = (sold + ?) WHERE book_id=?";
+	        try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+	            updateStatement.setInt(1, book.getQuantity());
+	            updateStatement.setInt(2, book.getQuantity());
+	            updateStatement.setString(3, book.getBookID());
+	            int rowsUpdated = updateStatement.executeUpdate();
+	            count += rowsUpdated;
+	        } catch (SQLException e) {
+	            System.err.println("Error: " + e.getMessage());
+	        }
+	    }
+	    return count;
 	}
 
 	// Get cart id with custID
 	private String getCartID(Connection connection, String custID) throws SQLException {
 		String cartID = null;
 		String selectQuery = "SELECT cartID FROM cart WHERE custID=?";
-		PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
-		selectStatement.setString(1, custID);
-		ResultSet resultSet = selectStatement.executeQuery();
-		if (resultSet.next()) {
-			cartID = resultSet.getString("cartID");
+		try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
+			selectStatement.setString(1, custID);
+			ResultSet resultSet = selectStatement.executeQuery();
+			if (resultSet.next()) {
+				cartID = resultSet.getString("cartID");
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
 		}
-		resultSet.close();
-		selectStatement.close();
 		return cartID;
 	}
 
@@ -340,7 +347,8 @@ public class CheckoutPage extends HttpServlet {
 					PaymentIntent paymentIntent = PaymentIntent.create(createParams);
 					// if payment succeeded do the necessary insertion
 					if (paymentIntent != null && paymentIntent.getStatus().equals("succeeded")) {
-						// If insertion of transaction history or transaction history items failed do a refund
+						// If insertion of transaction history or transaction history items failed do a
+						// refund
 						String transactionHistoryUUID = insertTransactionHistory(connection, amountInDollars, userID,
 								address);
 						if (transactionHistoryUUID != null) {

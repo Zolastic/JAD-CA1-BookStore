@@ -154,17 +154,24 @@ public class AllBooksPage extends HttpServlet {
 	}
 	
 	// Get total page for all books
-	private int getTotalPagesForAllBooks(Connection connection) throws SQLException {
-		int pageSize=10;
+	private int getTotalPagesForAllBooks(Connection connection) {
+	    int pageSize = 10;
 	    String countSqlStr = "SELECT COUNT(*) FROM book";
 	    try (PreparedStatement countPs = connection.prepareStatement(countSqlStr)) {
 	        try (ResultSet countRs = countPs.executeQuery()) {
-	            countRs.next();
-	            int totalBooks = countRs.getInt(1);
-	            return (int) Math.ceil((double) totalBooks / pageSize);
+	            if (countRs.next()) {
+	                int totalBooks = countRs.getInt(1);
+	                return (int) Math.ceil((double) totalBooks / pageSize);
+	            } else {
+	                return 0;
+	            }
 	        }
+	    } catch (SQLException e) {
+	    	System.err.println("Error: " + e.getMessage());
+	        return 0;
 	    }
 	}
+
 
 	// Get the search results
 	private List<Book> searchBookByTitle(Connection connection, String searchInput, int page) throws SQLException {
@@ -200,17 +207,24 @@ public class AllBooksPage extends HttpServlet {
 	
 	// Total Pages for search book by title
 	private int getTotalPagesForSearch(Connection connection, String searchInput) throws SQLException {
-		int pageSize=10;
+	    int pageSize = 10;
 	    String countSqlStr = "SELECT COUNT(*) FROM book WHERE book.title LIKE ?";
 	    try (PreparedStatement count = connection.prepareStatement(countSqlStr)) {
-	        count.setString(1,  searchInput);
+	        count.setString(1, searchInput);
 	        try (ResultSet countRs = count.executeQuery()) {
-	            countRs.next();
-	            int totalBooks = countRs.getInt(1);
-	            return (int) Math.ceil((double) totalBooks / pageSize);
+	            if (countRs.next()) {
+	                int totalBooks = countRs.getInt(1);
+	                return (int) Math.ceil((double) totalBooks / pageSize);
+	            } else {
+	                return 0;
+	            }
 	        }
+	    } catch (SQLException e) {
+	    	System.err.println("Error: " + e.getMessage());
+	        return 0;
 	    }
 	}
+
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse

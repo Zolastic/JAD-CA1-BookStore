@@ -162,11 +162,11 @@
 				</form>
 
 				<a href="<%=urlToBookDetails%>">
-					<div class="flex items-center h-30 m-6">
+					<div class="flex items-center h-32 m-6">
 						<%
 						if (item.getImg() != null) {
 						%>
-						<img class="h-full object-contain" src="data:image/png;base64, <%=item.getImg()%>">
+						<img class="h-32 w-32 object-contain" src="data:image/png;base64, <%=item.getImg()%>">
 						<%
 						} else {
 						%>

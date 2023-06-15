@@ -25,8 +25,7 @@ import utils.DBConnection;
  */
 
 /**
- * Author(s): Soh Jian Min (P2238856)
- * Description: JAD CA1
+ * Author(s): Soh Jian Min (P2238856) Description: JAD CA1
  */
 
 @WebServlet("/ReviewHistory")
@@ -76,54 +75,57 @@ public class ReviewHistory extends HttpServlet {
 
 	// Function to validate user id
 	private String validateUserID(Connection connection, String userID) {
-	    if (userID != null) {
-	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-	        try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	            ps.setString(1, userID);
-	            try (ResultSet rs = ps.executeQuery()) {
-	                if (rs.next()) {
-	                    int rowCount = rs.getInt(1);
-	                    if (rowCount < 1) {
-	                        userID = null;
-	                    }
-	                }
-	            }
-	        } catch (SQLException e) {
-	        	userID=null;
-	            System.err.println("Error: " + e.getMessage());
-	        }
-	    }
-	    return userID;
+		if (userID != null) {
+			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
+			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+				ps.setString(1, userID);
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						int rowCount = rs.getInt(1);
+						if (rowCount < 1) {
+							userID = null;
+						}
+					}
+				}
+			} catch (SQLException e) {
+				userID = null;
+				System.err.println("Error: " + e.getMessage());
+			}
+		}
+		return userID;
 	}
 
 	// Get all review history of the user
-	private List<ReviewHistoryClass> getReviewHistories(Connection connection, String custID) throws SQLException {
+	private List<ReviewHistoryClass> getReviewHistories(Connection connection, String custID) {
 		List<ReviewHistoryClass> reviewHistories = new ArrayList<>();
 		String query = "SELECT review.*, book.*, genre.genre_name, author.authorName, publisher.publisherName, "
-				+ "(SELECT CAST(AVG(IFNULL(rating, 0)) AS DECIMAL(2, 1)) FROM review WHERE bookID = book.book_id) AS average_rating " 
-				+ "FROM review "
-				+ "JOIN book ON review.bookID = book.book_id " + "JOIN genre ON genre.genre_id = book.genre_id "
-				+ "JOIN author ON book.authorID = author.authorID "
+				+ "(SELECT CAST(AVG(IFNULL(rating, 0)) AS DECIMAL(2, 1)) FROM review WHERE bookID = book.book_id) AS average_rating "
+				+ "FROM review " + "JOIN book ON review.bookID = book.book_id "
+				+ "JOIN genre ON genre.genre_id = book.genre_id " + "JOIN author ON book.authorID = author.authorID "
 				+ "JOIN publisher ON book.publisherID = publisher.publisherID " + "WHERE review.custID = ? "
 				+ "ORDER BY review.ratingDate DESC";
-		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setString(1, custID);
-		ResultSet resultSet = statement.executeQuery();
-		while (resultSet.next()) {
-			String reviewID = resultSet.getString("review_id");
-			String bookID = resultSet.getString("book_id");
-			String reviewText = resultSet.getString("review_text");
-			double rating = resultSet.getDouble("rating");
-			String ratingDate = resultSet.getString("ratingDate");
-			Book book = new Book(resultSet.getString("book_id"), resultSet.getString("ISBN"),
-					resultSet.getString("title"), resultSet.getString("authorName"),
-					resultSet.getString("publisherName"), resultSet.getString("publication_date"),
-					resultSet.getString("description"), resultSet.getString("genre_name"), resultSet.getString("img"),
-					resultSet.getInt("sold"), resultSet.getInt("inventory"), resultSet.getDouble("price"),
-					resultSet.getDouble("average_rating"));
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setString(1, custID);
+			ResultSet resultSet = statement.executeQuery();
+			while (resultSet.next()) {
+				String reviewID = resultSet.getString("review_id");
+				String bookID = resultSet.getString("book_id");
+				String reviewText = resultSet.getString("review_text");
+				double rating = resultSet.getDouble("rating");
+				String ratingDate = resultSet.getString("ratingDate");
+				Book book = new Book(resultSet.getString("book_id"), resultSet.getString("ISBN"),
+						resultSet.getString("title"), resultSet.getString("authorName"),
+						resultSet.getString("publisherName"), resultSet.getString("publication_date"),
+						resultSet.getString("description"), resultSet.getString("genre_name"),
+						resultSet.getString("img"), resultSet.getInt("sold"), resultSet.getInt("inventory"),
+						resultSet.getDouble("price"), resultSet.getDouble("average_rating"));
 
-			ReviewHistoryClass review = new ReviewHistoryClass(book, reviewID, custID, bookID, reviewText, rating, ratingDate);
-			reviewHistories.add(review);
+				ReviewHistoryClass review = new ReviewHistoryClass(book, reviewID, custID, bookID, reviewText, rating,
+						ratingDate);
+				reviewHistories.add(review);
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
 		}
 		return reviewHistories;
 	}

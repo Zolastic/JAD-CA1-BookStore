@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="model.ReviewHistoryClass"%>
@@ -22,7 +22,7 @@
 </head>
 <body>
 	<%
-	List<ReviewHistoryClass> reviewHistories = (List<ReviewHistoryClass>) request.getAttribute("reviewHistory");
+	List<ReviewHistoryClass> reviewHistories = (List<ReviewHistoryClass>) request.getAttribute("reviewHistories");
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	if (validatedUserID != null && reviewHistories != null) {
 	%>
@@ -43,7 +43,7 @@
 		class="fixed inset-0 flex flex-col items-center justify-center mt-10">
 		<p>No Review History</p>
 		<button
-			class="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-700 transform hover:scale-110"
+			class="bg-slate-500 mt-3 text-white px-4 py-2 rounded hover:bg-slate-700 transform hover:scale-110"
 			onclick="goBack()">Back</button>
 	</div>
 	<%
@@ -88,32 +88,38 @@
 			</div>
 			<%
 			Book book = reviewHistory.getBook();
+			String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
 			%>
 			<div class="w-full mt-2">
 				<div class="p-4 rounded shadow mx-10">
 					<div class="flex items-center justify-between">
-					<div class="flex items-center">
-						<div class="flex-shrink-0 w-16 h-16 mr-4">
-							<%
-							if (book.getImg() != null) {
-							%>
-							<img class="h-full object-contain" src="data:image/png;base64, <%=book.getImg()%>">
-							<%
-							} else {
-							%>
-							<i class="fas fa-image fa-3x"></i>
-							<%
-							}
-							%>
-						</div>
-						<div class="flex-shrink">
-							<h2 class="text-lg font-bold"><%=book.getTitle()%></h2>
-							<p class="text-gray-600">
-								Author:
-								<%=book.getAuthor()%></p>
-							<p class="text-gray-600">
-								Price: $<%=book.getPrice()%></p>
-						</div>
+						<div class="flex items-center">
+							<a href="<%=urlToBookDetails%>">
+								<div class="flex-shrink-0 w-16 h-16 mr-4">
+									<%
+									if (book.getImg() != null) {
+									%>
+									<img class="h-full object-contain"
+										src="data:image/png;base64, <%=book.getImg()%>">
+									<%
+									} else {
+									%>
+									<i class="fas fa-image fa-3x"></i>
+									<%
+									}
+									%>
+								</div>
+							</a>
+							<div class="flex-shrink">
+							<a href="<%=urlToBookDetails%>">
+								<h2 class="text-lg font-bold"><%=book.getTitle()%></h2>
+								</a>
+								<p class="text-gray-600">
+									Author:
+									<%=book.getAuthor()%></p>
+								<p class="text-gray-600">
+									Price: $<%=book.getPrice()%></p>
+							</div>
 						</div>
 						<div class="justify-end">
 							<p class="bg-rose-900 text-white text-sm p-1 rounded-lg"><%=book.getGenreName()%></p>

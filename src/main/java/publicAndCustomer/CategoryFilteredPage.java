@@ -165,7 +165,7 @@ public class CategoryFilteredPage extends HttpServlet {
 	}
 
 	// Get total pages of genre
-	private int getTotalPagesByGenre(Connection connection, String genreID) throws SQLException {
+	private int getTotalPagesByGenre(Connection connection, String genreID) {
 		int pageSize = 10;
 		String countSqlStr = "SELECT COUNT(*) FROM book WHERE book.genre_id = ?";
 		try (PreparedStatement count = connection.prepareStatement(countSqlStr)) {
@@ -178,6 +178,9 @@ public class CategoryFilteredPage extends HttpServlet {
 					return 0;
 				}
 			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
+			return 0;
 		}
 	}
 
@@ -197,6 +200,9 @@ public class CategoryFilteredPage extends HttpServlet {
 					return 0;
 				}
 			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
+			return 0;
 		}
 	}
 
