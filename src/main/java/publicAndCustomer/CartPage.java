@@ -83,30 +83,40 @@ public class CartPage extends HttpServlet {
 	}
 
 	// Function to validate user id
-	private String validateUserID(Connection connection, String userID) throws SQLException {
+	private String validateUserID(Connection connection, String userID) {
 		if (userID != null) {
 			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-			PreparedStatement ps = connection.prepareStatement(sqlStr);
-			ps.setString(1, userID);
-			ResultSet rs = ps.executeQuery();
-			rs.next();
-			int rowCount = rs.getInt(1);
-			if (rowCount < 1) {
+			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+				ps.setString(1, userID);
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						int rowCount = rs.getInt(1);
+						if (rowCount < 1) {
+							userID = null;
+						}
+					}
+				}
+			} catch (SQLException e) {
 				userID = null;
+				System.err.println("Error: " + e.getMessage());
 			}
 		}
 		return userID;
 	}
 
 	// Function to get cart id
-	private String getCartID(Connection connection, String userID) throws SQLException {
+	private String getCartID(Connection connection, String userID) {
 		String cartID = null;
 		String sqlString = "SELECT cartID FROM cart WHERE custID = ?;";
-		PreparedStatement sqlStatement = connection.prepareStatement(sqlString);
-		sqlStatement.setString(1, userID);
-		ResultSet rs = sqlStatement.executeQuery();
-		while (rs.next()) {
-			cartID = rs.getString("cartID");
+		try (PreparedStatement sqlStatement = connection.prepareStatement(sqlString)) {
+			sqlStatement.setString(1, userID);
+			try (ResultSet rs = sqlStatement.executeQuery()) {
+				while (rs.next()) {
+					cartID = rs.getString("cartID");
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
 		}
 		return cartID;
 	}
@@ -122,27 +132,30 @@ public class CartPage extends HttpServlet {
 				+ "    JOIN cart ON cart.custID=?\r\n" + "    JOIN cart_items ON cart.cartID=cart_items.cartID\r\n"
 				+ "    WHERE cart_items.BookID=book.book_id\r\n"
 				+ "    GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName;";
-		PreparedStatement ps = connection.prepareStatement(sqlStr);
-		ps.setString(1, userID);
-		ResultSet resultSet = ps.executeQuery();
-		while (resultSet.next()) {
-			String bookID = resultSet.getString("book_id");
-			String isbn = resultSet.getString("ISBN");
-			String title = resultSet.getString("title");
-			String author = resultSet.getString("authorName");
-			String publisher = resultSet.getString("publisherName");
-			String publication_date = resultSet.getString("publication_date");
-			String description = resultSet.getString("description");
-			String genre_name = resultSet.getString("genre_name");
-			String img = resultSet.getString("img");
-			int sold = resultSet.getInt("sold");
-			int inventory = resultSet.getInt("inventory");
-			double price = resultSet.getDouble("price");
-			double rating = resultSet.getDouble("average_rating");
-			int quantity = resultSet.getInt("Qty");
-			int selected = resultSet.getInt("selected");
-			cartItems.add(new Book(bookID, isbn, title, author, publisher, publication_date, description, genre_name,
-					img, sold, inventory, price, rating, quantity, selected));
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, userID);
+			ResultSet resultSet = ps.executeQuery();
+			while (resultSet.next()) {
+				String bookID = resultSet.getString("book_id");
+				String isbn = resultSet.getString("ISBN");
+				String title = resultSet.getString("title");
+				String author = resultSet.getString("authorName");
+				String publisher = resultSet.getString("publisherName");
+				String publication_date = resultSet.getString("publication_date");
+				String description = resultSet.getString("description");
+				String genre_name = resultSet.getString("genre_name");
+				String img = resultSet.getString("img");
+				int sold = resultSet.getInt("sold");
+				int inventory = resultSet.getInt("inventory");
+				double price = resultSet.getDouble("price");
+				double rating = resultSet.getDouble("average_rating");
+				int quantity = resultSet.getInt("Qty");
+				int selected = resultSet.getInt("selected");
+				cartItems.add(new Book(bookID, isbn, title, author, publisher, publication_date, description,
+						genre_name, img, sold, inventory, price, rating, quantity, selected));
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
 		}
 		return cartItems;
 	}

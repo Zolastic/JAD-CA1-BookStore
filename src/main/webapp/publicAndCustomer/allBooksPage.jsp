@@ -26,6 +26,7 @@
 	String searchInput = request.getParameter("searchInput");
 	boolean err = false;
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
+	int totalPages=(int) request.getAttribute("totalPages");
 	if (allBooks == null) {
 		err = true;
 	%>
@@ -50,17 +51,10 @@
 	}
 
 	if (!err) {
-	List<Book> booksOnCurrentPage = null;
-	int booksPerPage = 10;
-	int totalBooks = allBooks.size();
-	int totalPages = (int) Math.ceil((double) totalBooks / booksPerPage);
 	int currentPage = 1;
 	if (request.getParameter("page") != null) {
 		currentPage = Integer.parseInt(request.getParameter("page"));
 	}
-	int startIndex = (currentPage - 1) * booksPerPage;
-	int endIndex = Math.min(startIndex + booksPerPage, totalBooks);
-	booksOnCurrentPage = allBooks.subList(startIndex, endIndex);
 	%>
 
 	<!-- Search Input Form -->
@@ -86,12 +80,12 @@
 		</div>
 
 		<%
-		if (booksOnCurrentPage.size() > 0) {
+		if (allBooks.size() > 0) {
 		%>
 		<!-- Show MAX 10 Books Per Page -->
 		<div class="flex flex-wrap justify-center w-full">
 			<%
-			for (Book book : booksOnCurrentPage) {
+			for (Book book : allBooks) {
 				double rating = book.getRating();
 				int filledStars = (int) rating;
 				boolean hasHalfStar = (rating - filledStars) >= 0.5;

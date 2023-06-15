@@ -277,7 +277,7 @@
 		</div>
 		<div
 			class="flex items-center justify-between mt-10 mx-5 bg-gray-100 p-5">
-			<h1 class="text-4xl text-bold ">Description:</h1>
+			<h1 class="text-4xl text-bold ">Description</h1>
 		</div>
 		<!-- Book Description -->
 		<div class="flex items-center mx-5 border border-gray-100 p-5 ">
