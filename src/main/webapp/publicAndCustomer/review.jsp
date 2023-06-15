@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="model.Book"%>
@@ -28,16 +28,17 @@
 	if (bookDetails != null && custID != null && scrollPosition != null) {
 	%>
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
-	<div class="p-10 my-10 mx-64 border border-gray-500 rounded-2xl shadow-lg">
+	<div
+		class="p-10 my-10 mx-64 border border-gray-500 rounded-2xl shadow-lg">
 		<div class="flex items-center justify-end">
 			<span class="cursor-pointer text-gray-500 hover:text-gray-700"
-				onclick="goBack()"> <i
-				class="fas fa-times fa"></i>
+				onclick="goBack()"> <i class="fas fa-times fa"></i>
 			</span>
 		</div>
 		<h1 class="text-2xl font-bold mb-4">Book Details</h1>
 		<div class="border border-gray-300 mb-2"></div>
 		<div class="flex items-center mb-4">
+			<!-- Show Book Details -->
 			<div class="flex-shrink-0 items-center w-16 h-16 mr-4">
 				<%
 				if (bookDetails.getImg() != null) {
@@ -56,9 +57,10 @@
 				<p class="text-gray-600"><%=bookDetails.getAuthor()%></p>
 			</div>
 		</div>
-
+		<!-- Allow User Rate with slide -->
 		<h1 class="text-2xl font-bold mb-4">Rate the Book</h1>
 		<div class="border border-gray-300 mb-5"></div>
+		<!-- Form for Review -->
 		<form action="Review" method="post">
 			<input type="hidden" name="action" value="submitReview"> <input
 				type="hidden" name="bookID" value="<%=bookDetails.getBookID()%>">
@@ -81,8 +83,7 @@
 					class="ml-2 bg-rose-900 p-1 text-white rounded-lg">0.0</p>
 			</div>
 
-
-
+			<!-- Review Description Text Area -->
 			<div class="mb-4 mt-5">
 				<label for="review_text" class="block mb-2">Review
 					Description:</label>
@@ -92,6 +93,7 @@
 					<p class="wordCount">0/500 words</p>
 				</div>
 			</div>
+			<!-- Submit review button -->
 			<div class="flex justify-center">
 				<button type="submit"
 					class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded">Submit

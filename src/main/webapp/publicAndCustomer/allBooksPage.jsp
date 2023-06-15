@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>
@@ -29,9 +29,11 @@
 	if (allBooks == null) {
 		err = true;
 	%>
+	<!-- Error Loading Page -->
 	<div class="fixed inset-0 flex items-center justify-center">
-		<div class="bg-yellow-200 px-4 py-2 rounded-lg">
-			<i class="fas fa-exclamation-triangle mr-2"></i> Error Loading Page
+		<div class="bg-yellow-100 p-5 rounded-lg">
+			<i class="fas fa-exclamation-triangle text-yellow-700 mr-2"></i>
+			Error Loading Page
 		</div>
 	</div>
 	<%
@@ -60,6 +62,8 @@
 	int endIndex = Math.min(startIndex + booksPerPage, totalBooks);
 	booksOnCurrentPage = allBooks.subList(startIndex, endIndex);
 	%>
+
+	<!-- Search Input Form -->
 	<div class="mx-20 mb-60">
 		<div class="flex items-center justify-center m-5">
 			<form action="/CA1-assignment/AllBooksPage" method="GET">
@@ -84,6 +88,7 @@
 		<%
 		if (booksOnCurrentPage.size() > 0) {
 		%>
+		<!-- Show MAX 10 Books Per Page -->
 		<div class="flex flex-wrap justify-center w-full">
 			<%
 			for (Book book : booksOnCurrentPage) {
@@ -173,7 +178,7 @@
 			}
 			%>
 		</div>
-
+		<!-- Pagination -->
 		<div class="flex items-center justify-center mt-10">
 			<div class="flex space-x-4">
 				<a
@@ -221,6 +226,7 @@
 		<%
 		} else {
 		%>
+		<!-- Show no results if no books (search) -->
 		<div class="flex items-center justify-center">
 			<div class="flex flex-col items-center">
 				<h2 class="text-lg mt-20 pt-10">No results</h2>

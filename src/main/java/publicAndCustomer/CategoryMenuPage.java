@@ -52,24 +52,23 @@ public class CategoryMenuPage extends HttpServlet {
 	            userID = (String) request.getSession().getAttribute("userID");
 	        }
 	    }
-
 	    List<Genre> allGenre = new ArrayList<>();
 	    try (Connection connection = DBConnection.getConnection()) {
+	    	// Validate the userID
 	        userID = validateUserID(connection, userID);
-
+	        // Get all genre
 	        allGenre = getAllGenres(connection);
-
 	        connection.close();
 	    } catch (SQLException e) {
 	        System.err.println("Error: " + e);
 	    }
-
 	    request.setAttribute("allGenre", allGenre);
 	    request.setAttribute("validatedUserID", userID);
 	    RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/categoryMenuPage.jsp");
 	    dispatcher.forward(request, response);
 	}
 
+	// Function to validate user id
 	private String validateUserID(Connection connection, String userID) throws SQLException {
 	    if (userID != null) {
 	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
@@ -85,6 +84,7 @@ public class CategoryMenuPage extends HttpServlet {
 	    return userID;
 	}
 
+	// Get all the genre
 	private List<Genre> getAllGenres(Connection connection) throws SQLException {
 	    List<Genre> allGenre = new ArrayList<>();
 	    Statement stmt = connection.createStatement();
