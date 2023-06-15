@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import dao.UserDAO;
+import model.User;
 import utils.DBConnection;
 
 /**
@@ -43,10 +45,8 @@ public class OTPServlet extends HttpServlet {
 		
 		String otp = first + second + third + fourth + fifth + sixth;
 		String otpSQL = "SELECT * FROM user_otp WHERE user_id = ? AND otp = ? AND TIMESTAMPDIFF(MINUTE, otp_creation_timestamp, CURRENT_TIMESTAMP()) < 5;";
-		String userSQL = "SELECT * FROM users WHERE userID = ?;";
 		try (Connection connection = DBConnection.getConnection();
-				PreparedStatement otpPS = connection.prepareStatement(otpSQL);
-				PreparedStatement userPS = connection.prepareStatement(userSQL)) {
+				PreparedStatement otpPS = connection.prepareStatement(otpSQL)) {
 			otpPS.setString(1, otpUserID);
 			otpPS.setString(2, otp);
 			
@@ -56,14 +56,13 @@ public class OTPServlet extends HttpServlet {
 				return;
 			}
 			
-			userPS.setString(1, otpUserID);
-			ResultSet userResultSet = userPS.executeQuery();
-			if (!userResultSet.next()) {
+			User user = UserDAO.getUserInfo(connection, otpUserID);
+			if (user == null) {
 				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401").forward(request, response);
 				return;
 			}
 			
-			String role = userResultSet.getString("role");
+			String role = user.getRole();
 			session.removeAttribute("otpUserID");
 	        session.setAttribute("userID", otpUserID);
 	        session.setAttribute("role", role);

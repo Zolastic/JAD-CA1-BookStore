@@ -7,8 +7,9 @@ public class User {
 	private String password;
 	private String role;
 	private String image;
+	private String secret;
 	
-	public User(String userID, String name, String email, String password, String role, String image) {
+	public User(String userID, String name, String email, String password, String role, String image, String secret) {
 		super();
 		this.userID = userID;
 		this.name = name;
@@ -16,6 +17,7 @@ public class User {
 		this.password = password;
 		this.role = role;
 		this.image = image;
+		this.secret = secret;
 	}
 
 	public String getUserID() {
@@ -64,6 +66,14 @@ public class User {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public String getSecret() {
+		return secret;
+	}
+
+	public void setSecret(String secret) {
+		this.secret = secret;
 	}
 	
 	

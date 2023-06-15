@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import utils.DBConnection;
+import utils.OTPManagement;
 
 /**
  * Servlet implementation class SignUp
@@ -52,15 +53,15 @@ public class SignUpServlet extends HttpServlet {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		String duplicateCheckSqlStr = "SELECT * FROM users WHERE email = ?;";
-		String insertSqlStr = "INSERT INTO users (userID, name, email, password, role) VALUES (?, ?, ?, ?, \"customer\");";
+		String insertUserSqlStr = "INSERT INTO users (userID, name, email, password, role, secret) VALUES (?, ?, ?, ?, \"customer\", ?);";
 		String insertCartSqlStr = "INSERT INTO cart (cartID, custID) VALUES (?, ?);";
 		String insertUserOtpSqlStr = "INSERT INTO user_otp (user_id) VALUES (?);";
 
 		try (Connection connection = DBConnection.getConnection();
 				PreparedStatement duplicateCheckPS = connection.prepareStatement(duplicateCheckSqlStr);
-				PreparedStatement insertPS = connection.prepareStatement(insertSqlStr);
+				PreparedStatement insertUserPS = connection.prepareStatement(insertUserSqlStr);
 				PreparedStatement insertCartPS = connection.prepareStatement(insertCartSqlStr);
-				PreparedStatement insertUserOtpCartPS = connection.prepareStatement(insertUserOtpSqlStr);) {
+				PreparedStatement insertUserOtpPS = connection.prepareStatement(insertUserOtpSqlStr);) {
 			duplicateCheckPS.setString(1, email);
 			ResultSet resultSet = duplicateCheckPS.executeQuery();
 
@@ -69,12 +70,14 @@ public class SignUpServlet extends HttpServlet {
 						+ "/publicAndCustomer/registrationPage.jsp?signUp=true&statusCode=409");
 				return;
 			} else {
-				String customerID = (UUID.randomUUID()).toString();
-				insertPS.setString(1, customerID);
-				insertPS.setString(2, name);
-				insertPS.setString(3, email);
-				insertPS.setString(4, password);
-				int affectedUserRows = insertPS.executeUpdate();
+				String customerID = UUID.randomUUID().toString();
+				String secret = OTPManagement.generateSecret();
+				insertUserPS.setString(1, customerID);
+				insertUserPS.setString(2, name);
+				insertUserPS.setString(3, email);
+				insertUserPS.setString(4, password);
+				insertUserPS.setString(5, secret);
+				int affectedUserRows = insertUserPS.executeUpdate();
 
 				if (affectedUserRows == 0) {
 					response.sendRedirect(request.getContextPath()
@@ -92,8 +95,8 @@ public class SignUpServlet extends HttpServlet {
 					return;
 				}
 
-				insertUserOtpCartPS.setString(1, customerID);
-				int affectedOtpRows = insertUserOtpCartPS.executeUpdate();
+				insertUserOtpPS.setString(1, customerID);
+				int affectedOtpRows = insertUserOtpPS.executeUpdate();
 
 				if (affectedOtpRows == 0) {
 					response.sendRedirect(request.getContextPath()
