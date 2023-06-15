@@ -10,7 +10,7 @@ import model.User;
 public class UserDAO {
 
 	public static User getUserInfo(Connection connection, String userID) throws SQLException {
-		String sqlStr = "SELECT * FROM users WHERE userID = ?;\r\n";
+		String sqlStr = "SELECT * FROM users WHERE userID = ?;";
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
 			ps.setString(1, userID);
 
@@ -22,8 +22,9 @@ public class UserDAO {
 				String password = resultSet.getString("password");
 				String role = resultSet.getString("role");
 				String img = resultSet.getString("img");
+				String secret = resultSet.getString("secret");
 				resultSet.close();
-				User user = new User(userID, name, email, password, role, img);
+				User user = new User(userID, name, email, password, role, img, secret);
 				return user;
 			}
 
