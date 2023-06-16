@@ -37,12 +37,12 @@
 	if (validatedUserID == null) {
 		urlToAllBooks = "/CA1-assignment/AllBooksPage";
 	%>
-	<%@include file="navBar/headerNavPublic.html"%>
+	<%@include file="publicAndCustomer/navBar/headerNavPublic.html"%>
 	<%
 	} else {
-	urlToAllBooks = "/CA1-assignment/AllBooksPage?userIDAvailable=true";
+	urlToAllBooks = "publicAndCustomer/CA1-assignment/AllBooksPage?userIDAvailable=true";
 	%>
-	<%@include file="navBar/headerNavCustomer.jsp"%>
+	<%@include file="publicAndCustomer/navBar/headerNavCustomer.jsp"%>
 	<%
 	}
 	%>
