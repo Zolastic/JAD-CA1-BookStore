@@ -40,7 +40,7 @@
 	<%@include file="publicAndCustomer/navBar/headerNavPublic.html"%>
 	<%
 	} else {
-	urlToAllBooks = "publicAndCustomer/CA1-assignment/AllBooksPage?userIDAvailable=true";
+	urlToAllBooks = "/CA1-assignment/AllBooksPage?userIDAvailable=true";
 	%>
 	<%@include file="publicAndCustomer/navBar/headerNavCustomer.jsp"%>
 	<%
@@ -65,7 +65,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- Show popular books -->
 	<div class="flex items-center justify-center mt-20">
 		<div class="flex items-center mx-10 px-20 h-500 w-full">
@@ -96,7 +96,8 @@
 						<%
 						if (book.getImg() != null) {
 						%>
-						<img class="h-48 object-contain" src="data:image/png;base64, <%=book.getImg()%>">
+						<img class="h-48 object-contain"
+							src="data:image/png;base64, <%=book.getImg()%>">
 						<%
 						} else {
 						%>
