@@ -31,7 +31,7 @@ if (registrationType != null) {
 <body class="loginPageBody flex justify-center items-center">
 	<div class="containerZ main w-screen h-screen flex">
 		<div
-			class="cardZ flex w-2/3 h-4/5 justify-between mx-auto my-20 rounded-md ">
+			class="cardZ flex w-2/3 h-auto justify-between mx-auto my-20 rounded-md ">
 			<div class="flex items-center justify-center left w-1/2 h-auto flex-wrap py-7 rounded-l-md">
 				<img
 					src="<%=request.getContextPath()%>/publicAndCustomer/img/personReadingBook.png"
