@@ -24,5 +24,6 @@
 		closeButton.onclick = function() {
 			modal.classList.add("hidden");
 		};
+
 	}
 </script>

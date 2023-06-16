@@ -20,7 +20,7 @@
 <%@ include file="../../tailwind-css.jsp"%>
 </head>
 <body>
-	<%@ include file="modal.jsp"%>
+	<%@ include file="customerModal.jsp"%>
 	<script>
     function decrementQuantity(bookID, currentQuantity) {
         if (currentQuantity > 1) {

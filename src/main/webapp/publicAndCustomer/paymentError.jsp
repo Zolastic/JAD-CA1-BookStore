@@ -19,7 +19,7 @@
 <%@ include file="../../tailwind-css.jsp"%>
 </head>
 <body>
-	<%@ include file="modal.jsp"%>
+	<%@ include file="customerModal.jsp"%>
 	<%
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	String error = request.getParameter("error");

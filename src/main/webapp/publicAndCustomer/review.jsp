@@ -43,7 +43,8 @@
 				<%
 				if (bookDetails.getImg() != null) {
 				%>
-				<img class="h-full object-contain" src="data:image/png;base64, <%=bookDetails.getImg()%>">
+				<img class="h-full object-contain"
+					src="data:image/png;base64, <%=bookDetails.getImg()%>">
 				<%
 				} else {
 				%>
@@ -87,12 +88,13 @@
 			<div class="mb-4 mt-5">
 				<label for="review_text" class="block mb-2">Review
 					Description:</label>
-				<textarea name="review_text" id="review_text" rows="4"
+				<textarea name="review_text" id="reviewTextarea" rows="4"
 					maxlength="500" required class="w-full bg-gray-100 rounded-lg"></textarea>
 				<div class="flex justify-end">
 					<p class="wordCount">0/500 words</p>
 				</div>
 			</div>
+
 			<!-- Submit review button -->
 			<div class="flex justify-center">
 				<button type="submit"
@@ -105,10 +107,14 @@
 		function updateRangeValue(rangeInput) {
 			document.getElementById("rangeValue").textContent = rangeInput.value;
 		}
+		const reviewTextarea = document.getElementById('reviewTextarea');
+		const wordCountElement = document.querySelector('.wordCount');
+
 		reviewTextarea.addEventListener('input', function() {
 			const wordCount = reviewTextarea.value.split(/\s+/).length;
 			wordCountElement.textContent = wordCount + "/500 words";
 		});
+
 		function goBack() {
 			window.history.back();
 		}
