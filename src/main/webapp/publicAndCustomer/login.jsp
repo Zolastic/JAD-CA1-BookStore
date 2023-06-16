@@ -4,7 +4,7 @@
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 
-<div class="w-1/2  h-full flex-wrap justify-center p-12">
+<div class="w-1/2  h-auto flex-wrap justify-center p-12">
 	<h1 class="loginTextHeader text-center text-3xl font-bold">LOG IN</h1>
 	<form class="mt-6" action="<%=request.getContextPath()%>/Login"
 		method="post">
