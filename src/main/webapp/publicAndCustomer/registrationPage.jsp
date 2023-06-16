@@ -37,7 +37,7 @@ if (registrationType != null) {
 					src="<%=request.getContextPath()%>/publicAndCustomer/img/personReadingBook.png"
 					alt="loginPhoto"
 					class="registrationPageFloatingImage mx-auto h-auto w-auto object-contain" />
-				<h1 class="text-center mt-2 text-white font-semibold text-xl">
+				<h1 class="text-center text-white font-semibold text-xl">
 					Discover different dimensions with Inkwell.</h1>
 			</div>
 			<%
