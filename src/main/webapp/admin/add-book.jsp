@@ -12,8 +12,9 @@
 	<%@ page import="java.io.*, java.net.*, java.util.*, java.sql.*"%>
 	<%@ page import="utils.DBConnection, model.*"%>
 	<%@include file="./navbar.jsp"%>
+	<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Add Book</h1>
 	<!-- Add Book Form  -->
-	<form class="mt-28" action="<%= request.getContextPath()%>/admin/AddBook" method="post" enctype="multipart/form-data">
+	<form class="mt-3" action="<%= request.getContextPath()%>/admin/AddBook" method="post" enctype="multipart/form-data">
 		<!-- image -->
 		<div class="flex flex-col z-0 w-full mb-8 group">
 			<label for="image"
