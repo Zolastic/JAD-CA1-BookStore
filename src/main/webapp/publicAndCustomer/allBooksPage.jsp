@@ -93,8 +93,9 @@
 
 				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
 			%>
+
 			<div
-				class="flex items-center justify-between border border-gray-300 rounded-lg my-4 p-5 shadow-lg w-full  transform hover:scale-110"
+				class="flex items-center justify-between border border-gray-300 rounded-lg my-4 p-5 shadow-lg w-full  transform hover:scale-110 cursor-pointer"
 				onclick="window.location.href = '<%=urlToBookDetails%>'">
 
 

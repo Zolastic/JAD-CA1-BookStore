@@ -25,7 +25,7 @@
 <%@ include file="../../tailwind-css.jsp"%>
 </head>
 <body>
-	<%@ include file="modal.jsp"%>
+	<%@ include file="customerModal.jsp"%>
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div class="px-10 pt-10">
 		<%

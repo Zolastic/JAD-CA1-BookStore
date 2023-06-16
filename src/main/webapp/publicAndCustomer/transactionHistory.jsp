@@ -176,7 +176,7 @@
         }
     });
 		function goBack() {
-			window.history.back();
+			window.location.href = "/CA1-assignment/ProfilePage?userID="+<%=validatedUserID%>;
 		}
 		function review(formID, scrollURL) {
 			let scrollPosition = window.scrollY;

@@ -47,6 +47,7 @@ public class ReviewHistory extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String userIDAvailable = request.getParameter("userIDAvailable");
+		String scrollPosition = request.getParameter("scrollPosition");
 		List<ReviewHistoryClass> reviewHistories = new ArrayList<>();
 		String userID = null;
 		if (userIDAvailable != null && userIDAvailable.equals("true")) {
@@ -66,6 +67,7 @@ public class ReviewHistory extends HttpServlet {
 		} catch (Exception e) {
 			System.err.println("Error: " + e);
 		}
+		request.setAttribute("scrollPosition", scrollPosition);
 		request.setAttribute("reviewHistories", reviewHistories);
 		request.setAttribute("validatedUserID", userID);
 		String dispatcherURL = "publicAndCustomer/reviewHistory.jsp";
@@ -113,6 +115,7 @@ public class ReviewHistory extends HttpServlet {
 				String reviewText = resultSet.getString("review_text");
 				double rating = resultSet.getDouble("rating");
 				String ratingDate = resultSet.getString("ratingDate");
+				String transaction_history_itemID = resultSet.getString("transaction_history_itemID");
 				Book book = new Book(resultSet.getString("book_id"), resultSet.getString("ISBN"),
 						resultSet.getString("title"), resultSet.getString("authorName"),
 						resultSet.getString("publisherName"), resultSet.getString("publication_date"),
@@ -121,7 +124,7 @@ public class ReviewHistory extends HttpServlet {
 						resultSet.getDouble("price"), resultSet.getDouble("average_rating"));
 
 				ReviewHistoryClass review = new ReviewHistoryClass(book, reviewID, custID, bookID, reviewText, rating,
-						ratingDate);
+						ratingDate, transaction_history_itemID);
 				reviewHistories.add(review);
 			}
 		} catch (SQLException e) {
@@ -130,13 +133,78 @@ public class ReviewHistory extends HttpServlet {
 		return reviewHistories;
 	}
 
+	protected void deleteReviewAction(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String review_id = request.getParameter("review_id");
+		String scrollPosition = request.getParameter("scrollPositionForDelete");
+		String transaction_history_itemID = request.getParameter("transaction_history_itemID");
+		if (review_id == null || scrollPosition == null || transaction_history_itemID == null) {
+			String referer = request.getHeader("Referer");
+			response.sendRedirect(
+					 referer+"&scrollPosition=" + scrollPosition + "&delete=false");
+		} else {
+			try (Connection connection = DBConnection.getConnection()) {
+				int rowsAffectedDelete = deleteReview(connection, review_id);
+				if (rowsAffectedDelete != 1) {
+					throw new Exception("Delete Error!");
+				} else {
+					int countUpdate = updateReviewState(connection, transaction_history_itemID);
+					if (countUpdate == 1) {
+						String referer = request.getHeader("Referer");
+						response.sendRedirect(
+								referer+"&scrollPosition=" + scrollPosition + "&delete=true");
+					} else {
+						throw new Exception("Update Error!");
+					}
+				}
+			} catch (Exception e) {
+				System.err.println("Error: " + e);
+				String referer = request.getHeader("Referer");
+				response.sendRedirect(
+						referer+"&scrollPosition=" + scrollPosition + "&delete=false");
+			}
+		}
+	}
+
+	// Delete the inserted review
+	private int deleteReview(Connection connection, String review_id) {
+		String sql = "DELETE FROM review WHERE review_id=?;";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setString(1, review_id);
+			int rowsAffected = statement.executeUpdate();
+			statement.close();
+			return rowsAffected;
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
+			return 0;
+		}
+	}
+
+	// Function to update user's review state for the transaction history item
+	private int updateReviewState(Connection connection, String transactionHistoryItemID) {
+		String sql = "UPDATE transaction_history_items SET reviewed=0 WHERE transaction_history_itemID=?";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setString(1, transactionHistoryItemID);
+			int rowsAffected = statement.executeUpdate();
+			return rowsAffected;
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
+			return 0;
+		}
+	}
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		doGet(request, response);
+		String action = request.getParameter("action");
+		if (action != null && action.equals("deleteReview")) {
+			deleteReviewAction(request, response);
+		} else {
+			doGet(request, response);
+		}
 	}
 
 }

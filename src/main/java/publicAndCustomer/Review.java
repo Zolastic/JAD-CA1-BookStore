@@ -151,7 +151,7 @@ public class Review extends HttpServlet {
 			dispatcher.forward(request, response);
 		} else {
 			try (Connection connection = DBConnection.getConnection()) {
-				String review_id = insertReview(connection, custID, bookID, review_text, rating);
+				String review_id = insertReview(connection, custID, bookID, review_text, rating, transactionHistoryItemID);
 				if (review_id != null) {
 					int countUpdate = updateReviewState(connection, transactionHistoryItemID);
 					if (countUpdate == 1) {
@@ -178,9 +178,9 @@ public class Review extends HttpServlet {
 	}
 
 	// Function to insert a review
-	private String insertReview(Connection connection, String custID, String bookID, String review_text, double rating){
+	private String insertReview(Connection connection, String custID, String bookID, String review_text, double rating, String transactionHistoryItemID){
 		String review_id = uuidGenerator();
-		String sql = "INSERT INTO review (review_id, custID, bookID, review_text, rating, ratingDate) VALUES (?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO review (review_id, custID, bookID, review_text, rating, ratingDate, transaction_history_itemID) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		String ratingDate = getCurrentDate();
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			statement.setString(1, review_id);
@@ -189,6 +189,7 @@ public class Review extends HttpServlet {
 			statement.setString(4, review_text);
 			statement.setDouble(5, rating);
 			statement.setString(6, ratingDate);
+			statement.setString(7, transactionHistoryItemID);
 			int rowsAffected = statement.executeUpdate();
 			statement.close();
 			if (rowsAffected == 1) {

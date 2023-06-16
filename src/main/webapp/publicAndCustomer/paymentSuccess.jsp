@@ -20,7 +20,7 @@
 </head>
 <body>
 	<!-- Payment successful page -->
-	<%@ include file="modal.jsp"%>
+	<%@ include file="customerModal.jsp"%>
 	<%
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	if (validatedUserID != null) {

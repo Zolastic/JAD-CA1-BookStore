@@ -23,7 +23,7 @@
 <%@ include file="../../tailwind-css.jsp"%>
 </head>
 <body>
-	<%@ include file="modal.jsp"%>
+	<%@ include file="customerModal.jsp"%>
 	<%
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	List<Book> cartItems = (List<Book>) request.getAttribute("cartItems");
@@ -104,7 +104,17 @@
             document.getElementById('scrollPositionForQty_' + bookID).value = scrollPosition;
             document.getElementById('quantityForm_' + bookID).submit();
         } else {
-            currentOrInputQuantity.value = parseInt(currentOrInputQuantity.value);
+        	if(newQuantity <= 0){
+        		updatedQuantity.value = 1;
+                let scrollPosition = window.scrollY;
+                document.getElementById('scrollPositionForQty_' + bookID).value = scrollPosition;
+                document.getElementById('quantityForm_' + bookID).submit();
+        	}else{
+        		updatedQuantity.value = inventory;
+                let scrollPosition = window.scrollY;
+                document.getElementById('scrollPositionForQty_' + bookID).value = scrollPosition;
+                document.getElementById('quantityForm_' + bookID).submit();
+        	}
         }
 
         event.preventDefault();
@@ -166,7 +176,8 @@
 						<%
 						if (item.getImg() != null) {
 						%>
-						<img class="h-32 w-32 object-contain" src="data:image/png;base64, <%=item.getImg()%>">
+						<img class="h-32 w-32 object-contain"
+							src="data:image/png;base64, <%=item.getImg()%>">
 						<%
 						} else {
 						%>
@@ -286,7 +297,6 @@
 		window.location.href = "/CA1-assignment/home.jsp";
 	});
 	</script>
-
 	<%
 	}
 	%>
