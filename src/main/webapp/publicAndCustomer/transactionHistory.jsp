@@ -114,7 +114,7 @@
 			</div>
 			<div class="w-30">
 				<p class="text-gray-600">
-					$<%=transactionItem.getBook().getPrice()%></p>
+					$<%=String.format("%.2f", transactionItem.getBook().getPrice())%></p>
 			</div>
 			<%
 			if (transactionItem.getReviewed() == 0) {

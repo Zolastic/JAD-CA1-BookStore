@@ -152,7 +152,7 @@ public class ReviewHistory extends HttpServlet {
 					if (countUpdate == 1) {
 						String referer = request.getHeader("Referer");
 						response.sendRedirect(
-								referer+"&scrollPosition=" + scrollPosition + "&delete=true");
+								referer+"&scrollPosition=" + scrollPosition);
 					} else {
 						throw new Exception("Update Error!");
 					}
