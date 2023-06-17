@@ -66,7 +66,7 @@
 							Author:
 							<%=item.getAuthor()%></p>
 						<p class="text-gray-600">
-							Price: $<%=item.getPrice()%></p>
+							Price: $<%=String.format("%.2f", item.getPrice())%></p>
 					</div>
 				</div>
 				<div>

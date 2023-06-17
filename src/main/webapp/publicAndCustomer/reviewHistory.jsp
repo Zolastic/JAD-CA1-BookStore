@@ -30,9 +30,7 @@
 	String deleteStatus = request.getParameter("delete");
 	if (deleteStatus != null) {
 		if (deleteStatus.equals("false")) {
-			out.print("<script>alert('Internal Server Error')</script>");
-		} else {
-			out.print("<script>alert('Delete Review Success!')</script>");
+			out.print("<script>showModal('Internal Server Error')</script>");
 		}
 	}
 	if (validatedUserID != null && reviewHistories != null) {
@@ -154,7 +152,7 @@
 									Author:
 									<%=book.getAuthor()%></p>
 								<p class="text-gray-600">
-									Price: $<%=book.getPrice()%></p>
+									Price: $<%=String.format("%.2f", book.getPrice())%></p>
 							</div>
 						</div>
 						<div class="justify-end">
