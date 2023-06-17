@@ -4,16 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import model.Author;
 import model.Book;
-import model.Genre;
 import model.TransactionHistory;
 import model.TransactionHistoryItem;
-import utils.DBConnection;
 
 public class TransactionHistoryDAO {
 	// To get all transaction history of the user
