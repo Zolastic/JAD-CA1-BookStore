@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import utils.DBConnection;
-
+import dao.VerifyUserDAO;
 /**
  * Servlet implementation class paymentSuccess
  */
@@ -26,7 +26,7 @@ import utils.DBConnection;
 @WebServlet("/PaymentSuccess")
 public class PaymentSuccess extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -52,7 +52,7 @@ public class PaymentSuccess extends HttpServlet {
 				}
 			}
 			// Validate userID
-			userID = validateUserID(connection, userID);
+			userID = verifyUserDAO.validateUserID(connection, userID);
 			if (userID == null) {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
@@ -67,28 +67,6 @@ public class PaymentSuccess extends HttpServlet {
 			System.err.println("Error: \" + e);\r\n");
 		}
 
-	}
-
-	// Function to validate user id
-	private String validateUserID(Connection connection, String userID) {
-	    if (userID != null) {
-	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-	        try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	            ps.setString(1, userID);
-	            try (ResultSet rs = ps.executeQuery()) {
-	                if (rs.next()) {
-	                    int rowCount = rs.getInt(1);
-	                    if (rowCount < 1) {
-	                        userID = null;
-	                    }
-	                }
-	            }
-	        } catch (SQLException e) {
-	        	userID=null;
-	            System.err.println("Error: " + e.getMessage());
-	        }
-	    }
-	    return userID;
 	}
 
 	/**

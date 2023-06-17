@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,5 +56,29 @@ public class BookDAO {
 			resultSet.close();
 			return books;
 		}
+	}
+	// Function to get specific book details
+	public Book getBookDetailsForCustomer(Connection connection, String bookID) {
+	    Book bookDetails = null;
+	    String simpleProc = "{call getBookDetails(?)}";
+	    try (CallableStatement cs = connection.prepareCall(simpleProc)) {
+	        cs.setString(1, bookID);
+	        cs.execute();
+	        try (ResultSet resultSetForBookDetails = cs.getResultSet()) {
+	            if (resultSetForBookDetails.next()) {
+	                bookDetails = new Book(resultSetForBookDetails.getString("book_id"),
+	                        resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
+	                        resultSetForBookDetails.getString("authorName"), resultSetForBookDetails.getString("publisherName"),
+	                        resultSetForBookDetails.getString("publication_date"),
+	                        resultSetForBookDetails.getString("description"), resultSetForBookDetails.getString("genre_name"),
+	                        resultSetForBookDetails.getString("img"), resultSetForBookDetails.getInt("sold"),
+	                        resultSetForBookDetails.getInt("inventory"), resultSetForBookDetails.getDouble("price"), 1,
+	                        resultSetForBookDetails.getDouble("average_rating"));
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error: " + e.getMessage());
+	    }
+	    return bookDetails;
 	}
 }

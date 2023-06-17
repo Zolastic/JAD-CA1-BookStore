@@ -17,6 +17,7 @@ import javax.servlet.http.Cookie;
 
 import model.Book;
 import utils.DBConnection;
+import dao.VerifyUserDAO;
 
 /**
  * Servlet implementation class CartPage
@@ -29,6 +30,7 @@ import utils.DBConnection;
 @WebServlet("/CartPage")
 public class CartPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -57,7 +59,7 @@ public class CartPage extends HttpServlet {
 			String cartID = null;
 			List<Book> cartItems = new ArrayList<>();
 
-			userID = validateUserID(connection, userID);
+			userID = verifyUserDAO.validateUserID(connection, userID);
 			// if userID==null sent user to login
 			if (userID == null) {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
@@ -80,28 +82,6 @@ public class CartPage extends HttpServlet {
 			dispatcher.forward(request, response);
 			System.err.println("Error: " + e);
 		}
-	}
-
-	// Function to validate user id
-	private String validateUserID(Connection connection, String userID) {
-		if (userID != null) {
-			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-				ps.setString(1, userID);
-				try (ResultSet rs = ps.executeQuery()) {
-					if (rs.next()) {
-						int rowCount = rs.getInt(1);
-						if (rowCount < 1) {
-							userID = null;
-						}
-					}
-				}
-			} catch (SQLException e) {
-				userID = null;
-				System.err.println("Error: " + e.getMessage());
-			}
-		}
-		return userID;
 	}
 
 	// Function to get cart id
@@ -153,6 +133,7 @@ public class CartPage extends HttpServlet {
 				int selected = resultSet.getInt("selected");
 				cartItems.add(new Book(bookID, isbn, title, author, publisher, publication_date, description,
 						genre_name, img, sold, inventory, price, rating, quantity, selected));
+
 			}
 		} catch (SQLException e) {
 			System.err.println("Error: " + e.getMessage());
@@ -249,8 +230,22 @@ public class CartPage extends HttpServlet {
 		}
 	}
 
+	public static boolean deleteCartItem(String cartID, String bookID) {
+		try (Connection connection = DBConnection.getConnection()) {
+			String deleteQuery = "DELETE FROM cart_items WHERE cartID=? AND BookID=?;";
+			PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
+			deleteStatement.setString(1, cartID);
+			deleteStatement.setString(2, bookID);
+			int rowsAffected = deleteStatement.executeUpdate();
+			return rowsAffected > 0;
+		} catch (SQLException e) {
+			System.err.println("Error: " + e);
+			return false;
+		}
+	}
+
 	// Handle delete cart items
-	protected void deleteCartItem(HttpServletRequest request, HttpServletResponse response)
+	protected void deleteCartItemAction(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String scrollPosition = request.getParameter("scrollPositionForDelete");
 		String bookID = request.getParameter("bookID");
@@ -262,13 +257,8 @@ public class CartPage extends HttpServlet {
 					referer + "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&error=true");
 		} else {
 			try (Connection connection = DBConnection.getConnection()) {
-				String deleteQuery = "DELETE FROM cart_items WHERE cartID=? AND BookID=?;";
-				PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
-				deleteStatement.setString(1, cartID);
-				deleteStatement.setString(2, bookID);
-				int rowsAffected = deleteStatement.executeUpdate();
-
-				if (rowsAffected > 0) {
+				boolean deleteSuccess = deleteCartItem(cartID, bookID);
+				if (deleteSuccess) {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
 					response.sendRedirect(referer + "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition);
@@ -362,7 +352,7 @@ public class CartPage extends HttpServlet {
 		} else if (action != null && action.equals("selectAllCartItems")) {
 			selectAllCartItems(request, response);
 		} else if (action != null && action.equals("deleteCartItem")) {
-			deleteCartItem(request, response);
+			deleteCartItemAction(request, response);
 		} else if (action != null && action.equals("checkout")) {
 			checkout(request, response);
 		} else if (action != null && action.equals("updateQuantity")) {

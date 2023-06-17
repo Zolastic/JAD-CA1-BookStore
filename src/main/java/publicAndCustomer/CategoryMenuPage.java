@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import utils.DBConnection;
-
+import dao.VerifyUserDAO;
 /**
  * Servlet implementation class CategoryMenuPage
  */
@@ -29,7 +29,7 @@ import utils.DBConnection;
 @WebServlet("/CategoryMenuPage")
 public class CategoryMenuPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -54,7 +54,7 @@ public class CategoryMenuPage extends HttpServlet {
 		List<Genre> allGenre = new ArrayList<>();
 		try (Connection connection = DBConnection.getConnection()) {
 			// Validate the userID
-			userID = validateUserID(connection, userID);
+			userID = verifyUserDAO.validateUserID(connection, userID);
 			// Get all genre
 			allGenre = getAllGenres(connection);
 			connection.close();
@@ -65,28 +65,6 @@ public class CategoryMenuPage extends HttpServlet {
 		request.setAttribute("validatedUserID", userID);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/categoryMenuPage.jsp");
 		dispatcher.forward(request, response);
-	}
-
-	// Function to validate user id
-	private String validateUserID(Connection connection, String userID) {
-		if (userID != null) {
-			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-				ps.setString(1, userID);
-				try (ResultSet rs = ps.executeQuery()) {
-					if (rs.next()) {
-						int rowCount = rs.getInt(1);
-						if (rowCount < 1) {
-							userID = null;
-						}
-					}
-				}
-			} catch (SQLException e) {
-				userID = null;
-				System.err.println("Error: " + e.getMessage());
-			}
-		}
-		return userID;
 	}
 
 	// Get all the genre

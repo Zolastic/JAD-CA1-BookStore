@@ -14,14 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import utils.DBConnection;
 import model.Book;
-
+import dao.VerifyUserDAO;
 /**
  * Servlet implementation class Home
  */
 @WebServlet("/Home")
 public class Home extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -51,7 +51,7 @@ public class Home extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			popularBooks = popularBooks(connection);
 			if(userID!=null) {
-				validatedUserID = validateUserID(connection, userID);
+				validatedUserID = verifyUserDAO.validateUserID(connection, userID);
 			}
 			connection.close();
 		} catch (SQLException e) {
@@ -92,28 +92,6 @@ public class Home extends HttpServlet {
 		}
 
 		return popularBooks;
-	}
-
-	// Validate the userID
-	private String validateUserID(Connection connection, String userID) {
-	    if (userID != null) {
-	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-	        try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	            ps.setString(1, userID);
-	            try (ResultSet rs = ps.executeQuery()) {
-	                if (rs.next()) {
-	                    int rowCount = rs.getInt(1);
-	                    if (rowCount < 1) {
-	                        userID = null;
-	                    }
-	                }
-	            }
-	        } catch (SQLException e) {
-	        	userID=null;
-	            System.err.println("Error: " + e.getMessage());
-	        }
-	    }
-	    return userID;
 	}
 
 	/**
