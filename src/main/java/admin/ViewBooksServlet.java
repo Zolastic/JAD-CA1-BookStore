@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import dao.BookDAO;
 import model.Book;
 import utils.DBConnection;
+import utils.DispatchUtil;
 
 /**
  * Servlet implementation class viewBooks
@@ -24,24 +25,15 @@ public class ViewBooksServlet extends HttpServlet {
 	private BookDAO bookDAO = new BookDAO();
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ViewBooksServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		try (Connection connection = DBConnection.getConnection()) {
 
 			loadData(request, connection);
-			request.getRequestDispatcher("viewBooks.jsp").forward(request, response);
+			DispatchUtil.dispatch(request, response, "viewBooks.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -60,7 +52,6 @@ public class ViewBooksServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

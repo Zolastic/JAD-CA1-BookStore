@@ -32,6 +32,7 @@
 
 	int totalAuthors = authors.size();
 	int totalPages = (int) Math.ceil((double) totalAuthors / itemsPerPage);
+	totalPages = totalPages == 0 ? 1 : totalPages;
 
 	String userInput = request.getParameter("userInput");
 

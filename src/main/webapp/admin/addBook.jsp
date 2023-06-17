@@ -33,8 +33,6 @@
 			<input id="image" name="image" type="file" onchange="onFileChange()" />
 		</div>
 
-
-
 		<!-- title -->
 		<div class="relative z-0 w-full mb-8 group">
 			<input type="text" name="title" id="title"
