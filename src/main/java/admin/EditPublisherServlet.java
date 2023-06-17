@@ -74,10 +74,10 @@ public class EditPublisherServlet extends HttpServlet {
 			loadData(request, connection, publisherID);
 
 			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("editPublisher.jsp?publisherID=" + publisherID);
+				RequestDispatcher success = request.getRequestDispatcher("editPublisher.jsp?statusCode=200&ppublisherID=" + publisherID);
 				success.forward(request, response);
 			} else {
-				RequestDispatcher error = request.getRequestDispatcher("editPublisher.jsp?errCode=400&publisherID=" + publisherID);
+				RequestDispatcher error = request.getRequestDispatcher("editPublisher.jsp?statusCode=500&publisherID=" + publisherID);
 				error.forward(request, response);
 			}
 		} catch (SQLException e) {

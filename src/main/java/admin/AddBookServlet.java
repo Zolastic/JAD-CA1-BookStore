@@ -17,6 +17,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.AuthorDAO;
+import dao.GenreDAO;
+import dao.PublisherDAO;
 import model.Author;
 import model.Genre;
 import model.Publisher;
@@ -29,6 +32,9 @@ import utils.HttpServletRequestUploadWrapper;
 @WebServlet("/admin/AddBook")
 public class AddBookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	GenreDAO genreDAO = new GenreDAO();
+	AuthorDAO authorDAO = new AuthorDAO();
+	PublisherDAO publisherDAO = new PublisherDAO();
        
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -37,7 +43,7 @@ public class AddBookServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			
 			loadData(request, connection);
-			request.getRequestDispatcher("add-book.jsp").forward(request, response);
+			request.getRequestDispatcher("addBook.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -45,62 +51,14 @@ public class AddBookServlet extends HttpServlet {
 	}
 
 	private void loadData(HttpServletRequest request, Connection connection) throws SQLException {
-		List<Genre> genres = getGenres(connection);
-		List<Author> authors = getAuthors(connection);
-		List<Publisher> publishers = getPublishers(connection);
+		List<Genre> genres = genreDAO.getGenres(connection);
+		List<Author> authors = authorDAO.getAuthors(connection);
+		List<Publisher> publishers = publisherDAO.getPublishers(connection);
 		request.setAttribute("genres", genres);
 		request.setAttribute("authors", authors);
 		request.setAttribute("publishers", publishers);
 	}
 	
-	private List<Genre> getGenres(Connection connection) throws SQLException {
-		try (Statement genreStatement = connection.createStatement();
-			 ResultSet genreResultSet = genreStatement
-							.executeQuery("SELECT genre_id as genreId, genre_name as genreName, genre_img as image FROM genre;");) {
-				
-				List<Genre> genres = new ArrayList<>();
-				while (genreResultSet.next()) {
-					String genreId = genreResultSet.getString("genreId");
-					String genreName = genreResultSet.getString("genreName");
-					String genreImage = genreResultSet.getString("image");
-					genres.add(new Genre(genreId, genreName, genreImage));
-				}
-				
-				return genres;
-			} 
-	}
-	
-	private List<Author> getAuthors(Connection connection) throws SQLException {
-		try (Statement statement = connection.createStatement();
-			 ResultSet resultSet = statement
-							.executeQuery("SELECT * FROM author;");) {
-				
-				List<Author> authors = new ArrayList<>();
-				while (resultSet.next()) {
-					String authorId = resultSet.getString("authorID");
-					String authorName = resultSet.getString("authorName");
-					authors.add(new Author(authorId, authorName));
-				}
-				
-				return authors;
-			} 
-	}
-	
-	private List<Publisher> getPublishers(Connection connection) throws SQLException {
-		try (Statement statement = connection.createStatement();
-			 ResultSet resultSet = statement
-							.executeQuery("SELECT * FROM publisher;");) {
-				
-				List<Publisher> publishers = new ArrayList<>();
-				while (resultSet.next()) {
-					String publisherId = resultSet.getString("publisherID");
-					String publisherName = resultSet.getString("publisherName");
-					publishers.add(new Publisher(publisherId, publisherName));
-				}
-				
-				return publishers;
-			} 
-	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -140,10 +98,10 @@ public class AddBookServlet extends HttpServlet {
 			loadData(request, conn);
 			
 			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("add-book.jsp");
+				RequestDispatcher success = request.getRequestDispatcher("addBook.jsp?statusCode=200");
 				success.forward(request, response);
 			} else {
-				RequestDispatcher error = request.getRequestDispatcher("add-book.jsp?errCode=400");
+				RequestDispatcher error = request.getRequestDispatcher("addBook.jsp?statusCode=500");
 				error.forward(request, response);
 			}
 		} catch (Exception e) {

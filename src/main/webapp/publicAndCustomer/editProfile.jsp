@@ -6,6 +6,8 @@
 <meta charset="ISO-8859-1">
 <title>Inkwell: Edit Profile</title>
 <%@include file="../tailwind-css.jsp"%>
+<link rel="stylesheet"
+	href="<%=request.getContextPath()%>/publicAndCustomer/css/feedbackMessages.css">
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 </head>
@@ -13,18 +15,21 @@
 	<%@ page import="java.util.*, model.*"%>
 	<%
 	User user = (User) request.getAttribute("user");
-	String image = user.getImage() == null ? request.getContextPath() + "/publicAndCustomer/img/defaultUserPFP.png" : "data:image/png;base64, " + user.getImage();
+	String image = user.getImage() == null
+			? request.getContextPath() + "/publicAndCustomer/img/defaultUserPFP.png"
+			: "data:image/png;base64, " + user.getImage();
+			String statusCode = request.getParameter("statusCode");
 	%>
 
 	<%@include file="navBar/headerNavCustomer.jsp"%>
 	<div class="my-8 mx-48">
 		<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Edit
 			Profile</h1>
-		<form id="upload-form" action="<%=request.getContextPath()%>/EditProfile" method="post"
+		<form id="upload-form"
+			action="<%=request.getContextPath()%>/EditProfile" method="post"
 			enctype="multipart/form-data">
-			<input type="text" name="userID" id=""
-			value="<%=user.getUserID()%>" class="hidden"
-				placeholder=" " required />
+			<input type="text" name="userID" id="" value="<%=user.getUserID()%>"
+				class="hidden" placeholder=" " required />
 
 			<!-- profile picture/ image -->
 			<div class="flex items-center justify-center w-full">
@@ -44,8 +49,9 @@
 							JPG or GIF</p>
 					</div> <input id="dropzone-file" type="file" class="hidden" name="image"
 					value="<%=user.getImage()%>" />
-				</label>
-				<img id="pfp" class="pfpImage ml-2 border-2 border-pink-100 bg-gray-50 w-64 h-64 rounded-full flex justify-center items-center" src="<%= image %>">
+				</label> <img id="pfp"
+					class="pfpImage ml-2 border-2 border-pink-100 bg-gray-50 w-64 h-64 rounded-full flex justify-center items-center"
+					src="<%=image%>">
 			</div>
 
 
@@ -64,6 +70,22 @@
 					class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-pink-100 peer"
 					placeholder=" " required /> <label for="email"
 					class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-amber-800 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email</label>
+			</div>
+
+			<div class="-mt-1 mb-2">
+				<%
+				if (statusCode != null) {
+					if (statusCode.equals("200")) {
+				%>
+				<h1 class="successMessage">Profile successfully updated!</h1>
+				<%
+				} else {
+				%>
+				<h1 class="errorMessage">Uh-oh! Error</h1>
+				<%
+				}
+				}
+				%>
 			</div>
 
 			<button type="submit"
@@ -89,8 +111,8 @@
 		const file = e.dataTransfer.files[0]; // Get the dropped file
 		// Do something with the file (e.g., upload it or display preview)
 		const dropzoneFileInput = document.getElementById("dropzone-file");
-	    dropzoneFileInput.files = e.dataTransfer.files;
-	    //dropzoneFileInput.value = file.name;
+		dropzoneFileInput.files = e.dataTransfer.files;
+		//dropzoneFileInput.value = file.name;
 
 		// Example: Display a preview image
 		const reader = new FileReader();

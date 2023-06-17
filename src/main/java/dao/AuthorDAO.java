@@ -52,4 +52,20 @@ public class AuthorDAO {
 		}
 
 	}
+	
+	public List<Author> getAuthors(Connection connection) throws SQLException {
+		try (Statement statement = connection.createStatement();
+			 ResultSet resultSet = statement
+							.executeQuery("SELECT * FROM author;");) {
+				
+				List<Author> authors = new ArrayList<>();
+				while (resultSet.next()) {
+					String authorId = resultSet.getString("authorID");
+					String authorName = resultSet.getString("authorName");
+					authors.add(new Author(authorId, authorName));
+				}
+				
+				return authors;
+			} 
+	}
 }
