@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import dao.GenreDAO;
 import model.Genre;
 import utils.DBConnection;
+import utils.DispatchUtil;
 
 /**
  * Servlet implementation class ViewGenresServlet
@@ -23,24 +24,16 @@ public class ViewGenresServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private GenreDAO genreDAO = new GenreDAO();
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ViewGenresServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		try (Connection connection = DBConnection.getConnection()) {
 
 			loadData(request, connection);
-			request.getRequestDispatcher("viewGenres.jsp").forward(request, response);
+			DispatchUtil.dispatch(request, response, "viewGenres.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -57,7 +50,6 @@ public class ViewGenresServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

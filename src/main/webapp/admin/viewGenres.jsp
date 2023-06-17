@@ -32,6 +32,7 @@
 
 	int totalGenres = genres.size();
 	int totalPages = (int) Math.ceil((double) totalGenres / itemsPerPage);
+	totalPages = totalPages == 0 ? 1 : totalPages;
 
 	String userInput = request.getParameter("userInput");
 
