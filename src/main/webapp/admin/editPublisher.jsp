@@ -15,7 +15,7 @@
 	<%
 	Publisher publisher = (Publisher) request.getAttribute("publisher");
 	%>
-	<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Edit Author (<%= publisher.getName() %>)</h1>
+	<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Edit Publisher (<%= publisher.getName() %>)</h1>
 	<form class="mt-28"
 		action="<%=request.getContextPath()%>/admin/EditPublisher" method="post">
 
