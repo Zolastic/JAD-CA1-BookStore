@@ -14,6 +14,14 @@
 	<%@ page import="java.io.*, java.net.*, java.util.*, java.sql.*"%>
 	<%@ page import="utils.DBConnection, model.*"%>
 	<%@include file="./navbar.jsp"%>
+	
+	<%
+	List<Author> authors = (List<Author>) request.getAttribute("authors");
+	List<Publisher> publishers = (List<Publisher>) request.getAttribute("publishers");
+	List<Genre> genres = (List<Genre>) request.getAttribute("genres");
+	String statusCode = request.getParameter("statusCode");
+	%>
+	
 	<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Add
 		Book</h1>
 	<!-- Add Book Form  -->
@@ -65,7 +73,6 @@
 				class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-pink-100 peer"
 				name="author" required>
 				<%
-				List<Author> authors = (List<Author>) request.getAttribute("authors");
 				for (Author author : authors) {
 				%>
 				<option value="<%=author.getId()%>"><%=author.getName()%></option>
@@ -83,7 +90,6 @@
 				class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-pink-100 peer"
 				name="publisher" required>
 				<%
-				List<Publisher> publishers = (List<Publisher>) request.getAttribute("publishers");
 				for (Publisher publisher : publishers) {
 				%>
 				<option value="<%=publisher.getId()%>"><%=publisher.getName()%></option>
@@ -116,7 +122,6 @@
 					class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-pink-100 peer"
 					name="genre" required>
 					<%
-					List<Genre> genres = (List<Genre>) request.getAttribute("genres");
 					for (Genre genre : genres) {
 					%>
 					<option value="<%=genre.getId()%>"><%=genre.getName()%></option>
@@ -130,15 +135,14 @@
 
 		<div class="my-1">
 			<%
-			String statusCode = request.getParameter("statusCode");
 			if (statusCode != null) {
 				if (statusCode.equals("200")) {
 			%>
-			<h1 class="successMessage">Book successfully added!</h1>
+			<h1 class="successMessage tracking-wide">Book successfully added!</h1>
 			<%
 			} else {
 			%>
-			<h1 class="errorMessage">Uh-oh! Error</h1>
+			<h1 class="errorMessage tracking-wide">Uh-oh! Error</h1>
 			<%
 			}
 			}
