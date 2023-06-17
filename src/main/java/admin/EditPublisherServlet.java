@@ -2,10 +2,8 @@ package admin;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import dao.PublisherDAO;
 import model.Publisher;
 import utils.DBConnection;
+import utils.DispatchUtil;
 
 /**
  * Servlet implementation class EditPublisher
@@ -24,20 +23,11 @@ public class EditPublisherServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private PublisherDAO publisherDAO = new PublisherDAO();
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public EditPublisherServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		try (Connection connection = DBConnection.getConnection()) {
 			String publisherID = request.getParameter("publisherID");
 			loadData(request, connection, publisherID);
@@ -58,31 +48,20 @@ public class EditPublisherServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		String publisherID = request.getParameter("publisherID");
 		String publisherName = request.getParameter("name");
 
-		String sqlStr = "UPDATE publisher SET publisherName = ? WHERE publisherID = ?";
 
-		try (Connection connection = DBConnection.getConnection();
-				PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			ps.setString(1, publisherName);
-			ps.setString(2, publisherID);
+		try (Connection connection = DBConnection.getConnection()) {
 
-			int affectedRows = ps.executeUpdate();
+			int statusCode = publisherDAO.updatePublisher(connection, publisherID, publisherName);
 
 			loadData(request, connection, publisherID);
 
-			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("editPublisher.jsp?statusCode=200&ppublisherID=" + publisherID);
-				success.forward(request, response);
-			} else {
-				RequestDispatcher error = request.getRequestDispatcher("editPublisher.jsp?statusCode=500&publisherID=" + publisherID);
-				error.forward(request, response);
-			}
+			DispatchUtil.dispatch(request, response, "editPublisher.jsp?statusCode=" + statusCode + "&ppublisherID=" + publisherID);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			DispatchUtil.dispatch(request, response, "editPublisher.jsp?statusCode=500&ppublisherID=" + publisherID);
 		}
 	}
 

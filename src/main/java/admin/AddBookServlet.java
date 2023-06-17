@@ -2,15 +2,9 @@ package admin;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,12 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.AuthorDAO;
+import dao.BookDAO;
 import dao.GenreDAO;
 import dao.PublisherDAO;
 import model.Author;
 import model.Genre;
 import model.Publisher;
 import utils.DBConnection;
+import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
 
 /**
@@ -32,9 +28,10 @@ import utils.HttpServletRequestUploadWrapper;
 @WebServlet("/admin/AddBook")
 public class AddBookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	GenreDAO genreDAO = new GenreDAO();
-	AuthorDAO authorDAO = new AuthorDAO();
-	PublisherDAO publisherDAO = new PublisherDAO();
+	private GenreDAO genreDAO = new GenreDAO();
+	private AuthorDAO authorDAO = new AuthorDAO();
+	private PublisherDAO publisherDAO = new PublisherDAO();
+	private BookDAO bookDAO = new BookDAO();
        
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -43,10 +40,10 @@ public class AddBookServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			
 			loadData(request, connection);
-			request.getRequestDispatcher("addBook.jsp").forward(request, response);
+			DispatchUtil.dispatch(request, response, "addBook.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=500");
 		}
 	}
 
@@ -64,11 +61,8 @@ public class AddBookServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String sqlStr = "INSERT INTO BOOK (title, price, authorID, publisherID, inventory, publication_date, ISBN, description, genre_id, img, book_id)\r\n"
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-		try (Connection conn = DBConnection.getConnection();
-			 PreparedStatement ps = conn.prepareStatement(sqlStr)) {
-			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
+		try (Connection conn = DBConnection.getConnection()) {
+			 HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 	        
 	        String title = requestWrapper.getParameter("title");
 			double price = Double.parseDouble(requestWrapper.getParameter("price"));
@@ -81,31 +75,12 @@ public class AddBookServlet extends HttpServlet {
 			int genreId = Integer.parseInt(requestWrapper.getParameter("genre"));
 			String image = requestWrapper.getBase64Parameter("image");
 	        
-			ps.setString(1, title);
-			ps.setDouble(2, price);
-			ps.setInt(3, author);
-			ps.setInt(4, publisher);
-			ps.setInt(5, quantity);
-			ps.setString(6, pubDate);
-			ps.setString(7, isbn);
-			ps.setString(8, description);
-			ps.setInt(9, genreId);
-			ps.setString(10, image);
-			ps.setString(11, (UUID.randomUUID()).toString());
+			int statusCode = bookDAO.addBook(title, price, author, publisher, quantity, pubDate, isbn, description, genreId, image);
 			
-			int affectedRows = ps.executeUpdate();
-			// Load data for page
 			loadData(request, conn);
-			
-			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("addBook.jsp?statusCode=200");
-				success.forward(request, response);
-			} else {
-				RequestDispatcher error = request.getRequestDispatcher("addBook.jsp?statusCode=500");
-				error.forward(request, response);
-			}
+			DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=" + statusCode);
 		} catch (Exception e) {
-			e.printStackTrace();
+			DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=500");
 		}
 	}
 

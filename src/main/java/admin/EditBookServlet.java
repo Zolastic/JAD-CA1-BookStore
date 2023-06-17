@@ -2,13 +2,9 @@ package admin;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,6 +20,7 @@ import model.Book;
 import model.Genre;
 import model.Publisher;
 import utils.DBConnection;
+import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
 
 /**
@@ -38,20 +35,11 @@ public class EditBookServlet extends HttpServlet {
 	BookDAO bookDAO = new BookDAO();
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public EditBookServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		try (Connection connection = DBConnection.getConnection()) {
 			String bookID = request.getParameter("bookID");
 			loadData(request, connection, bookID);
@@ -80,18 +68,12 @@ public class EditBookServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String sqlStrWithImage = " UPDATE book SET title = ?, price = ?, authorID = ?, publisherID = ?, inventory = ?, \r\n"
-				+ " publication_date = ?, ISBN = ?, description = ?,\r\n" + " genre_id = ?, sold = ?, img = ?\r\n"
-				+ " WHERE book_id = ?;";
-
-		String sqlStrWithoutImage = " UPDATE book SET title = ?, price = ?, authorID = ?, publisherID = ?, inventory = ?, \r\n"
-				+ " publication_date = ?, ISBN = ?, description = ?,\r\n" + " genre_id = ?, sold = ?\r\n"
-				+ " WHERE book_id = ?;";
-
-		try (Connection connection = DBConnection.getConnection();) {
+		String bookID = null;
+		
+		try (Connection connection = DBConnection.getConnection()) {
 			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 
-			String bookID = requestWrapper.getParameter("bookID");
+			bookID = requestWrapper.getParameter("bookID");
 			String title = requestWrapper.getParameter("title");
 			double price = Double.parseDouble(requestWrapper.getParameter("price"));
 			int author = Integer.parseInt(requestWrapper.getParameter("author"));
@@ -103,47 +85,15 @@ public class EditBookServlet extends HttpServlet {
 			int genreId = Integer.parseInt(requestWrapper.getParameter("genre"));
 			int sold = Integer.parseInt(requestWrapper.getParameter("sold"));
 			String image = requestWrapper.getBase64Parameter("image");
-			boolean noImage = image == null;
-
-			String sqlUpdate = noImage ? sqlStrWithoutImage : sqlStrWithImage;
-
-			PreparedStatement ps = connection.prepareStatement(sqlUpdate);
-
-			ps.setString(1, title);
-			ps.setDouble(2, price);
-			ps.setInt(3, author);
-			ps.setInt(4, publisher);
-			ps.setInt(5, quantity);
-			ps.setString(6, pubDate);
-			ps.setString(7, isbn);
-			ps.setString(8, description);
-			ps.setInt(9, genreId);
-			ps.setInt(10, sold);
-
-			if (noImage) {
-				ps.setString(11, bookID);
-			} else {
-				ps.setString(11, image);
-				ps.setString(12, bookID);
-			}
-
-			int affectedRows = ps.executeUpdate();
-			System.out.printf("affectedRows: " + affectedRows);
+			
+			int statusCode = bookDAO.updateBook(connection, bookID, title, price, author, publisher, quantity, pubDate, isbn, description, genreId, sold, image);
 			// Load data for page
 			loadData(request, connection, bookID);
 
-			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("editBook.jsp?statusCode=200&bookID=" + bookID);
-				success.forward(request, response);
-			} else {
-				RequestDispatcher error = request.getRequestDispatcher("editBook.jsp?statusCode=500&bookID=" + bookID);
-				error.forward(request, response);
-			}
-
+			DispatchUtil.dispatch(request, response, "editBook.jsp?statusCode=" + statusCode + "&bookID=" + bookID);
 			System.out.println("Woots");
-
 		} catch (Exception e) {
-			e.printStackTrace();
+			DispatchUtil.dispatch(request, response, "editBook.jsp?statusCode=500&bookID=" + bookID);
 		}
 	}
 }

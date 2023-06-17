@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Author;
 import model.Publisher;
 
 public class PublisherDAO {
@@ -55,8 +54,7 @@ public class PublisherDAO {
 	
 	public List<Publisher> getPublishers(Connection connection) throws SQLException {
 		try (Statement statement = connection.createStatement();
-			 ResultSet resultSet = statement
-							.executeQuery("SELECT * FROM publisher;");) {
+			 ResultSet resultSet = statement.executeQuery("SELECT * FROM publisher;");) {
 				
 				List<Publisher> publishers = new ArrayList<>();
 				while (resultSet.next()) {
@@ -67,5 +65,31 @@ public class PublisherDAO {
 				
 				return publishers;
 			} 
+	}
+	
+	public int deletePublisher(Connection connection, String publisherID) throws SQLException {
+		String sqlStr = " DELETE FROM publisher WHERE publisherID = ?;";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, publisherID);
+
+			int affectedRows = ps.executeUpdate();
+			
+			return affectedRows > 0 ? 200 : 500;
+		}
+	}
+	
+	public int updatePublisher(Connection connection, String publisherID, String publisherName) throws SQLException {
+
+		String sqlStr = "UPDATE publisher SET publisherName = ? WHERE publisherID = ?";
+
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, publisherName);
+			ps.setString(2, publisherID);
+
+			int affectedRows = ps.executeUpdate();
+
+
+			return affectedRows > 0 ? 200 : 500;
+		}
 	}
 }
