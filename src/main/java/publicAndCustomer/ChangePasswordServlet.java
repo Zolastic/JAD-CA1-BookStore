@@ -62,6 +62,7 @@ public class ChangePasswordServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			String userID = request.getParameter("userID");
 			loadData(request, response, connection, userID);
+			request.getRequestDispatcher("publicAndCustomer/changePassword.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -77,7 +78,6 @@ public class ChangePasswordServlet extends HttpServlet {
 			return;
 		}
 		request.setAttribute("user", user);
-		request.getRequestDispatcher("publicAndCustomer/changePassword.jsp").forward(request, response);
 	}
 
 	/**

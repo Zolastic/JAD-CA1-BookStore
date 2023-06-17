@@ -30,7 +30,7 @@ String otpImage = (String) request.getAttribute("otpImage");
 		</div>
 
 		<div class="flex flex-col justify-center items-center my-3">
-			<h1 class="font-light mb-1">Scan the QRCode with <span class="text-amber-900">Google Authenticator</span> app to access your OTP:</h1>
+			<h1 class="font-light mb-1">Scan the QRCode with <span class="text-amber-900">Google or Microsoft Authenticator</span>  app for OTP access:</h1>
 			<img class="w-1/2 h-1/2" src="<%=otpImage%>" />
 		</div>
 

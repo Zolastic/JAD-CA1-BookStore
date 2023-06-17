@@ -14,23 +14,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dao.AuthorDAO;
-import model.Author;
+import dao.GenreDAO;
 import model.Book;
+import model.Genre;
 import utils.DBConnection;
 
 /**
- * Servlet implementation class AuthorDetails
+ * Servlet implementation class GenreDetialsServlet
  */
-@WebServlet("/admin/AuthorDetails")
-public class AuthorDetailsServlet extends HttpServlet {
+@WebServlet("/admin/GenreDetails")
+public class GenreDetailsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private AuthorDAO authorDAO = new AuthorDAO();
+	private GenreDAO genreDAO = new GenreDAO();
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AuthorDetailsServlet() {
+    public GenreDetailsServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -38,31 +38,32 @@ public class AuthorDetailsServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		try (Connection connection = DBConnection.getConnection()) {
-			String authorID = request.getParameter("authorID");
-			loadData(request, connection, authorID);
-			request.getRequestDispatcher("authorDetails.jsp").forward(request, response);
+			String genreID = request.getParameter("genreID");
+			loadData(request, connection, genreID);
+			request.getRequestDispatcher("genreDetails.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
 		}
 	}
-	
-	private void loadData(HttpServletRequest request, Connection connection, String authorID) throws SQLException {
-		List<Book> books = getBooks(connection, authorID);
-		Author author = authorDAO.getAuthor(connection, authorID);
-		request.setAttribute("author", author);
+
+	private void loadData(HttpServletRequest request, Connection connection, String genreID) throws SQLException {
+		List<Book> books = getBooks(connection, genreID);
+		Genre genre = genreDAO.getGenre(connection, genreID);
+		request.setAttribute("genre", genre);
 		request.setAttribute("books", books);
 	}
 	
-	private List<Book> getBooks(Connection connection, String authorID) throws SQLException {
+	private List<Book> getBooks(Connection connection, String genreID) throws SQLException {
 		String sqlStr = "SELECT book_id as bookID, title FROM book\r\n"
-				+ "JOIN author ON book.authorID = author.authorID\r\n"
-				+ "WHERE author.authorID = ?;";
+				+ "JOIN genre ON book.genre_id = genre.genre_id\r\n"
+				+ "WHERE genre.genre_id = ?;";
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			ps.setString(1, authorID);
+			ps.setString(1, genreID);
 
 			ResultSet resultSet = ps.executeQuery();
 

@@ -52,4 +52,20 @@ public class PublisherDAO {
 		}
 
 	}
+	
+	public List<Publisher> getPublishers(Connection connection) throws SQLException {
+		try (Statement statement = connection.createStatement();
+			 ResultSet resultSet = statement
+							.executeQuery("SELECT * FROM publisher;");) {
+				
+				List<Publisher> publishers = new ArrayList<>();
+				while (resultSet.next()) {
+					String publisherId = resultSet.getString("publisherID");
+					String publisherName = resultSet.getString("publisherName");
+					publishers.add(new Publisher(publisherId, publisherName));
+				}
+				
+				return publishers;
+			} 
+	}
 }
