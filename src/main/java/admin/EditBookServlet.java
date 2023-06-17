@@ -133,10 +133,10 @@ public class EditBookServlet extends HttpServlet {
 			loadData(request, connection, bookID);
 
 			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("editBook.jsp?bookID=" + bookID);
+				RequestDispatcher success = request.getRequestDispatcher("editBook.jsp?statusCode=200&bookID=" + bookID);
 				success.forward(request, response);
 			} else {
-				RequestDispatcher error = request.getRequestDispatcher("editBook.jsp?errCode=400&bookID=" + bookID);
+				RequestDispatcher error = request.getRequestDispatcher("editBook.jsp?statusCode=500&bookID=" + bookID);
 				error.forward(request, response);
 			}
 

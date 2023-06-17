@@ -98,7 +98,7 @@ public class AddBookServlet extends HttpServlet {
 			loadData(request, conn);
 			
 			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("addBook.jsp?statusCode=500");
+				RequestDispatcher success = request.getRequestDispatcher("addBook.jsp?statusCode=200");
 				success.forward(request, response);
 			} else {
 				RequestDispatcher error = request.getRequestDispatcher("addBook.jsp?statusCode=500");
