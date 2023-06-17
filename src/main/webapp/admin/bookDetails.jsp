@@ -8,6 +8,8 @@
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/admin/css/objectDetails.css">
+	<link rel="stylesheet"
+	href="<%=request.getContextPath()%>/admin/css/viewManagementSystem.css">
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 </head>
@@ -24,12 +26,12 @@
 		%>
 		<img alt=""
 			src="<%=request.getContextPath()%>/admin/img/No_Image_Available.jpg"
-			class="viewBooksImg rounded-lg mx-10 object-contain">
+			class="viewImg rounded-lg mx-10 object-contain">
 		<%
 		} else {
 		%>
 		<img alt="" src="data:image/png;base64, <%=book.getImg()%>"
-			class="viewBooksImg rounded-lg mx-10 object-contain">
+			class="viewImg rounded-lg mx-10 object-contain">
 		<%
 		}
 		%>

@@ -56,4 +56,21 @@ public class GenreDAO {
 		}
 
 	}
+	
+	public List<Genre> getGenres(Connection connection) throws SQLException {
+		try (Statement genreStatement = connection.createStatement();
+			 ResultSet genreResultSet = genreStatement
+							.executeQuery("SELECT genre_id as genreId, genre_name as genreName, genre_img as image FROM genre;");) {
+				
+				List<Genre> genres = new ArrayList<>();
+				while (genreResultSet.next()) {
+					String genreId = genreResultSet.getString("genreId");
+					String genreName = genreResultSet.getString("genreName");
+					String genreImage = genreResultSet.getString("image");
+					genres.add(new Genre(genreId, genreName, genreImage));
+				}
+				
+				return genres;
+			} 
+	}
 }
