@@ -3,10 +3,6 @@ package publicAndCustomer;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
-import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.net.URLDecoder;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -21,14 +17,13 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.RefundCreateParams;
-
 import model.Book;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import utils.DBConnection;
 import dao.VerifyUserDAO;
 import dao.CheckoutDAO;
+
 /**
  * Servlet implementation class CheckoutPage
  */

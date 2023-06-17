@@ -5,18 +5,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import model.Author;
 import model.Book;
-import model.Genre;
-import utils.DBConnection;
 
 public class CheckoutDAO {
 	// Get all the checkout items details

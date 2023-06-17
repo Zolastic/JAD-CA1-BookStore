@@ -1,12 +1,10 @@
 package publicAndCustomer;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

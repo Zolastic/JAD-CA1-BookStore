@@ -2,7 +2,6 @@ package publicAndCustomer;
 
 import java.io.IOException;
 import java.sql.*;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,9 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-import model.Book;
 import model.TransactionHistory;
-import model.TransactionHistoryItem;
 import dao.VerifyUserDAO;
 import dao.TransactionHistoryDAO;
 import utils.DBConnection;

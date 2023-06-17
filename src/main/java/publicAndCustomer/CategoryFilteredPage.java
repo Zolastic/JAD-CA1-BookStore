@@ -2,10 +2,7 @@ package publicAndCustomer;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Book;
@@ -15,11 +12,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import model.Genre;
 import utils.DBConnection;
-import dao.CategoryDAO;
+import dao.GenreDAO;
 import dao.VerifyUserDAO;
+
 /**
  * Servlet implementation class CategoryFilteredPage
  */
@@ -32,7 +28,8 @@ import dao.VerifyUserDAO;
 public class CategoryFilteredPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
-	private CategoryDAO categoryDAO = new CategoryDAO();
+	private GenreDAO genreDAO=new GenreDAO();
+	
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -68,8 +65,8 @@ public class CategoryFilteredPage extends HttpServlet {
 				String searchInput = request.getParameter("searchInput");
 				if (genreID != null && searchInput != null) {
 					// Get search results
-					allGenreBook = categoryDAO.searchBookByTitle(connection, genreID, ("%" + searchInput + "%"), page);
-					totalPages = categoryDAO.getTotalPagesByGenreSearch(connection, genreID, ("%" + searchInput + "%"));
+					allGenreBook = genreDAO.searchBookByTitle(connection, genreID, ("%" + searchInput + "%"), page);
+					totalPages = genreDAO.getTotalPagesByGenreSearch(connection, genreID, ("%" + searchInput + "%"));
 					request.setAttribute("searchExecuted", "true");
 					request.setAttribute("allGenreBook", allGenreBook);
 					request.setAttribute("totalPages", totalPages);
@@ -81,8 +78,8 @@ public class CategoryFilteredPage extends HttpServlet {
 			} else {
 				if (genreID != null) {
 					// Get all books in that particular genre
-					allGenreBook = categoryDAO.getBooksByGenre(connection, genreID, page);
-					totalPages = categoryDAO.getTotalPagesByGenre(connection, genreID);
+					allGenreBook = genreDAO.getBooksByGenre(connection, genreID, page);
+					totalPages = genreDAO.getTotalPagesByGenre(connection, genreID);
 					request.setAttribute("allGenreBook", allGenreBook);
 					request.setAttribute("totalPages", totalPages);
 					request.setAttribute("genreName", genreName);

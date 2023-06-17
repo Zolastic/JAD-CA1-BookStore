@@ -3,11 +3,7 @@ package publicAndCustomer;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import model.Book;
 import model.Genre;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,10 +11,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import utils.DBConnection;
-import dao.CategoryDAO;
 import dao.VerifyUserDAO;
+import dao.GenreDAO;
+
 /**
  * Servlet implementation class CategoryMenuPage
  */
@@ -31,7 +27,7 @@ import dao.VerifyUserDAO;
 public class CategoryMenuPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
-	private CategoryDAO categoryDAO = new CategoryDAO();
+	private GenreDAO genreDAO=new GenreDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -58,7 +54,7 @@ public class CategoryMenuPage extends HttpServlet {
 			// Validate the userID
 			userID = verifyUserDAO.validateUserID(connection, userID);
 			// Get all genre
-			allGenre = categoryDAO.getAllGenres(connection);
+			allGenre = genreDAO.getGenres(connection);
 			connection.close();
 		} catch (SQLException e) {
 			System.err.println("Error: " + e);
