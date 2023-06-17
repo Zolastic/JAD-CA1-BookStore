@@ -19,7 +19,8 @@
 	<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Add
 		Publisher</h1>
 	<form class="mt-28"
-		action="<%=request.getContextPath()%>/admin/AddPublisher" method="post">
+		action="<%=request.getContextPath()%>/admin/AddPublisher"
+		method="post">
 
 		<!-- name -->
 		<div class="relative z-0 w-full mb-8 group">
@@ -29,24 +30,27 @@
 				class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-amber-800 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Name</label>
 		</div>
 
-		<%
-		if (statusCode != null) {
-			if (statusCode.equals("200")) {
-		%>
-		<h1 class="successMessage tracking-wide">Publisher Added!</h1>
-		<%
-		} else if (statusCode.equals("409")) {
-		%>
-		<h1 class="errorMessage tracking-wide">Uh-oh! Publisher already exists</h1>
-		<%
-		} else if (statusCode.equals("500")) {
-		%>
-		<h1 class="errorMessage tracking-wide">Uh-oh! Internal
-			Server Error</h1>
-		<%
-		}
-		}
-		%>
+		<div class="-mt-1 mb-2">
+			<%
+			if (statusCode != null) {
+				if (statusCode.equals("200")) {
+			%>
+			<h1 class="successMessage tracking-wide">Publisher Added!</h1>
+			<%
+			} else if (statusCode.equals("409")) {
+			%>
+			<h1 class="errorMessage tracking-wide">Uh-oh! Publisher already
+				exists</h1>
+			<%
+			} else if (statusCode.equals("500")) {
+			%>
+			<h1 class="errorMessage tracking-wide">Uh-oh! Internal Server
+				Error</h1>
+			<%
+			}
+			}
+			%>
+		</div>
 
 		<button type="submit"
 			class="text-amber-800 bg-pink-100 hover:bg-pink-200 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Add
