@@ -7,7 +7,7 @@
 <title>Inkwell: Change Password</title>
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/publicAndCustomer/css/changePassword.css">
+	href="<%=request.getContextPath()%>/publicAndCustomer/css/feedbackMessages.css">
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 </head>
@@ -62,18 +62,18 @@
 				if (statusCode != null) {
 					if (statusCode.equals("200")) {
 						%>
-						<h1 class="changePasswordSuccessMsg tracking-wide">Password Changed!</h1>
+						<h1 class="successMessage tracking-wide">Password Changed!</h1>
 						<%
 					} else if (statusCode.equals("400")) {
 						%>
 						<%
 					} else if (statusCode.equals("401")) {
 						%>
-						<h1 class="changePasswordErrorMsg tracking-wide">Uh-oh! Incorrect Current Password</h1>
+						<h1 class="errorMessage tracking-wide">Uh-oh! Incorrect Current Password</h1>
 						<%
 					} else if (statusCode.equals("500")) {
 						%>
-						<h1 class="changePasswordErrorMsg tracking-wide">Uh-oh! Internal Server Error</h1>
+						<h1 class="errorMessage tracking-wide">Uh-oh! Internal Server Error</h1>
 						<%
 					}
 				}
