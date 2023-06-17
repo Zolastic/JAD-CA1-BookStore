@@ -10,6 +10,7 @@
 		</div>
 	</div>
 </div>
+
 <!-- Script for modal -->
 <script>
 	function showModal(message) {

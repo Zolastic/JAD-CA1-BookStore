@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.VerifyUserDAO;
 import model.Book;
 import utils.DBConnection;
 
@@ -26,6 +27,7 @@ import utils.DBConnection;
 @WebServlet("/AllBooksPage")
 public class AllBooksPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -61,7 +63,7 @@ public class AllBooksPage extends HttpServlet {
 					allBooks = searchBookByTitle(connection, ("%" + searchInput + "%"), page);
 					totalPages =getTotalPagesForSearch(connection, ("%" + searchInput + "%"));
 					// Validate the user id
-					userID = validateUserID(connection, userID);
+					userID = verifyUserDAO.validateUserID(connection, userID);
 					request.setAttribute("searchExecuted", "true");
 					request.setAttribute("allBooks", allBooks);
 					request.setAttribute("totalPages", totalPages);
@@ -69,7 +71,7 @@ public class AllBooksPage extends HttpServlet {
 					url = "publicAndCustomer/allBooksPage.jsp?action=searchBookByTitle&searchInput=" + searchInput;
 				}
 			} else {
-				userID = validateUserID(connection, userID);
+				userID = verifyUserDAO.validateUserID(connection, userID);
 				allBooks = getAllBooks(connection, page);
 				totalPages =getTotalPagesForAllBooks(connection);
 				request.setAttribute("totalPages", totalPages);
@@ -100,27 +102,6 @@ public class AllBooksPage extends HttpServlet {
 		return page;
 	}
 
-	// Function to validate user id
-	private String validateUserID(Connection connection, String userID) {
-		if (userID != null) {
-			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-				ps.setString(1, userID);
-				try (ResultSet rs = ps.executeQuery()) {
-					if (rs.next()) {
-						int rowCount = rs.getInt(1);
-						if (rowCount < 1) {
-							userID = null;
-						}
-					}
-				}
-			} catch (SQLException e) {
-				userID=null;
-				System.err.println("Error: " + e.getMessage());
-			}
-		}
-		return userID;
-	}
 
 	// Get all the books from db
 	private List<Book> getAllBooks(Connection connection, int page) {
@@ -128,7 +109,8 @@ public class AllBooksPage extends HttpServlet {
 		int pageSize = 10; // Number of books per page
 		int offset = (page - 1) * pageSize;
 		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName\r\n"
-				+ "    FROM book\r\n" + "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
+				+ "    FROM book\r\n" 
+				+ "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
 				+ "    LEFT JOIN review ON review.bookID = book.book_id\r\n"
 				+ "    JOIN author ON book.authorID = author.authorID\r\n"
 				+ "    JOIN publisher ON book.publisherID = publisher.publisherID\r\n"
@@ -179,7 +161,8 @@ public class AllBooksPage extends HttpServlet {
 		int pageSize = 10; // Number of books per page
 		int offset = (page - 1) * pageSize;
 		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName\r\n"
-				+ "    FROM book\r\n" + "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
+				+ "    FROM book\r\n" 
+				+ "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
 				+ "    LEFT JOIN review ON review.bookID = book.book_id\r\n"
 				+ "    JOIN author ON book.authorID = author.authorID\r\n"
 				+ "    JOIN publisher ON book.publisherID = publisher.publisherID\r\n"

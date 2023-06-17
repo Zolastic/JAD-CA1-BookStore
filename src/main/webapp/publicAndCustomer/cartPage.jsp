@@ -92,7 +92,7 @@
 
 
     
-    function updateQuantity(change, bookID) {
+    function updateQuantity(change, bookID, current) {
         const currentOrInputQuantity = document.getElementById("quantityInput_" + bookID);
         const updatedQuantity = document.getElementById("updatedQuantity_" + bookID);
         const newQuantity = parseInt(currentOrInputQuantity.value) + change;
@@ -105,15 +105,23 @@
             document.getElementById('quantityForm_' + bookID).submit();
         } else {
         	if(newQuantity <= 0){
-        		updatedQuantity.value = 1;
-                let scrollPosition = window.scrollY;
-                document.getElementById('scrollPositionForQty_' + bookID).value = scrollPosition;
-                document.getElementById('quantityForm_' + bookID).submit();
+        		if(inventory==0){
+        			currentOrInputQuantity.value = current;
+        		}else{
+        			updatedQuantity.value = 1;
+                    let scrollPosition = window.scrollY;
+                    document.getElementById('scrollPositionForQty_' + bookID).value = scrollPosition;
+                    document.getElementById('quantityForm_' + bookID).submit();
+        		}
         	}else{
-        		updatedQuantity.value = inventory;
-                let scrollPosition = window.scrollY;
-                document.getElementById('scrollPositionForQty_' + bookID).value = scrollPosition;
-                document.getElementById('quantityForm_' + bookID).submit();
+        		if(inventory==0){
+        			currentOrInputQuantity.value = current;
+        		}else{
+        			updatedQuantity.value = inventory;
+                    let scrollPosition = window.scrollY;
+                    document.getElementById('scrollPositionForQty_' + bookID).value = scrollPosition;
+                    document.getElementById('quantityForm_' + bookID).submit();
+        		}
         	}
         }
 
@@ -157,10 +165,12 @@
 
 				<form id="selectCartItemForm_<%=item.getBookID()%>"
 					action="/CA1-assignment/CartPage" method="post">
+
 					<div
 						onclick="selectCartItem('selectCartItemForm_<%=item.getBookID()%>', 'scrollPositionForSelect_<%=item.getBookID()%>')">
 						<input type="checkbox" class="selectCheckbox mr-2 w-4 h-4"
-							<%=(item.getSelected() == 1) ? "checked" : ""%> />
+							<%=(item.getSelected() == 1 && item.getInventory() > 0) ? "checked" : ""%>
+							<%=(item.getInventory() == 0) ? "disabled" : ""%> />
 					</div>
 					<input type="hidden" class="bookIDInput" name="bookID"
 						value="<%=item.getBookID()%>" /> <input type="hidden"
@@ -203,16 +213,16 @@
 						action="/CA1-assignment/CartPage" method="post">
 						<button id="minusBtn"
 							class="text-gray-500 hover:text-black focus:outline-none"
-							onclick="updateQuantity(-1, <%=item.getBookID()%>)">
+							onclick="updateQuantity(-1, <%=item.getBookID()%>, <%=item.getQuantity()%>)">
 							<i class="fas fa-minus transform hover:scale-110"></i>
 						</button>
 						<input id="quantityInput_<%=item.getBookID()%>"
 							class="w-12 text-center" type="number" name="quantity"
 							value="<%=item.getQuantity()%>"
-							onchange="updateQuantity(0, <%=item.getBookID()%>)">
+							onchange="updateQuantity(0, <%=item.getBookID()%>,<%=item.getQuantity()%>)">
 						<button id="plusBtn"
 							class="text-gray-500 hover:text-black focus:outline-none"
-							onclick="updateQuantity(1, <%=item.getBookID()%>)">
+							onclick="updateQuantity(1, <%=item.getBookID()%>, <%=item.getQuantity()%>)">
 							<i class="fas fa-plus transform hover:scale-110"></i>
 						</button>
 						<input type="hidden" name="scrollPositionForQty"
@@ -225,6 +235,14 @@
 							type="hidden" id="inventory_<%=item.getBookID()%>"
 							value="<%=item.getInventory()%>">
 					</form>
+					<%
+					if (item.getInventory() == 0) {
+					%>
+					<div class="text-red-600 px-2 py-1 rounded-tr mx-5">No stock
+						left</div>
+					<%
+					}
+					%>
 					<!-- Form action to delete cart item -->
 					<form id="deleteCartItemForm_<%=item.getBookID()%>"
 						action="/CA1-assignment/CartPage" method="post">
@@ -239,11 +257,12 @@
 						<input type="hidden" name="cartID" value="<%=cartID%>"> <input
 							type="hidden" name="action" value="deleteCartItem">
 					</form>
+
 				</div>
 			</div>
 			<!-- Calculate subtotal -->
 			<%
-			subtotal += (item.getSelected() == 1) ? (item.getPrice() * item.getQuantity()) : 0;
+			subtotal += (item.getSelected() == 1 && item.getInventory() > 0) ? (item.getPrice() * item.getQuantity()) : 0;
 			}
 			%>
 			<!-- Fixed bottom div for select all and subtotal with their form action -->

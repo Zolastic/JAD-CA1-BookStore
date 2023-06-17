@@ -27,7 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import utils.DBConnection;
-
+import dao.VerifyUserDAO;
 /**
  * Servlet implementation class CheckoutPage
  */
@@ -41,7 +41,7 @@ import utils.DBConnection;
 public class CheckoutPage extends HttpServlet {
 	private static final String STRIPE_SECRET_KEY = "sk_test_51NHoftHrRFi94qYrcY4Yxv3NiAwj1ea5D7zuxCZtQ0kT9beLlwCh8GbjFKSgPz3s9K8QJ0U5mjet6H8vRL4VZBLq001eDbwLUL";
 	private static final long serialVersionUID = 1L;
-
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -69,7 +69,7 @@ public class CheckoutPage extends HttpServlet {
 			String checkoutItemsString = null;
 			List<Map<String, Object>> checkoutItemsArrayString = new ArrayList<>();
 
-			userID = validateUserID(connection, userID);
+			userID = verifyUserDAO.validateUserID(connection, userID);
 			if (userID == null) {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
@@ -111,31 +111,9 @@ public class CheckoutPage extends HttpServlet {
 		}
 	}
 
-	// Function to validate user id
-	private String validateUserID(Connection connection, String userID) {
-		if (userID != null) {
-			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-				ps.setString(1, userID);
-				try (ResultSet rs = ps.executeQuery()) {
-					if (rs.next()) {
-						int rowCount = rs.getInt(1);
-						if (rowCount < 1) {
-							userID = null;
-						}
-					}
-				}
-			} catch (SQLException e) {
-				userID = null;
-				System.err.println("Error: " + e.getMessage());
-			}
-		}
-		return userID;
-	}
-
 	// Get all the checkout items details
 	private List<Book> getCheckoutItems(Connection connection, String userID,
-			List<Map<String, Object>> checkoutItemsList) throws SQLException {
+			List<Map<String, Object>> checkoutItemsList){
 		List<Book> checkoutItems = new ArrayList<>();
 
 		for (Map<String, Object> itemMap : checkoutItemsList) {
@@ -240,7 +218,7 @@ public class CheckoutPage extends HttpServlet {
 	}
 
 	// Delete the cart items that is already purchased after success payment
-	private int deleteFromCart(Connection connection, List<Book> checkoutItems, String custID) throws SQLException {
+	private int deleteFromCart(Connection connection, List<Book> checkoutItems, String custID){
 		int count = 0;
 		String cartID = getCartID(connection, custID);
 		if (cartID != null) {
@@ -260,7 +238,7 @@ public class CheckoutPage extends HttpServlet {
 	}
 
 	// Update Book's inventory and sold
-	private int updateBooks(Connection connection, List<Book> checkoutItems) throws SQLException {
+	private int updateBooks(Connection connection, List<Book> checkoutItems){
 	    int count = 0;
 	    for (Book book : checkoutItems) {
 	        String updateQuery = "UPDATE book SET inventory = (inventory - ?), sold = (sold + ?) WHERE book_id=?";
@@ -278,7 +256,7 @@ public class CheckoutPage extends HttpServlet {
 	}
 
 	// Get cart id with custID
-	private String getCartID(Connection connection, String custID) throws SQLException {
+	private String getCartID(Connection connection, String custID){
 		String cartID = null;
 		String selectQuery = "SELECT cartID FROM cart WHERE custID=?";
 		try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {

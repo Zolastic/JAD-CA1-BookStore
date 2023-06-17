@@ -32,9 +32,9 @@
 		String validatedUserID = (String) request.getAttribute("validatedUserID");
 		List<Book> checkoutItems = (List<Book>) request.getAttribute("checkoutItems");
 		double subtotal = 0.0;
-		if (checkoutItems != null && validatedUserID != null) {
+		if (checkoutItems != null && validatedUserID != null && checkoutItems.size()!=0) {
 			for (Book item : checkoutItems) {
-				subtotal += item.getPrice();
+				subtotal += (item.getPrice()*item.getQuantity());
 			}
 
 			subtotal = Math.round(subtotal * 100.0) / 100.0; // Round to 2 decimal places

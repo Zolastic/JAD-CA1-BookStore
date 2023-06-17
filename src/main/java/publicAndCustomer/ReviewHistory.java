@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import model.Book;
 import model.ReviewHistoryClass;
 import utils.DBConnection;
-
+import dao.VerifyUserDAO;
 /**
  * Servlet implementation class ReviewHistory
  */
@@ -31,7 +31,7 @@ import utils.DBConnection;
 @WebServlet("/ReviewHistory")
 public class ReviewHistory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -55,7 +55,7 @@ public class ReviewHistory extends HttpServlet {
 		}
 		try (Connection connection = DBConnection.getConnection()) {
 			// To validate the user
-			userID = validateUserID(connection, userID);
+			userID = verifyUserDAO.validateUserID(connection, userID);
 			if (userID == null) {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
@@ -73,28 +73,6 @@ public class ReviewHistory extends HttpServlet {
 		String dispatcherURL = "publicAndCustomer/reviewHistory.jsp";
 		RequestDispatcher dispatcher = request.getRequestDispatcher(dispatcherURL);
 		dispatcher.forward(request, response);
-	}
-
-	// Function to validate user id
-	private String validateUserID(Connection connection, String userID) {
-		if (userID != null) {
-			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-				ps.setString(1, userID);
-				try (ResultSet rs = ps.executeQuery()) {
-					if (rs.next()) {
-						int rowCount = rs.getInt(1);
-						if (rowCount < 1) {
-							userID = null;
-						}
-					}
-				}
-			} catch (SQLException e) {
-				userID = null;
-				System.err.println("Error: " + e.getMessage());
-			}
-		}
-		return userID;
 	}
 
 	// Get all review history of the user

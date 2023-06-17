@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import model.Book;
-
+import dao.VerifyUserDAO;
+import dao.BookDAO;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,6 +30,8 @@ import utils.DBConnection;
 @WebServlet("/BookDetailsPage")
 public class BookDetailsPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	private BookDAO bookDAO = new BookDAO();
 
 	public BookDetailsPage() {
 		super();
@@ -44,9 +47,9 @@ public class BookDetailsPage extends HttpServlet {
 		if (bookID != null) {
 			try (Connection connection = DBConnection.getConnection()) {
 				// Validate the userID
-				userID = validateUserID(connection, userID);
+				userID = verifyUserDAO.validateUserID(connection, userID);
 				// Get the book details
-				bookDetails = getBookDetails(connection, bookID);
+				bookDetails = bookDAO.getBookDetailsForCustomer(connection, bookID);
 				// Get the reviews of the book
 				reviews = getBookReviews(connection, bookID);
 				connection.close();
@@ -59,53 +62,6 @@ public class BookDetailsPage extends HttpServlet {
 		request.setAttribute("validatedUserID", userID);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/bookDetailsPage.jsp");
 		dispatcher.forward(request, response);
-	}
-
-	// Function to validate user id
-	private String validateUserID(Connection connection, String userID) {
-	    if (userID != null) {
-	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-	        try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	            ps.setString(1, userID);
-	            try (ResultSet rs = ps.executeQuery()) {
-	                if (rs.next()) {
-	                    int rowCount = rs.getInt(1);
-	                    if (rowCount < 1) {
-	                        userID = null;
-	                    }
-	                }
-	            }
-	        } catch (SQLException e) {
-	        	userID=null;
-	            System.err.println("Error: " + e.getMessage());
-	        }
-	    }
-	    return userID;
-	}
-
-	// Function to get specific book details
-	private Book getBookDetails(Connection connection, String bookID) {
-	    Book bookDetails = null;
-	    String simpleProc = "{call getBookDetails(?)}";
-	    try (CallableStatement cs = connection.prepareCall(simpleProc)) {
-	        cs.setString(1, bookID);
-	        cs.execute();
-	        try (ResultSet resultSetForBookDetails = cs.getResultSet()) {
-	            if (resultSetForBookDetails.next()) {
-	                bookDetails = new Book(resultSetForBookDetails.getString("book_id"),
-	                        resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
-	                        resultSetForBookDetails.getString("authorName"), resultSetForBookDetails.getString("publisherName"),
-	                        resultSetForBookDetails.getString("publication_date"),
-	                        resultSetForBookDetails.getString("description"), resultSetForBookDetails.getString("genre_name"),
-	                        resultSetForBookDetails.getString("img"), resultSetForBookDetails.getInt("sold"),
-	                        resultSetForBookDetails.getInt("inventory"), resultSetForBookDetails.getDouble("price"), 1,
-	                        resultSetForBookDetails.getDouble("average_rating"));
-	            }
-	        }
-	    } catch (SQLException e) {
-	        System.err.println("Error: " + e.getMessage());
-	    }
-	    return bookDetails;
 	}
 
 
@@ -203,7 +159,7 @@ public class BookDetailsPage extends HttpServlet {
 
 					connection.close();
 				} catch (SQLException e) {
-					System.out.println("Error: " + e.getMessage());
+					System.err.println("Error: " + e.getMessage());
 					String referer = (request.getHeader("Referer") + "&addToCart=failed");
 					response.sendRedirect(referer);
 				}
