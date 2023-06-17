@@ -14,8 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import dao.UserDAO;
+import dao.UserOTPDAO;
 import model.User;
 import utils.DBConnection;
+import utils.OTPManagement;
 
 /**
  * Servlet implementation class OTPServlet
@@ -23,6 +25,7 @@ import utils.DBConnection;
 @WebServlet("/OTP")
 public class OTPServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private UserOTPDAO userOTPDAO = new UserOTPDAO();
        
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -50,15 +53,19 @@ public class OTPServlet extends HttpServlet {
 			otpPS.setString(1, otpUserID);
 			otpPS.setString(2, otp);
 			
-			ResultSet otpResultSet = otpPS.executeQuery();
-			if (!otpResultSet.next()) {
-				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401&type=OTP").forward(request, response);
-				return;
-			}
-			
 			User user = UserDAO.getUserInfo(connection, otpUserID);
 			if (user == null) {
 				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401").forward(request, response);
+				return;
+			}
+			
+			userOTPDAO.updateOTP(connection, otpUserID, user.getSecret());
+			String otpImage = OTPManagement.generateBase64Image(user.getSecret(), user.getEmail());
+	        request.setAttribute("otpImage", otpImage);
+			
+			ResultSet otpResultSet = otpPS.executeQuery();
+			if (!otpResultSet.next()) {
+				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401&type=OTP").forward(request, response);
 				return;
 			}
 			
@@ -68,7 +75,7 @@ public class OTPServlet extends HttpServlet {
 	        session.setAttribute("role", role);
 	        request.getRequestDispatcher("home.jsp").forward(request, response);
 			
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

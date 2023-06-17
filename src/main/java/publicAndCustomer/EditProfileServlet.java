@@ -55,6 +55,7 @@ public class EditProfileServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			String userID = request.getParameter("userID");
 			loadData(request, response, connection, userID);
+			request.getRequestDispatcher("publicAndCustomer/editProfile.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -70,7 +71,6 @@ public class EditProfileServlet extends HttpServlet {
 			return;
 		}
 		request.setAttribute("user", user);
-		request.getRequestDispatcher("publicAndCustomer/editProfile.jsp").forward(request, response);
 	}
 	
 
@@ -110,15 +110,13 @@ public class EditProfileServlet extends HttpServlet {
 			loadData(request, response, connection, userID);
 
 			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("publicAndCustomer/editProfile.jsp?userID=" + userID);
+				RequestDispatcher success = request.getRequestDispatcher("publicAndCustomer/editProfile.jsp?statusCode=200&userID=" + userID);
 				success.forward(request, response);
 			} else {
 				RequestDispatcher error = request
-						.getRequestDispatcher("publicAndCustomer/editProfile.jsp?errCode=400&userID=" + userID);
+						.getRequestDispatcher("publicAndCustomer/editProfile.jsp?statusCode=500&&userID=" + userID);
 				error.forward(request, response);
 			}
-
-			System.out.println("Woots");
 
 		} catch (Exception e) {
 			e.printStackTrace();

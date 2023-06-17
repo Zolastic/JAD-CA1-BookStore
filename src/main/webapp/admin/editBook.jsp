@@ -6,15 +6,19 @@
 <meta charset="ISO-8859-1">
 <title>Admin: Edit Book</title>
 <%@include file="../tailwind-css.jsp"%>
-
+<link rel="stylesheet"
+	href="<%=request.getContextPath()%>/admin/css/feedbackMessages.css">
 </head>
 <body class="my-8 mx-48">
 	<%@ page import="java.util.*, model.*"%>
 	<%@include file="./navbar.jsp"%>
 	<%
 	Book book = (Book) request.getAttribute("book");
+	List<Author> authors = (List<Author>) request.getAttribute("authors");
+	List<Publisher> publishers = (List<Publisher>) request.getAttribute("publishers");
+	List<Genre> genres = (List<Genre>) request.getAttribute("genres");
+	String statusCode = request.getParameter("statusCode");
 	%>
-	
 	<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Edit Book (<%= book.getTitle() %>)</h1>
 	<form class="mt-3" action="<%=request.getContextPath()%>/admin/EditBook"
 		method="post" enctype="multipart/form-data">
@@ -67,7 +71,6 @@
 				class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-pink-100 peer"
 				name="author" required>
 				<%
-				List<Author> authors = (List<Author>) request.getAttribute("authors");
 				for (Author author : authors) {
 					if (author.getName().equals(book.getAuthor())) {
 				%>
@@ -91,7 +94,6 @@
 				class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-pink-100 peer"
 				name="publisher" required>
 				<%
-				List<Publisher> publishers = (List<Publisher>) request.getAttribute("publishers");
 				for (Publisher publisher : publishers) {
 					if (publisher.getName().equals(book.getPublisher())) {
 				%>
@@ -142,7 +144,6 @@
 					class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-pink-100 peer"
 					name="genre" required>
 					<%
-					List<Genre> genres = (List<Genre>) request.getAttribute("genres");
 					for (Genre genre : genres) {
 						if (genre.getName().equals(book.getGenreName())) {
 					%>
@@ -159,6 +160,23 @@
 					class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-amber-800 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Genre</label>
 			</div>
 		</div>
+		
+		<div class="-mt-1 mb-2">
+			<%
+			if (statusCode != null) {
+				if (statusCode.equals("200")) {
+			%>
+			<h1 class="successMessage tracking-wide">Book successfully updated!</h1>
+			<%
+			} else {
+			%>
+			<h1 class="errorMessage tracking-wide">Uh-oh! Error</h1>
+			<%
+			}
+			}
+			%>
+		</div>
+		
 		<button type="submit"
 			class="text-amber-800 bg-pink-100 hover:bg-pink-200 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Save
 			Changes!</button>

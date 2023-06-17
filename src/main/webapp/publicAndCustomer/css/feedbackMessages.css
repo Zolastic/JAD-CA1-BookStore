@@ -1,9 +1,9 @@
 @charset "UTF-8";
 
-.changePasswordErrorMsg {
+.errorMessage {
 	color: #EF616B;
 }
 
-.changePasswordSuccessMsg {
+.successMessage {
 	color: #91C691;
 }

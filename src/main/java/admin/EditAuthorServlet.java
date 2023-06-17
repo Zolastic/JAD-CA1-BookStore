@@ -83,10 +83,10 @@ public class EditAuthorServlet extends HttpServlet {
 			loadData(request, connection, authorID);
 
 			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("editAuthor.jsp?authorID=" + authorID);
+				RequestDispatcher success = request.getRequestDispatcher("editAuthor.jsp?statusCode=200&authorID=" + authorID);
 				success.forward(request, response);
 			} else {
-				RequestDispatcher error = request.getRequestDispatcher("editAuthor.jsp?errCode=400&authorID=" + authorID);
+				RequestDispatcher error = request.getRequestDispatcher("editAuthor.jsp?statusCode=500&authorID=" + authorID);
 				error.forward(request, response);
 			}
 		} catch (SQLException e) {
