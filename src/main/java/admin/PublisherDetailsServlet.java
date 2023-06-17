@@ -51,13 +51,13 @@ public class PublisherDetailsServlet extends HttpServlet {
 	}
 	
 	private void loadData(HttpServletRequest request, Connection connection, String publisherID) throws SQLException {
-		List<Book> books = getBook(connection, publisherID);
+		List<Book> books = getBooks(connection, publisherID);
 		Publisher publisher = publisherDAO.getPublisher(connection, publisherID);
 		request.setAttribute("publisher", publisher);
 		request.setAttribute("books", books);
 	}
 	
-	private List<Book> getBook(Connection connection, String publisherID) throws SQLException {
+	private List<Book> getBooks(Connection connection, String publisherID) throws SQLException {
 		String sqlStr = "SELECT book_id as bookID, title FROM book\r\n"
 				+ "JOIN publisher ON book.publisherID = publisher.publisherID\r\n"
 				+ "WHERE publisher.publisherID = ?;";
