@@ -2,6 +2,8 @@ package publicAndCustomer;
 
 import java.io.IOException;
 import dao.BookDAO;
+import dao.ReviewDAO;
+
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,6 +39,7 @@ public class Review extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private BookDAO bookDAO = new BookDAO();
+	private ReviewDAO reviewDAO = new ReviewDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -104,9 +107,9 @@ public class Review extends HttpServlet {
 			dispatcher.forward(request, response);
 		} else {
 			try (Connection connection = DBConnection.getConnection()) {
-				String review_id = insertReview(connection, custID, bookID, review_text, rating, transactionHistoryItemID);
+				String review_id = reviewDAO.insertReview(connection, custID, bookID, review_text, rating, transactionHistoryItemID);
 				if (review_id != null) {
-					int countUpdate = updateReviewState(connection, transactionHistoryItemID);
+					int countUpdate = reviewDAO.updateReviewState(connection, transactionHistoryItemID,1);
 					if (countUpdate == 1) {
 						RequestDispatcher dispatcher = request.getRequestDispatcher("TransactionHistoryPage"
 								+ "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&success=true");
@@ -130,58 +133,7 @@ public class Review extends HttpServlet {
 		}
 	}
 
-	// Function to insert a review
-	private String insertReview(Connection connection, String custID, String bookID, String review_text, double rating, String transactionHistoryItemID){
-		String review_id = uuidGenerator();
-		String sql = "INSERT INTO review (review_id, custID, bookID, review_text, rating, ratingDate, transaction_history_itemID) VALUES (?, ?, ?, ?, ?, ?, ?)";
-		String ratingDate = getCurrentDate();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			statement.setString(1, review_id);
-			statement.setString(2, custID);
-			statement.setString(3, bookID);
-			statement.setString(4, review_text);
-			statement.setDouble(5, rating);
-			statement.setString(6, ratingDate);
-			statement.setString(7, transactionHistoryItemID);
-			int rowsAffected = statement.executeUpdate();
-			statement.close();
-			if (rowsAffected == 1) {
-				return review_id;
-			} else {
-				return null;
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-			return null;
-		}
-	}
-
-	// Function to update user's review state for the transaction history item
-	private int updateReviewState(Connection connection, String transactionHistoryItemID) {
-	    String sql = "UPDATE transaction_history_items SET reviewed=1 WHERE transaction_history_itemID=?";
-	    try (PreparedStatement statement = connection.prepareStatement(sql)) {
-	        statement.setString(1, transactionHistoryItemID);
-	        int rowsAffected = statement.executeUpdate();
-	        return rowsAffected;
-	    } catch (SQLException e) {
-	        System.err.println("Error: " + e.getMessage());
-	        return 0;
-	    }
-	}
-
-	// Get current DATE
-	private String getCurrentDate() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date currentDate = new Date();
-		return dateFormat.format(currentDate);
-	}
-
-	// To generate a UUID
-	private String uuidGenerator() {
-		UUID uuid = UUID.randomUUID();
-		return (uuid.toString());
-	}
-
+	
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)

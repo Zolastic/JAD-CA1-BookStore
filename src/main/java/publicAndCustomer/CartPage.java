@@ -17,6 +17,7 @@ import javax.servlet.http.Cookie;
 
 import model.Book;
 import utils.DBConnection;
+import dao.CartDAO;
 import dao.VerifyUserDAO;
 
 /**
@@ -31,6 +32,7 @@ import dao.VerifyUserDAO;
 public class CartPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	private CartDAO cartDAO = new CartDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -67,9 +69,9 @@ public class CartPage extends HttpServlet {
 				return;
 			}
 			// get cart id
-			cartID = getCartID(connection, userID);
+			cartID = cartDAO.getCartID(connection, userID);
 			// get cart items
-			cartItems = getCartItems(connection, userID);
+			cartItems = cartDAO.getCartItems(connection, userID);
 			connection.close();
 			request.setAttribute("scrollPosition", scrollPosition);
 			request.setAttribute("cartID", cartID);
@@ -82,63 +84,6 @@ public class CartPage extends HttpServlet {
 			dispatcher.forward(request, response);
 			System.err.println("Error: " + e);
 		}
-	}
-
-	// Function to get cart id
-	private String getCartID(Connection connection, String userID) {
-		String cartID = null;
-		String sqlString = "SELECT cartID FROM cart WHERE custID = ?;";
-		try (PreparedStatement sqlStatement = connection.prepareStatement(sqlString)) {
-			sqlStatement.setString(1, userID);
-			try (ResultSet rs = sqlStatement.executeQuery()) {
-				while (rs.next()) {
-					cartID = rs.getString("cartID");
-				}
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-		}
-		return cartID;
-	}
-
-	// Function to get cart items
-	private List<Book> getCartItems(Connection connection, String userID) throws SQLException {
-		List<Book> cartItems = new ArrayList<>();
-		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName, cart_items.Qty, cart_items.selected\r\n"
-				+ "    FROM book\r\n" + "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
-				+ "    LEFT JOIN review ON review.bookID = book.book_id\r\n"
-				+ "    JOIN author ON book.authorID = author.authorID\r\n"
-				+ "    JOIN publisher ON book.publisherID = publisher.publisherID\r\n"
-				+ "    JOIN cart ON cart.custID=?\r\n" + "    JOIN cart_items ON cart.cartID=cart_items.cartID\r\n"
-				+ "    WHERE cart_items.BookID=book.book_id\r\n"
-				+ "    GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName;";
-		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			ps.setString(1, userID);
-			ResultSet resultSet = ps.executeQuery();
-			while (resultSet.next()) {
-				String bookID = resultSet.getString("book_id");
-				String isbn = resultSet.getString("ISBN");
-				String title = resultSet.getString("title");
-				String author = resultSet.getString("authorName");
-				String publisher = resultSet.getString("publisherName");
-				String publication_date = resultSet.getString("publication_date");
-				String description = resultSet.getString("description");
-				String genre_name = resultSet.getString("genre_name");
-				String img = resultSet.getString("img");
-				int sold = resultSet.getInt("sold");
-				int inventory = resultSet.getInt("inventory");
-				double price = resultSet.getDouble("price");
-				double rating = resultSet.getDouble("average_rating");
-				int quantity = resultSet.getInt("Qty");
-				int selected = resultSet.getInt("selected");
-				cartItems.add(new Book(bookID, isbn, title, author, publisher, publication_date, description,
-						genre_name, img, sold, inventory, price, rating, quantity, selected));
-
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-		}
-		return cartItems;
 	}
 
 	// To remove parameters from url
@@ -166,13 +111,8 @@ public class CartPage extends HttpServlet {
 		} else {
 			try (Connection connection = DBConnection.getConnection()) {
 				int newSelectionInt = Integer.parseInt(newSelection);
-				String updateQuery = "UPDATE cart_items SET selected=? WHERE cartID=? AND BookID=?;";
-				PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
-				updateStatement.setInt(1, newSelectionInt);
-				updateStatement.setString(2, cartID);
-				updateStatement.setString(3, bookID);
-				int rowsAffected = updateStatement.executeUpdate();
-				if (rowsAffected > 0) {
+				int rowsAffected = cartDAO.updateCartItemSelection(connection, cartID, bookID, newSelectionInt);
+				if (rowsAffected == 1) {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
 					response.sendRedirect(referer + "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition);
@@ -205,11 +145,7 @@ public class CartPage extends HttpServlet {
 		} else {
 			try (Connection connection = DBConnection.getConnection()) {
 				int newSelectionInt = Integer.parseInt(newSelection);
-				String updateQuery = "UPDATE cart_items SET selected=? WHERE cartID=?";
-				PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
-				updateStatement.setInt(1, newSelectionInt);
-				updateStatement.setString(2, cartID);
-				int rowsAffected = updateStatement.executeUpdate();
+				int rowsAffected = cartDAO.updateAllCartItemSelection(connection, cartID, newSelectionInt);
 				if (rowsAffected > 0) {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
@@ -230,20 +166,6 @@ public class CartPage extends HttpServlet {
 		}
 	}
 
-	public static boolean deleteCartItem(String cartID, String bookID) {
-		try (Connection connection = DBConnection.getConnection()) {
-			String deleteQuery = "DELETE FROM cart_items WHERE cartID=? AND BookID=?;";
-			PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
-			deleteStatement.setString(1, cartID);
-			deleteStatement.setString(2, bookID);
-			int rowsAffected = deleteStatement.executeUpdate();
-			return rowsAffected > 0;
-		} catch (SQLException e) {
-			System.err.println("Error: " + e);
-			return false;
-		}
-	}
-
 	// Handle delete cart items
 	protected void deleteCartItemAction(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -257,7 +179,7 @@ public class CartPage extends HttpServlet {
 					referer + "?userIDAvailable=true" + "&scrollPosition=" + scrollPosition + "&error=true");
 		} else {
 			try (Connection connection = DBConnection.getConnection()) {
-				boolean deleteSuccess = deleteCartItem(cartID, bookID);
+				boolean deleteSuccess = cartDAO.deleteCartItem(cartID, bookID);
 				if (deleteSuccess) {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);
@@ -311,14 +233,7 @@ public class CartPage extends HttpServlet {
 		} else {
 			try (Connection connection = DBConnection.getConnection()) {
 				int updatedQuantityInt = Integer.parseInt(updatedQuantity);
-				String updateQuery = "UPDATE cart_items SET Qty=? WHERE cartID=? AND BookID=?;";
-				PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
-				updateStatement.setInt(1, updatedQuantityInt);
-				updateStatement.setString(2, cartID);
-				updateStatement.setString(3, bookID);
-
-				int rowsAffected = updateStatement.executeUpdate();
-
+				int rowsAffected = cartDAO.updateCartItemQuantity(connection, cartID, bookID, updatedQuantityInt);
 				if (rowsAffected > 0) {
 					String referer = request.getHeader("Referer");
 					referer = removeParameterFromUrl(referer);

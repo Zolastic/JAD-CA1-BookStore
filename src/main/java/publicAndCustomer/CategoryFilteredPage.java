@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import model.Genre;
 import utils.DBConnection;
+import dao.CategoryDAO;
 import dao.VerifyUserDAO;
 /**
  * Servlet implementation class CategoryFilteredPage
@@ -31,6 +32,7 @@ import dao.VerifyUserDAO;
 public class CategoryFilteredPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	private CategoryDAO categoryDAO = new CategoryDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -66,8 +68,8 @@ public class CategoryFilteredPage extends HttpServlet {
 				String searchInput = request.getParameter("searchInput");
 				if (genreID != null && searchInput != null) {
 					// Get search results
-					allGenreBook = searchBookByTitle(connection, genreID, ("%" + searchInput + "%"), page);
-					totalPages = getTotalPagesByGenreSearch(connection, genreID, ("%" + searchInput + "%"));
+					allGenreBook = categoryDAO.searchBookByTitle(connection, genreID, ("%" + searchInput + "%"), page);
+					totalPages = categoryDAO.getTotalPagesByGenreSearch(connection, genreID, ("%" + searchInput + "%"));
 					request.setAttribute("searchExecuted", "true");
 					request.setAttribute("allGenreBook", allGenreBook);
 					request.setAttribute("totalPages", totalPages);
@@ -79,8 +81,8 @@ public class CategoryFilteredPage extends HttpServlet {
 			} else {
 				if (genreID != null) {
 					// Get all books in that particular genre
-					allGenreBook = getBooksByGenre(connection, genreID, page);
-					totalPages = getTotalPagesByGenre(connection, genreID);
+					allGenreBook = categoryDAO.getBooksByGenre(connection, genreID, page);
+					totalPages = categoryDAO.getTotalPagesByGenre(connection, genreID);
 					request.setAttribute("allGenreBook", allGenreBook);
 					request.setAttribute("totalPages", totalPages);
 					request.setAttribute("genreName", genreName);
@@ -109,111 +111,6 @@ public class CategoryFilteredPage extends HttpServlet {
 			}
 		}
 		return page;
-	}
-
-	// Get book based on their genre
-	private List<Book> getBooksByGenre(Connection connection, String genreID, int page) throws SQLException {
-		List<Book> allGenreBook = new ArrayList<>();
-		int pageSize = 10; // Number of books per page
-		int offset = (page - 1) * pageSize;
-		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName\r\n"
-				+ "    FROM book\r\n" + "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
-				+ "    LEFT JOIN review ON review.bookID = book.book_id\r\n"
-				+ "    JOIN author ON book.authorID = author.authorID\r\n"
-				+ "    JOIN publisher ON book.publisherID = publisher.publisherID\r\n"
-				+ "    WHERE book.genre_id = ?\r\n"
-				+ "    GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName LIMIT ?, ?;";
-		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			ps.setString(1, genreID);
-			ps.setInt(2, offset);
-			ps.setInt(3, pageSize);
-
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				Book genreBook = new Book(rs.getString("book_id"), rs.getString("ISBN"), rs.getString("title"),
-						rs.getString("authorName"), rs.getString("publisherName"), rs.getString("publication_date"),
-						rs.getString("description"), rs.getString("genre_name"), rs.getString("img"), rs.getInt("sold"),
-						rs.getInt("inventory"), rs.getDouble("price"), 1, rs.getDouble("average_rating"));
-				allGenreBook.add(genreBook);
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-		}
-		return allGenreBook;
-	}
-
-	// Get total pages of genre
-	private int getTotalPagesByGenre(Connection connection, String genreID) {
-		int pageSize = 10;
-		String countSqlStr = "SELECT COUNT(*) FROM book WHERE book.genre_id = ?";
-		try (PreparedStatement count = connection.prepareStatement(countSqlStr)) {
-			count.setString(1, genreID);
-			try (ResultSet countRs = count.executeQuery()) {
-				if (countRs.next()) {
-					int totalBooks = countRs.getInt(1);
-					return (int) Math.ceil((double) totalBooks / pageSize);
-				} else {
-					return 0;
-				}
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-			return 0;
-		}
-	}
-
-	// Get total pages of genre search
-	private int getTotalPagesByGenreSearch(Connection connection, String genreID, String searchInput)
-			throws SQLException {
-		int pageSize = 10;
-		String countSqlStr = "SELECT COUNT(*) FROM book WHERE book.genre_id = ? AND book.title LIKE ?";
-		try (PreparedStatement count = connection.prepareStatement(countSqlStr)) {
-			count.setString(1, genreID);
-			count.setString(2, searchInput);
-			try (ResultSet countRs = count.executeQuery()) {
-				if (countRs.next()) {
-					int totalBooks = countRs.getInt(1);
-					return (int) Math.ceil((double) totalBooks / pageSize);
-				} else {
-					return 0;
-				}
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-			return 0;
-		}
-	}
-
-	// search book by their title
-	private List<Book> searchBookByTitle(Connection connection, String genreID, String searchInput, int page)
-			throws SQLException {
-		List<Book> allGenreBook = new ArrayList<>();
-		int pageSize = 10; // Number of books per page
-		int offset = (page - 1) * pageSize;
-		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName\r\n"
-				+ "    FROM book\r\n" + "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
-				+ "    LEFT JOIN review ON review.bookID = book.book_id\r\n"
-				+ "    JOIN author ON book.authorID = author.authorID\r\n"
-				+ "    JOIN publisher ON book.publisherID = publisher.publisherID\r\n"
-				+ "    WHERE book.genre_id = ?\r\n" + "	   AND book.title LIKE ?\r\n"
-				+ "    GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName LIMIT ?, ?;";
-		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			ps.setString(1, genreID);
-			ps.setString(2, searchInput);
-			ps.setInt(3, offset);
-			ps.setInt(4, pageSize);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				Book genreBook = new Book(rs.getString("book_id"), rs.getString("ISBN"), rs.getString("title"),
-						rs.getString("authorName"), rs.getString("publisherName"), rs.getString("publication_date"),
-						rs.getString("description"), rs.getString("genre_name"), rs.getString("img"), rs.getInt("sold"),
-						rs.getInt("inventory"), rs.getDouble("price"), 1, rs.getDouble("average_rating"));
-				allGenreBook.add(genreBook);
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-		}
-		return allGenreBook;
 	}
 
 	/**

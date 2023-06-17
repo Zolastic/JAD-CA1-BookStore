@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.BookDAO;
 import dao.VerifyUserDAO;
 import model.Book;
 import utils.DBConnection;
@@ -28,6 +29,7 @@ import utils.DBConnection;
 public class AllBooksPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	private BookDAO bookDAO = new BookDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -60,8 +62,8 @@ public class AllBooksPage extends HttpServlet {
 				String searchInput = request.getParameter("searchInput");
 				if (searchInput != null) {
 					// Function to search to show the search results
-					allBooks = searchBookByTitle(connection, ("%" + searchInput + "%"), page);
-					totalPages =getTotalPagesForSearch(connection, ("%" + searchInput + "%"));
+					allBooks = bookDAO.searchBookByTitle(connection, ("%" + searchInput + "%"), page);
+					totalPages =bookDAO.getTotalPagesForSearch(connection, ("%" + searchInput + "%"));
 					// Validate the user id
 					userID = verifyUserDAO.validateUserID(connection, userID);
 					request.setAttribute("searchExecuted", "true");
@@ -72,8 +74,8 @@ public class AllBooksPage extends HttpServlet {
 				}
 			} else {
 				userID = verifyUserDAO.validateUserID(connection, userID);
-				allBooks = getAllBooks(connection, page);
-				totalPages =getTotalPagesForAllBooks(connection);
+				allBooks = bookDAO.getAllBooks(connection, page);
+				totalPages = bookDAO.getTotalPagesForAllBooks(connection);
 				request.setAttribute("totalPages", totalPages);
 				request.setAttribute("allBooks", allBooks);
 				request.setAttribute("validatedUserID", userID);
@@ -101,113 +103,6 @@ public class AllBooksPage extends HttpServlet {
 		}
 		return page;
 	}
-
-
-	// Get all the books from db
-	private List<Book> getAllBooks(Connection connection, int page) {
-		List<Book> allBooks = new ArrayList<>();
-		int pageSize = 10; // Number of books per page
-		int offset = (page - 1) * pageSize;
-		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName\r\n"
-				+ "    FROM book\r\n" 
-				+ "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
-				+ "    LEFT JOIN review ON review.bookID = book.book_id\r\n"
-				+ "    JOIN author ON book.authorID = author.authorID\r\n"
-				+ "    JOIN publisher ON book.publisherID = publisher.publisherID\r\n"
-				+ "    GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName LIMIT ?, ?;";
-		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-			ps.setInt(1, offset);
-			ps.setInt(2, pageSize);
-			try (ResultSet rs = ps.executeQuery()) {
-				while (rs.next()) {
-					Book book = new Book(rs.getString("book_id"), rs.getString("ISBN"), rs.getString("title"),
-							rs.getString("authorName"), rs.getString("publisherName"), rs.getString("publication_date"),
-							rs.getString("description"), rs.getString("genre_name"), rs.getString("img"),
-							rs.getInt("sold"), rs.getInt("inventory"), rs.getDouble("price"), 1,
-							rs.getDouble("average_rating"));
-					allBooks.add(book);
-				}
-			}
-		} catch (SQLException e) {
-			allBooks=null;
-			System.err.println("Error: " + e.getMessage());
-		}
-		return allBooks;
-	}
-	
-	// Get total page for all books
-	private int getTotalPagesForAllBooks(Connection connection) {
-	    int pageSize = 10;
-	    String countSqlStr = "SELECT COUNT(*) FROM book";
-	    try (PreparedStatement countPs = connection.prepareStatement(countSqlStr)) {
-	        try (ResultSet countRs = countPs.executeQuery()) {
-	            if (countRs.next()) {
-	                int totalBooks = countRs.getInt(1);
-	                return (int) Math.ceil((double) totalBooks / pageSize);
-	            } else {
-	                return 0;
-	            }
-	        }
-	    } catch (SQLException e) {
-	    	System.err.println("Error: " + e.getMessage());
-	        return 0;
-	    }
-	}
-
-
-	// Get the search results
-	private List<Book> searchBookByTitle(Connection connection, String searchInput, int page) throws SQLException {
-		List<Book> searchResults = new ArrayList<>();
-		int pageSize = 10; // Number of books per page
-		int offset = (page - 1) * pageSize;
-		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName\r\n"
-				+ "    FROM book\r\n" 
-				+ "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
-				+ "    LEFT JOIN review ON review.bookID = book.book_id\r\n"
-				+ "    JOIN author ON book.authorID = author.authorID\r\n"
-				+ "    JOIN publisher ON book.publisherID = publisher.publisherID\r\n"
-				+ "    WHERE book.title LIKE ?\r\n"
-				+ "    GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName LIMIT ?, ?;";
-		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	        ps.setString(1, searchInput);
-	        ps.setInt(2, offset);
-	        ps.setInt(3, pageSize);
-	        try (ResultSet rs = ps.executeQuery()) {
-	            while (rs.next()) {
-	                Book searchResult = new Book(rs.getString("book_id"), rs.getString("ISBN"), rs.getString("title"),
-	                        rs.getString("authorName"), rs.getString("publisherName"), rs.getString("publication_date"),
-	                        rs.getString("description"), rs.getString("genre_name"), rs.getString("img"), rs.getInt("sold"),
-	                        rs.getInt("inventory"), rs.getDouble("price"), 1, rs.getDouble("average_rating"));
-	                searchResults.add(searchResult);
-	            }
-	        }
-	    } catch (SQLException e) {
-	    	searchResults=null;
-	        System.err.println("Error: " + e.getMessage());
-	    }
-	    return searchResults;
-	}
-	
-	// Total Pages for search book by title
-	private int getTotalPagesForSearch(Connection connection, String searchInput) throws SQLException {
-	    int pageSize = 10;
-	    String countSqlStr = "SELECT COUNT(*) FROM book WHERE book.title LIKE ?";
-	    try (PreparedStatement count = connection.prepareStatement(countSqlStr)) {
-	        count.setString(1, searchInput);
-	        try (ResultSet countRs = count.executeQuery()) {
-	            if (countRs.next()) {
-	                int totalBooks = countRs.getInt(1);
-	                return (int) Math.ceil((double) totalBooks / pageSize);
-	            } else {
-	                return 0;
-	            }
-	        }
-	    } catch (SQLException e) {
-	    	System.err.println("Error: " + e.getMessage());
-	        return 0;
-	    }
-	}
-
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse

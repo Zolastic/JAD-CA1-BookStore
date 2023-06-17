@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import utils.DBConnection;
 import dao.VerifyUserDAO;
+import dao.CheckoutDAO;
 /**
  * Servlet implementation class CheckoutPage
  */
@@ -42,6 +43,7 @@ public class CheckoutPage extends HttpServlet {
 	private static final String STRIPE_SECRET_KEY = "sk_test_51NHoftHrRFi94qYrcY4Yxv3NiAwj1ea5D7zuxCZtQ0kT9beLlwCh8GbjFKSgPz3s9K8QJ0U5mjet6H8vRL4VZBLq001eDbwLUL";
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	private CheckoutDAO checkoutDAO = new CheckoutDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -98,7 +100,7 @@ public class CheckoutPage extends HttpServlet {
 					}
 				}
 			}
-			checkoutItems = getCheckoutItems(connection, userID, checkoutItemsArrayString);
+			checkoutItems = checkoutDAO.getCheckoutItems(connection, userID, checkoutItemsArrayString);
 			connection.close();
 			request.setAttribute("checkoutItems", checkoutItems);
 			request.setAttribute("validatedUserID", userID);
@@ -111,165 +113,6 @@ public class CheckoutPage extends HttpServlet {
 		}
 	}
 
-	// Get all the checkout items details
-	private List<Book> getCheckoutItems(Connection connection, String userID,
-			List<Map<String, Object>> checkoutItemsList){
-		List<Book> checkoutItems = new ArrayList<>();
-
-		for (Map<String, Object> itemMap : checkoutItemsList) {
-			String bookID = (String) itemMap.get("bookID");
-			int quantity = (int) itemMap.get("quantity");
-
-			String simpleProc = "{call getBookDetails(?)}";
-			try (CallableStatement cs = connection.prepareCall(simpleProc)) {
-				cs.setString(1, bookID);
-				cs.execute();
-				try (ResultSet resultSetForBookDetails = cs.getResultSet()) {
-					if (resultSetForBookDetails.next()) {
-						Book book = new Book(resultSetForBookDetails.getString("book_id"),
-								resultSetForBookDetails.getString("ISBN"), resultSetForBookDetails.getString("title"),
-								resultSetForBookDetails.getString("authorName"),
-								resultSetForBookDetails.getString("publisherName"),
-								resultSetForBookDetails.getString("publication_date"),
-								resultSetForBookDetails.getString("description"),
-								resultSetForBookDetails.getString("genre_name"),
-								resultSetForBookDetails.getString("img"), resultSetForBookDetails.getInt("sold"),
-								resultSetForBookDetails.getInt("inventory"), resultSetForBookDetails.getDouble("price"),
-								quantity, resultSetForBookDetails.getDouble("average_rating"));
-						checkoutItems.add(book);
-					}
-				}
-			} catch (SQLException e) {
-				System.err.println("Error: " + e.getMessage());
-			}
-		}
-
-		return checkoutItems;
-	}
-
-	// Function to generate an uuid
-	private String uuidGenerator() {
-		UUID uuid = UUID.randomUUID();
-		return (uuid.toString());
-	}
-
-	// insert checkout items into DB transaction history after payment success
-	private String insertTransactionHistory(Connection connection, double subtotal, String custID, String address)
-			throws SQLException {
-		String transactionHistoryUUID = uuidGenerator();
-
-		String sql = "INSERT INTO transaction_history (transaction_historyID, transactionDate, subtotal, custID, address) VALUES (?, ?, ?, ?, ?)";
-		String transactionDate = getCurrentDateTime();
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-
-			statement.setString(1, transactionHistoryUUID);
-			statement.setString(2, transactionDate);
-			statement.setDouble(3, subtotal);
-			statement.setString(4, custID);
-			statement.setString(5, address);
-
-			int rowsAffected = statement.executeUpdate();
-
-			statement.close();
-
-			if (rowsAffected == 1) {
-				return transactionHistoryUUID;
-			} else {
-				return null;
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-			return null;
-		}
-	}
-
-	// Function to get DATETIME
-	private String getCurrentDateTime() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date currentDate = new Date();
-		return dateFormat.format(currentDate);
-	}
-
-	// insert checkout items into DB transaction history items after payment success
-	private Boolean insertTransactionHistoryItems(Connection connection, List<Book> checkoutItems,
-			String transactionHistoryUUID) throws SQLException {
-		Boolean success = true;
-		String sql = "INSERT INTO transaction_history_items (transaction_historyID, transaction_history_itemID, bookID, Qty) VALUES (?, ?, ?, ?)";
-
-		try (PreparedStatement statement = connection.prepareStatement(sql)) {
-			for (Book book : checkoutItems) {
-				String transactionHistoryItemUUID = uuidGenerator();
-				statement.setString(1, transactionHistoryUUID);
-				statement.setString(2, transactionHistoryItemUUID);
-				statement.setString(3, book.getBookID());
-				statement.setInt(4, book.getQuantity());
-				int rowsAffected = statement.executeUpdate();
-				if (rowsAffected != 1) {
-					success = false;
-					break;
-				}
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-			success = false;
-		}
-
-		return success;
-	}
-
-	// Delete the cart items that is already purchased after success payment
-	private int deleteFromCart(Connection connection, List<Book> checkoutItems, String custID){
-		int count = 0;
-		String cartID = getCartID(connection, custID);
-		if (cartID != null) {
-			for (Book book : checkoutItems) {
-				String deleteQuery = "DELETE FROM cart_items WHERE cartID=? AND BookID=?";
-				try (PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
-					deleteStatement.setString(1, cartID);
-					deleteStatement.setString(2, book.getBookID());
-					int rowsDeleted = deleteStatement.executeUpdate();
-					count += rowsDeleted;
-				} catch (SQLException e) {
-					System.err.println("Error: " + e.getMessage());
-				}
-			}
-		}
-		return count;
-	}
-
-	// Update Book's inventory and sold
-	private int updateBooks(Connection connection, List<Book> checkoutItems){
-	    int count = 0;
-	    for (Book book : checkoutItems) {
-	        String updateQuery = "UPDATE book SET inventory = (inventory - ?), sold = (sold + ?) WHERE book_id=?";
-	        try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
-	            updateStatement.setInt(1, book.getQuantity());
-	            updateStatement.setInt(2, book.getQuantity());
-	            updateStatement.setString(3, book.getBookID());
-	            int rowsUpdated = updateStatement.executeUpdate();
-	            count += rowsUpdated;
-	        } catch (SQLException e) {
-	            System.err.println("Error: " + e.getMessage());
-	        }
-	    }
-	    return count;
-	}
-
-	// Get cart id with custID
-	private String getCartID(Connection connection, String custID){
-		String cartID = null;
-		String selectQuery = "SELECT cartID FROM cart WHERE custID=?";
-		try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
-			selectStatement.setString(1, custID);
-			ResultSet resultSet = selectStatement.executeQuery();
-			if (resultSet.next()) {
-				cartID = resultSet.getString("cartID");
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-		}
-		return cartID;
-	}
 
 	// Payment intent for stripe
 	protected void paymentIntent(HttpServletRequest request, HttpServletResponse response)
@@ -317,7 +160,7 @@ public class CheckoutPage extends HttpServlet {
 			if (userID != null && address != null && checkoutItemsArrayString.size() != 0) {
 				try {
 					// get the Book Class version of checkout items
-					checkoutItems = getCheckoutItems(connection, userID, checkoutItemsArrayString);
+					checkoutItems = checkoutDAO.getCheckoutItems(connection, userID, checkoutItemsArrayString);
 					// Create payment intent's parameters
 					PaymentIntentCreateParams createParams = new PaymentIntentCreateParams.Builder().setCurrency("sgd")
 							.setAmount(amount).setPaymentMethod(paymentMethodId).setConfirm(true).build();
@@ -327,10 +170,10 @@ public class CheckoutPage extends HttpServlet {
 					if (paymentIntent != null && paymentIntent.getStatus().equals("succeeded")) {
 						// If insertion of transaction history or transaction history items failed do a
 						// refund
-						String transactionHistoryUUID = insertTransactionHistory(connection, amountInDollars, userID,
+						String transactionHistoryUUID = checkoutDAO.insertTransactionHistory(connection, amountInDollars, userID,
 								address);
 						if (transactionHistoryUUID != null) {
-							Boolean success = insertTransactionHistoryItems(connection, checkoutItems,
+							Boolean success = checkoutDAO.insertTransactionHistoryItems(connection, checkoutItems,
 									transactionHistoryUUID);
 							if (!success) {
 								RefundCreateParams refundParams = new RefundCreateParams.Builder()
@@ -345,8 +188,8 @@ public class CheckoutPage extends HttpServlet {
 								}
 							} else {
 								// Payment success
-								deleteFromCart(connection, checkoutItems, userID);
-								updateBooks(connection, checkoutItems);
+								checkoutDAO.deleteFromCart(connection, checkoutItems, userID);
+								checkoutDAO.updateBooks(connection, checkoutItems);
 								clearCheckoutItemsCookie(response);
 								response.sendRedirect("PaymentSuccess?userIDAvailable=true");
 							}

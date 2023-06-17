@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import utils.DBConnection;
+import dao.CategoryDAO;
 import dao.VerifyUserDAO;
 /**
  * Servlet implementation class CategoryMenuPage
@@ -30,6 +31,7 @@ import dao.VerifyUserDAO;
 public class CategoryMenuPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	private CategoryDAO categoryDAO = new CategoryDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -56,7 +58,7 @@ public class CategoryMenuPage extends HttpServlet {
 			// Validate the userID
 			userID = verifyUserDAO.validateUserID(connection, userID);
 			// Get all genre
-			allGenre = getAllGenres(connection);
+			allGenre = categoryDAO.getAllGenres(connection);
 			connection.close();
 		} catch (SQLException e) {
 			System.err.println("Error: " + e);
@@ -65,25 +67,6 @@ public class CategoryMenuPage extends HttpServlet {
 		request.setAttribute("validatedUserID", userID);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/categoryMenuPage.jsp");
 		dispatcher.forward(request, response);
-	}
-
-	// Get all the genre
-	private List<Genre> getAllGenres(Connection connection) {
-		List<Genre> allGenre = new ArrayList<>();
-		try (Statement stmt = connection.createStatement()) {
-			String sqlStr = "SELECT * FROM genre;";
-			ResultSet rs = stmt.executeQuery(sqlStr);
-
-			while (rs.next()) {
-				Genre genre = new Genre(rs.getString("genre_id"), rs.getString("genre_name"),
-						rs.getString("genre_img"));
-				allGenre.add(genre);
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-		}
-
-		return allGenre;
 	}
 
 	/**
