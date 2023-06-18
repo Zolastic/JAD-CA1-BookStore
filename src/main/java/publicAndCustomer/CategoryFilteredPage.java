@@ -28,8 +28,8 @@ import dao.VerifyUserDAO;
 public class CategoryFilteredPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
-	private GenreDAO genreDAO=new GenreDAO();
-	
+	private GenreDAO genreDAO = new GenreDAO();
+
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -54,6 +54,24 @@ public class CategoryFilteredPage extends HttpServlet {
 		if (userIDAvailable != null) {
 			if (userIDAvailable.equals("true")) {
 				userID = (String) request.getSession().getAttribute("userID");
+			}
+		}
+		if (genreName == null) {
+			if (userIDAvailable != null) {
+				if (userIDAvailable.equals("true")) {
+					RequestDispatcher dispatcher = request.getRequestDispatcher("CategoryMenuPage");
+					dispatcher.forward(request, response);
+					return;
+				} else {
+					RequestDispatcher dispatcher = request
+							.getRequestDispatcher("CategoryMenuPage?userIDAvailable=true");
+					dispatcher.forward(request, response);
+					return;
+				}
+			} else {
+				RequestDispatcher dispatcher = request.getRequestDispatcher("CategoryMenuPage?userIDAvailable=true");
+				dispatcher.forward(request, response);
+				return;
 			}
 		}
 		List<Book> allGenreBook = new ArrayList<>();
