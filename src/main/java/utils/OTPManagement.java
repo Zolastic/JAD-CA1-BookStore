@@ -29,16 +29,6 @@ public class OTPManagement {
 		return otp;
 	}
 	
-	private static String mysecret = "IO5ANNYPYCCKL6RORS3E6FOUIOMUAEDI";
-
-	public static void main(String[] args) throws Exception {
-		String otp = generateOTPCode(mysecret);
-		System.out.println(otp);
-		
-		String base64Image = generateBase64Image(mysecret, "user1@abc.com");
-		System.out.println(base64Image);
-	}
-	
 	public static String generateSecret() {
 		SecretGenerator secretGenerator = new DefaultSecretGenerator();
 		String secret = secretGenerator.generate();
