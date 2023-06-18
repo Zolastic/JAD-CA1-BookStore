@@ -91,7 +91,7 @@
 				<textarea name="review_text" id="reviewTextarea" rows="4"
 					maxlength="500" required class="w-full bg-gray-100 rounded-lg"></textarea>
 				<div class="flex justify-end">
-					<p class="wordCount">0/500 words</p>
+					<p class="wordCount">0/500 Characters</p>
 				</div>
 			</div>
 
@@ -111,8 +111,8 @@
 		const wordCountElement = document.querySelector('.wordCount');
 
 		reviewTextarea.addEventListener('input', function() {
-			const wordCount = reviewTextarea.value.split(/\s+/).length;
-			wordCountElement.textContent = wordCount + "/500 words";
+			const characterCount = reviewTextarea.value.length;
+			wordCountElement.textContent = characterCount + "/500 Characters";
 		});
 
 		function goBack() {
