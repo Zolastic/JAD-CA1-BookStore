@@ -2,8 +2,6 @@ package auth;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +14,7 @@ import dao.UserDAO;
 import dao.UserOTPDAO;
 import model.User;
 import utils.DBConnection;
+import utils.DispatchUtil;
 import utils.OTPManagement;
 
 /**
@@ -42,20 +41,15 @@ public class OTPServlet extends HttpServlet {
 		
 		
 		if (otpUserID == null || first == null || second == null || third == null || fourth == null || fifth == null || sixth == null) {
-			request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401").forward(request, response);
+			DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401");
 			return;
 		}
 		
 		String otp = first + second + third + fourth + fifth + sixth;
-		String otpSQL = "SELECT * FROM user_otp WHERE user_id = ? AND otp = ? AND TIMESTAMPDIFF(MINUTE, otp_creation_timestamp, CURRENT_TIMESTAMP()) < 5;";
-		try (Connection connection = DBConnection.getConnection();
-				PreparedStatement otpPS = connection.prepareStatement(otpSQL)) {
-			otpPS.setString(1, otpUserID);
-			otpPS.setString(2, otp);
-			
+		try (Connection connection = DBConnection.getConnection()) {
 			User user = userDAO.getUserInfo(connection, otpUserID);
 			if (user == null) {
-				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401").forward(request, response);
+				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401");
 				return;
 			}
 			
@@ -63,9 +57,8 @@ public class OTPServlet extends HttpServlet {
 			String otpImage = OTPManagement.generateBase64Image(user.getSecret(), user.getEmail());
 	        request.setAttribute("otpImage", otpImage);
 			
-			ResultSet otpResultSet = otpPS.executeQuery();
-			if (!otpResultSet.next()) {
-				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401&type=OTP").forward(request, response);
+			if (!userOTPDAO.verifyOTP(connection, otpUserID, otp)) {
+				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401&type=OTP");
 				return;
 			}
 			
@@ -77,6 +70,7 @@ public class OTPServlet extends HttpServlet {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401");
 		}
 	}
 

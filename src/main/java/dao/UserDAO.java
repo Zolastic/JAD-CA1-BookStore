@@ -29,6 +29,55 @@ public class UserDAO {
 			return null;
 		}
 	}
+	
+	public User validateUserCredentials(Connection connection, String email, String password) throws SQLException {
+		String validateCredentialsSqlStr = "SELECT * FROM users WHERE email = ? and password = ?;";
+		try (PreparedStatement validateCredentialsPS = connection.prepareStatement(validateCredentialsSqlStr)) {
+			validateCredentialsPS.setString(1, email);
+			validateCredentialsPS.setString(2, password);
+			ResultSet resultSet = validateCredentialsPS.executeQuery();
+			
+			if (resultSet.next()) {
+				String userID = resultSet.getString("userID");
+				String name = resultSet.getString("name");
+				String role = resultSet.getString("role");
+				String img = resultSet.getString("img");
+				String secret = resultSet.getString("secret");
+				resultSet.close();
+				User user = new User(userID, name, email, password, role, img, secret);
+				return user;
+			}
+			return null;
+			
+		}
+	}
+	
+	public boolean checkForExistingUserEmail(Connection connection, String email) throws SQLException {
+		String duplicateCheckSqlStr = "SELECT * FROM users WHERE email = ?;";
+		try (PreparedStatement duplicateCheckPS = connection.prepareStatement(duplicateCheckSqlStr)) {
+			duplicateCheckPS.setString(1, email);
+			ResultSet resultSet = duplicateCheckPS.executeQuery();
+			
+			if (resultSet.next()) {
+				return true;
+			}
+			return false;
+		}
+	}
+	
+	public int addUser(Connection connection, String name, String email, String password, String customerID, String secret) throws SQLException {
+		String insertUserSqlStr = "INSERT INTO users (userID, name, email, password, role, secret) VALUES (?, ?, ?, ?, \"customer\", ?);";
+		try (PreparedStatement insertUserPS = connection.prepareStatement(insertUserSqlStr)) {
+			insertUserPS.setString(1, customerID);
+			insertUserPS.setString(2, name);
+			insertUserPS.setString(3, email);
+			insertUserPS.setString(4, password);
+			insertUserPS.setString(5, secret);
+			int affectedUserRows = insertUserPS.executeUpdate();
+			
+			return affectedUserRows;
+		}
+	}
 
 	public int updateUser(Connection connection, String name, String email, String image, String userID) throws SQLException {
 		String sql = "UPDATE users SET name = ?, email = ?, img = ? WHERE userID = ?;";
