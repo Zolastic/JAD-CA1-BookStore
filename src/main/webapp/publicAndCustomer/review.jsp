@@ -89,7 +89,7 @@
 				<label for="review_text" class="block mb-2">Review
 					Description:</label>
 				<textarea name="review_text" id="reviewTextarea" rows="4"
-					maxlength="500" required class="w-full bg-gray-100 rounded-lg"></textarea>
+					maxlength="500" required class="w-full bg-gray-100 rounded-lg px-2"></textarea>
 				<div class="flex justify-end">
 					<p class="wordCount">0/500 Characters</p>
 				</div>
