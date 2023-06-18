@@ -33,7 +33,7 @@
 					ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
 					<div class="flex flex-col items-center justify-center pt-5 pb-6">
 						<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-							<span class="font-semibold text-amber-800">Profile Picture</span>
+							<span class="font-semibold text-amber-800">Book Cover</span>
 						</p>
 						<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
 							<span class="font-semibold">Click to upload</span> or drag and
@@ -50,7 +50,7 @@
 		<input type="text" name="bookID" id="bookID"
 			value="<%=book.getBookID()%>" class="hidden" placeholder=" " required />
 		<!-- title -->
-		<div class="relative z-0 w-full mb-8 group">
+		<div class="relative z-0 w-full mb-8 mt-5 group">
 			<input type="text" name="title" id="title"
 				value="<%=book.getTitle()%>"
 				class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-pink-100 peer"

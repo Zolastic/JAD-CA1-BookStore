@@ -35,7 +35,7 @@
 					ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
 					<div class="flex flex-col items-center justify-center pt-5 pb-6">
 						<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-							<span class="font-semibold text-amber-800">Profile Picture</span>
+							<span class="font-semibold text-amber-800">Book Cover</span>
 						</p>
 						<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
 							<span class="font-semibold">Click to upload</span> or drag and
