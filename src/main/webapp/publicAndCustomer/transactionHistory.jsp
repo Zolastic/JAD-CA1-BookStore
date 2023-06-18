@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="model.Book"%>
@@ -35,7 +35,8 @@
 		if (transactionHistories.size() != 0) {
 		%>
 		<span class="cursor-pointer text-gray-500 hover:text-gray-700"
-			onclick="goBack()"> <i class="fas fa-times fa-2x m-5 pt-2 mr-10"></i>
+			onclick="goBack()"> <i
+			class="fas fa-times fa-2x m-5 pt-2 mr-10"></i>
 		</span>
 		<%
 		}
@@ -46,12 +47,13 @@
 	if (transactionHistories.size() == 0) {
 	%>
 	<!-- If user have no transaction history -->
-<div class="fixed inset-0 flex flex-col items-center justify-center mt-10">
-  <p class="mb-4">No Transaction History</p>
-  <button class="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-700 transform hover:scale-110" onclick="goBack()">
-    Back
-  </button>
-</div>
+	<div
+		class="fixed inset-0 flex flex-col items-center justify-center mt-10">
+		<p class="mb-4">No Transaction History</p>
+		<button
+			class="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-700 transform hover:scale-110"
+			onclick="goBack()">Back</button>
+	</div>
 
 	<%
 	} else {
@@ -71,7 +73,7 @@
 		List<TransactionHistoryItem> transactionHistoryItems = transactionHistory.getTransactionHistoryItems();
 		%>
 		<div>
-		<!-- Show the transaction history items -->
+			<!-- Show the transaction history items -->
 			<%
 			for (TransactionHistoryItem transactionItem : transactionHistoryItems) {
 				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + transactionItem.getBook().getBookID();
@@ -80,7 +82,7 @@
 				class="flex items-center justify-between p-4 px-3 border-b border-gray-300">
 				<div class="flex items-center">
 					<a href="<%=urlToBookDetails%>">
-						<div class="w-16 h-16 mr-4">
+						<div class="flex-shrink-0 w-16 h-16 mr-4">
 							<%
 							if (transactionItem.getBook().getImg() != null) {
 							%>
@@ -93,63 +95,63 @@
 							<%
 							}
 							%>
-						
-					</a>
-				</div>
-				<div class="w-80">
-					<a href="<%=urlToBookDetails%>">
-						<h2 class="text-lg font-bold"><%=transactionItem.getBook().getTitle()%></h2>
+						</div>
 					</a>
 
-					<p class="text-gray-600">
-						Author:
-						<%=transactionItem.getBook().getAuthor()%>
-					</p>
+					<div class="w-80">
+						<a href="<%=urlToBookDetails%>">
+							<h2 class="text-lg font-bold"><%=transactionItem.getBook().getTitle()%></h2>
+						</a>
+
+						<p class="text-gray-600">
+							Author:
+							<%=transactionItem.getBook().getAuthor()%>
+						</p>
+					</div>
 				</div>
+				<div class="w-70">
+					<p>
+						Quantity Purchased:
+						<%=transactionItem.getQuantity()%></p>
+				</div>
+				<div class="w-30">
+					<p class="text-gray-600">
+						$<%=String.format("%.2f", transactionItem.getBook().getPrice())%></p>
+				</div>
+				<%
+				if (transactionItem.getReviewed() == 0) {
+				%>
+				<form action="/CA1-assignment/Review" method="post"
+					id="review_<%=transactionItem.getBook().getBookID()%>">
+					<input type="hidden" name="bookID"
+						value="<%=transactionItem.getBook().getBookID()%>"> <input
+						type="hidden" name="custID"
+						value="<%=transactionHistory.getCustID()%>"> <input
+						type="hidden" name="scrollPosition"
+						id="scrollPosition_<%=transactionItem.getBook().getBookID()%>">
+					<input type="hidden" name="transactionHistoryItemID"
+						value="<%=transactionItem.getTransactionHistoryItemID()%>">
+					<button class="bg-slate-500 hover:bg-slate-600 p-2 text-white mr-5"
+						onclick="review('review_<%=transactionItem.getBook().getBookID()%>','scrollPosition_<%=transactionItem.getBook().getBookID()%>')">Review</button>
+				</form>
+				<%
+				} else {
+				%>
+				<button class="bg-gray-400 cursor-not-allowed p-2 text-white mr-5"
+					disabled>Reviewed</button>
+				<%
+				}
+				%>
 			</div>
-			<div class="w-70">
-				<p>
-					Quantity Purchased:
-					<%=transactionItem.getQuantity()%></p>
-			</div>
-			<div class="w-30">
-				<p class="text-gray-600">
-					$<%=String.format("%.2f", transactionItem.getBook().getPrice())%></p>
-			</div>
-			<%
-			if (transactionItem.getReviewed() == 0) {
-			%>
-			<form action="/CA1-assignment/Review" method="post"
-				id="review_<%=transactionItem.getBook().getBookID()%>">
-				<input type="hidden" name="bookID"
-					value="<%=transactionItem.getBook().getBookID()%>"> <input
-					type="hidden" name="custID"
-					value="<%=transactionHistory.getCustID()%>"> <input
-					type="hidden" name="scrollPosition"
-					id="scrollPosition_<%=transactionItem.getBook().getBookID()%>">
-				<input type="hidden" name="transactionHistoryItemID"
-					value="<%=transactionItem.getTransactionHistoryItemID()%>">
-				<button class="bg-slate-500 hover:bg-slate-600 p-2 text-white mr-5"
-					onclick="review('review_<%=transactionItem.getBook().getBookID()%>','scrollPosition_<%=transactionItem.getBook().getBookID()%>')">Review</button>
-			</form>
-			<%
-			} else {
-			%>
-			<button class="bg-gray-400 cursor-not-allowed p-2 text-white mr-5"
-				disabled>Reviewed</button>
 			<%
 			}
 			%>
 		</div>
-		<%
-		}
-		%>
-	</div>
-	<div class="border border-gray-300"></div>
-	<div class="flex items-center justify-end m-2 mr-8">
-		<p class="font-bold text-lg italic">
-			Subtotal: $<%=transactionHistory.getSubtotal()%></p>
-	</div>
+		<div class="border border-gray-300"></div>
+		<div class="flex items-center justify-end m-2 mr-8">
+			<p class="font-bold text-lg italic">
+				Subtotal: $<%=transactionHistory.getSubtotal()%></p>
+		</div>
 	</div>
 	<%
 	}
@@ -168,7 +170,6 @@
 	<%
 	}
 	%>
-
 	<script>
     window.addEventListener('load', () => {
         if (!isNaN(<%=scrollPosition%>)) {

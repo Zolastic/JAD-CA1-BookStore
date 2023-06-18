@@ -4,16 +4,16 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import utils.DBConnection;
 import model.Book;
+import dao.BookDAO;
+import dao.VerifyUserDAO;
 
 /**
  * Servlet implementation class Home
@@ -21,7 +21,8 @@ import model.Book;
 @WebServlet("/Home")
 public class Home extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	private BookDAO bookDAO = new BookDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -49,9 +50,9 @@ public class Home extends HttpServlet {
 		String userID=(String) request.getSession().getAttribute("userID");
 
 		try (Connection connection = DBConnection.getConnection()) {
-			popularBooks = popularBooks(connection);
+			popularBooks = bookDAO.popularBooks(connection);
 			if(userID!=null) {
-				validatedUserID = validateUserID(connection, userID);
+				validatedUserID = verifyUserDAO.validateUserID(connection, userID);
 			}
 			connection.close();
 		} catch (SQLException e) {
@@ -60,60 +61,6 @@ public class Home extends HttpServlet {
 
 		request.setAttribute("popularBooks", popularBooks);
 		request.setAttribute("validatedUserID", validatedUserID);
-	}
-
-	// Getting popular books
-	private List<Book> popularBooks(Connection connection) throws SQLException {
-		List<Book> popularBooks = new ArrayList<>();
-
-		String query = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(review.rating) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName FROM book JOIN genre ON genre.genre_id = book.genre_id LEFT JOIN review ON review.bookID = book.book_id JOIN author ON book.authorID = author.authorID JOIN publisher ON book.publisherID = publisher.publisherID GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName ORDER BY book.sold DESC LIMIT 6;";
-
-		try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
-
-			while (resultSet.next()) {
-				String bookID = resultSet.getString("book_id");
-				String iSBN = resultSet.getString("ISBN");
-				String title = resultSet.getString("title");
-				String author = resultSet.getString("authorName");
-				String publisher = resultSet.getString("publisherName");
-				String publicationDate = resultSet.getString("publication_date");
-				String description = resultSet.getString("description");
-				String genreName = resultSet.getString("genre_name");
-				String img = resultSet.getString("img");
-				int sold = resultSet.getInt("sold");
-				int inventory = resultSet.getInt("inventory");
-				double price = resultSet.getDouble("price");
-				double rating = resultSet.getDouble("average_rating");
-
-				Book popularBook = new Book(bookID, iSBN, title, author, publisher, publicationDate, description,
-						genreName, img, sold, inventory, price, rating);
-				popularBooks.add(popularBook);
-			}
-		}
-
-		return popularBooks;
-	}
-
-	// Validate the userID
-	private String validateUserID(Connection connection, String userID) {
-	    if (userID != null) {
-	        String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-	        try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	            ps.setString(1, userID);
-	            try (ResultSet rs = ps.executeQuery()) {
-	                if (rs.next()) {
-	                    int rowCount = rs.getInt(1);
-	                    if (rowCount < 1) {
-	                        userID = null;
-	                    }
-	                }
-	            }
-	        } catch (SQLException e) {
-	        	userID=null;
-	            System.err.println("Error: " + e.getMessage());
-	        }
-	    }
-	    return userID;
 	}
 
 	/**

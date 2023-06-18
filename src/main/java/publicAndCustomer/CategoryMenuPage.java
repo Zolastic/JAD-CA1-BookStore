@@ -3,11 +3,7 @@ package publicAndCustomer;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import model.Book;
 import model.Genre;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,8 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import utils.DBConnection;
+import dao.VerifyUserDAO;
+import dao.GenreDAO;
 
 /**
  * Servlet implementation class CategoryMenuPage
@@ -29,7 +26,8 @@ import utils.DBConnection;
 @WebServlet("/CategoryMenuPage")
 public class CategoryMenuPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	private GenreDAO genreDAO=new GenreDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -54,9 +52,9 @@ public class CategoryMenuPage extends HttpServlet {
 		List<Genre> allGenre = new ArrayList<>();
 		try (Connection connection = DBConnection.getConnection()) {
 			// Validate the userID
-			userID = validateUserID(connection, userID);
+			userID = verifyUserDAO.validateUserID(connection, userID);
 			// Get all genre
-			allGenre = getAllGenres(connection);
+			allGenre = genreDAO.getGenres(connection);
 			connection.close();
 		} catch (SQLException e) {
 			System.err.println("Error: " + e);
@@ -65,47 +63,6 @@ public class CategoryMenuPage extends HttpServlet {
 		request.setAttribute("validatedUserID", userID);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/categoryMenuPage.jsp");
 		dispatcher.forward(request, response);
-	}
-
-	// Function to validate user id
-	private String validateUserID(Connection connection, String userID) {
-		if (userID != null) {
-			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-			try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-				ps.setString(1, userID);
-				try (ResultSet rs = ps.executeQuery()) {
-					if (rs.next()) {
-						int rowCount = rs.getInt(1);
-						if (rowCount < 1) {
-							userID = null;
-						}
-					}
-				}
-			} catch (SQLException e) {
-				userID = null;
-				System.err.println("Error: " + e.getMessage());
-			}
-		}
-		return userID;
-	}
-
-	// Get all the genre
-	private List<Genre> getAllGenres(Connection connection) {
-		List<Genre> allGenre = new ArrayList<>();
-		try (Statement stmt = connection.createStatement()) {
-			String sqlStr = "SELECT * FROM genre;";
-			ResultSet rs = stmt.executeQuery(sqlStr);
-
-			while (rs.next()) {
-				Genre genre = new Genre(rs.getString("genre_id"), rs.getString("genre_name"),
-						rs.getString("genre_img"));
-				allGenre.add(genre);
-			}
-		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-		}
-
-		return allGenre;
 	}
 
 	/**
