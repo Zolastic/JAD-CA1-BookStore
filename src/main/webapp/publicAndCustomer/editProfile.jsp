@@ -18,7 +18,7 @@
 	String image = user.getImage() == null
 			? request.getContextPath() + "/publicAndCustomer/img/defaultUserPFP.png"
 			: "data:image/png;base64, " + user.getImage();
-			String statusCode = request.getParameter("statusCode");
+	String statusCode = request.getParameter("statusCode");
 	%>
 
 	<%@include file="navBar/headerNavCustomer.jsp"%>
@@ -48,7 +48,7 @@
 						<p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG,
 							JPG or GIF</p>
 					</div> <input id="dropzone-file" type="file" class="hidden" name="image"
-					value="<%=user.getImage()%>" />
+					value="<%=user.getImage()%>" onchange="handleFileSelect(event)" />
 				</label> <img id="pfp"
 					class="pfpImage ml-2 border-2 border-pink-100 bg-gray-50 w-64 h-64 rounded-full flex justify-center items-center"
 					src="<%=image%>">
@@ -97,29 +97,38 @@
 <script>
 	function handleDragOver(e) {
 		e.preventDefault();
-		e.currentTarget.classList.add("border-blue-500"); // Add a visual indication when dragging over the dropzone
+		e.currentTarget.classList.add("border-pink-200");
 	}
 
 	function handleDragLeave(e) {
-		e.currentTarget.classList.remove("border-blue-500"); // Remove the visual indication when leaving the dropzone
+		e.currentTarget.classList.remove("border-pink-200");
 	}
 
 	function handleDrop(e) {
 		e.preventDefault();
-		e.currentTarget.classList.remove("border-blue-500"); // Remove the visual indication when dropping the file
+		e.currentTarget.classList.remove("border-pink-200");
 
-		const file = e.dataTransfer.files[0]; // Get the dropped file
-		// Do something with the file (e.g., upload it or display preview)
+		const file = e.dataTransfer.files[0];
 		const dropzoneFileInput = document.getElementById("dropzone-file");
 		dropzoneFileInput.files = e.dataTransfer.files;
-		//dropzoneFileInput.value = file.name;
 
-		// Example: Display a preview image
 		const reader = new FileReader();
 		reader.onload = function(e) {
 			const imagePreview = document.getElementById("pfp");
 			imagePreview.src = e.target.result;
 		};
+		reader.readAsDataURL(file);
+	}
+
+	function handleFileSelect(e) {
+		const file = event.target.files[0];
+		const reader = new FileReader();
+
+		reader.onload = function(e) {
+			const imagePreview = document.getElementById("pfp");
+			imagePreview.src = e.target.result;
+		};
+
 		reader.readAsDataURL(file);
 	}
 </script>

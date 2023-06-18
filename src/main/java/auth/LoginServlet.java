@@ -2,8 +2,6 @@ package auth;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,8 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import dao.UserDAO;
 import dao.UserOTPDAO;
+import model.User;
 import utils.DBConnection;
+import utils.DispatchUtil;
 import utils.OTPManagement;
 
 /**
@@ -22,6 +23,7 @@ import utils.OTPManagement;
 @WebServlet("/Login")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private UserDAO userDAO = new UserDAO();
 	private UserOTPDAO userOTPDAO = new UserOTPDAO();
 
 	/**
@@ -33,37 +35,31 @@ public class LoginServlet extends HttpServlet {
 		
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
-		String validateCredentialsSqlStr = "SELECT * FROM users WHERE email = ? and password = ?;";
 		
-		try (Connection connection = DBConnection.getConnection();
-				PreparedStatement validateCredentialsPS = connection.prepareStatement(validateCredentialsSqlStr)) {
-			
-			validateCredentialsPS.setString(1, email);
-			validateCredentialsPS.setString(2, password);
-			ResultSet resultSet = validateCredentialsPS.executeQuery();
-			
-			if (!resultSet.next()) {
-				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401").forward(request, response);
+		try (Connection connection = DBConnection.getConnection()) {
+			User user = userDAO.validateUserCredentials(connection, email, password);
+			if (user == null) {
+				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401");
 				return;
 			}
 			
-			String userID = resultSet.getString("userID");
-			String secret = resultSet.getString("secret");
+			String userID = user.getUserID();
+			String secret = user.getSecret();
 			HttpSession session = request.getSession();
 	        session.setAttribute("otpUserID", userID);
-	        String otpImage = OTPManagement.generateBase64Image(secret, resultSet.getString("email"));
+	        String otpImage = OTPManagement.generateBase64Image(secret, user.getEmail());
 	        request.setAttribute("otpImage", otpImage);
 			
 			if (!userOTPDAO.updateOTP(connection, userID, secret)) {
-				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401").forward(request, response);
+				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401");
 				return;
 			}
 			
-			request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?type=OTP").forward(request, response);
+			DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?type=OTP");
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401");
 		}
 	}
 
