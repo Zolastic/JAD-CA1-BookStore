@@ -71,7 +71,7 @@ public class CartDAO {
 	}
 
 	// Function to get cart items
-	public List<Book> getCartItems(Connection connection, String userID) throws SQLException {
+	public List<Book> getCartItems(Connection connection, String userID) {
 		List<Book> cartItems = new ArrayList<>();
 		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName, cart_items.Qty, cart_items.selected\r\n"
 				+ "    FROM book\r\n" + "    JOIN genre ON genre.genre_id = book.genre_id\r\n"

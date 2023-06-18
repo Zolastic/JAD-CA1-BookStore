@@ -318,7 +318,7 @@ public class BookDAO {
 
 
 		// Get the search results
-		public List<Book> searchBookByTitle(Connection connection, String searchInput, int page) throws SQLException {
+		public List<Book> searchBookByTitle(Connection connection, String searchInput, int page) {
 			List<Book> searchResults = new ArrayList<>();
 			int pageSize = 10; // Number of books per page
 			int offset = (page - 1) * pageSize;
@@ -351,7 +351,7 @@ public class BookDAO {
 		}
 		
 		// Total Pages for search book by title
-		public int getTotalPagesForSearch(Connection connection, String searchInput) throws SQLException {
+		public int getTotalPagesForSearch(Connection connection, String searchInput){
 		    int pageSize = 10;
 		    String countSqlStr = "SELECT COUNT(*) FROM book WHERE book.title LIKE ?";
 		    try (PreparedStatement count = connection.prepareStatement(countSqlStr)) {
@@ -371,7 +371,7 @@ public class BookDAO {
 		}
 		
 		// Getting popular books
-		public List<Book> popularBooks(Connection connection) throws SQLException {
+		public List<Book> popularBooks(Connection connection){
 			List<Book> popularBooks = new ArrayList<>();
 
 			String query = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(review.rating) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName FROM book JOIN genre ON genre.genre_id = book.genre_id LEFT JOIN review ON review.bookID = book.book_id JOIN author ON book.authorID = author.authorID JOIN publisher ON book.publisherID = publisher.publisherID GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName ORDER BY book.sold DESC LIMIT 6;";
@@ -397,6 +397,9 @@ public class BookDAO {
 							genreName, img, sold, inventory, price, rating);
 					popularBooks.add(popularBook);
 				}
+			} catch (SQLException e) {
+				popularBooks=null;
+				System.err.println("Error: " + e.getMessage());
 			}
 
 			return popularBooks;

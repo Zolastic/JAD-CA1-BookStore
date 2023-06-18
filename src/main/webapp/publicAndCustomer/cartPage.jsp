@@ -41,7 +41,6 @@
 	if (cartID != null && validatedUserID != null) {
 	%>
 	<script>
-	
 	function selectCartItem(formID, scrollURL) {
 		let scrollPosition = window.scrollY;
         document.getElementById(scrollURL).value = scrollPosition;
@@ -282,7 +281,6 @@
 							name="newSelection" id="newSelection" value="">
 					</form>
 					<div>
-
 						<p class="text-lg font-bold my-2">
 							Subtotal: $<%=String.format("%.2f", subtotal)%>
 						</p>
@@ -290,7 +288,7 @@
 							<form id="checkoutForm" action="/CA1-assignment/CartPage"
 								method="post">
 								<button
-									class="px-4 p-2 bg-slate-600 hover:bg-slate-800 hover:scale-110 text-white rounded hover:bg-blue-600"
+									class="px-4 p-2 bg-slate-600 hover:bg-slate-800 hover:scale-110 text-white rounded"
 									onclick="submitCheckoutForm()">Checkout</button>
 								<input type="hidden" id="selectedCartItems"
 									name="selectedCartItems" value=""> <input type="hidden"

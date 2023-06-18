@@ -31,11 +31,22 @@
 	home.setData(request);
 	List<Book> popularBooks = (List<Book>) request.getAttribute("popularBooks");
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
-	%>
-	<%
 	String urlToAllBooks;
+	boolean err = false;
+	if (popularBooks == null) {
+		err = true;
+	%>
+	<!-- Error Loading Page -->
+	<div class="fixed inset-0 flex items-center justify-center">
+		<div class="bg-yellow-100 p-5 rounded-lg">
+			<i class="fas fa-exclamation-triangle text-yellow-700 mr-2"></i>
+			Error Loading Page
+		</div>
+	</div>
+	<%
+	}
 	if (validatedUserID == null) {
-		urlToAllBooks = "/CA1-assignment/AllBooksPage";
+	urlToAllBooks = "/CA1-assignment/AllBooksPage";
 	%>
 	<%@include file="publicAndCustomer/navBar/headerNavPublic.html"%>
 	<%
@@ -45,6 +56,7 @@
 	<%@include file="publicAndCustomer/navBar/headerNavCustomer.jsp"%>
 	<%
 	}
+	if (!err) {
 	%>
 	<div class="flex items-center justify-center mt-5">
 		<div
@@ -192,6 +204,8 @@
 			EXPLORE ALL</button>
 	</div>
 
-
+	<%
+	}
+	%>
 </body>
 </html>
