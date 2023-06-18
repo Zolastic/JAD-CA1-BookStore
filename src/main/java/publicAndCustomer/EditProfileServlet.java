@@ -2,10 +2,8 @@ package publicAndCustomer;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -56,23 +54,23 @@ public class EditProfileServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			String userID = request.getParameter("userID");
-			loadData(request, response, connection, userID);
+			User user = loadData(request, response, connection, userID);
+			if (user == null) {
+				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp");
+				return;
+			}
 			DispatchUtil.dispatch(request, response, "publicAndCustomer/editProfile.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "home.jsp");
 		}
 	}
 	
-	private void loadData(HttpServletRequest request, HttpServletResponse response, Connection connection,
+	private User loadData(HttpServletRequest request, HttpServletResponse response, Connection connection,
 			String userID) throws SQLException, ServletException, IOException {
 		User user = userDAO.getUserInfo(connection, userID);
-
-		if (user == null) {
-			DispatchUtil.dispatch(request, response, "/publicAndCustomer/registrationPage.jsp");
-			return;
-		}
 		request.setAttribute("user", user);
+		return user;	
 	}
 	
 
@@ -90,7 +88,12 @@ public class EditProfileServlet extends HttpServlet {
 	        String image = requestWrapper.getBase64Parameter("image");
 		
 			int statusCode = userDAO.updateUser(connection, name, email, image, userID);
-			loadData(request, response, connection, userID);
+			
+			User user = loadData(request, response, connection, userID);
+			if (user == null) {
+				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp");
+				return;
+			}
 			
 			DispatchUtil.dispatch(request, response, "publicAndCustomer/editProfile.jsp?statusCode=" + statusCode + "&userID=" + userID);
 
