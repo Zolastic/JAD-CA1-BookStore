@@ -39,7 +39,7 @@ public class EditPublisherServlet extends HttpServlet {
 	}
 
 	private void loadData(HttpServletRequest request, Connection connection, String publisherID) throws SQLException {
-		Publisher publisher = publisherDAO.getPublisher(connection, publisherID);
+		Publisher publisher = publisherDAO.getPublisherById(connection, publisherID);
 		request.setAttribute("publisher", publisher);
 	}
 

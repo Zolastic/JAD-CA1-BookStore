@@ -24,6 +24,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import dao.UserDAO;
 import model.User;
 import utils.DBConnection;
+import utils.DispatchUtil;
 
 /**
  * Servlet implementation class ChangePasswordServlet
@@ -31,6 +32,7 @@ import utils.DBConnection;
 @WebServlet("/ChangePassword")
 public class ChangePasswordServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private UserDAO userDAO = new UserDAO();
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -71,7 +73,7 @@ public class ChangePasswordServlet extends HttpServlet {
 	
     private void loadData(HttpServletRequest request, HttpServletResponse response, Connection connection,
 			String userID) throws SQLException, ServletException, IOException {
-		User user = UserDAO.getUserInfo(connection, userID);
+		User user = userDAO.getUserInfo(connection, userID);
 
 		if (user == null) {
 			response.sendRedirect(request.getContextPath() + "/publicAndCustomer/registrationPage.jsp");
@@ -89,52 +91,17 @@ public class ChangePasswordServlet extends HttpServlet {
 		String currentPassword = request.getParameter("currentPassword");
 		String newPassword = request.getParameter("newPassword");
 		String confirmNewPassword = request.getParameter("confirmNewPassword");
-		
-		String currentPasswordValidationSqlStr = "SELECT password FROM users WHERE userID = ? AND password = ?;";
-		String updatePasswordSqlStr = "UPDATE users SET password = ? WHERE userID = ?;";
 
-		try (Connection connection = DBConnection.getConnection();
-				PreparedStatement currentPasswordValidationPS = connection.prepareStatement(currentPasswordValidationSqlStr);
-				PreparedStatement updatePasswordPS = connection.prepareStatement(updatePasswordSqlStr);) {
-			
-			if (!newPassword.equals(confirmNewPassword)) {
-				loadData(request, response, connection, userID);
-				RequestDispatcher error = request
-						.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=400&userID=" + userID);
-				error.forward(request, response);
-				return;
-			}
-			
-			currentPasswordValidationPS.setString(1, userID);
-			currentPasswordValidationPS.setString(2, currentPassword);
-			ResultSet currentPasswordValidationRS = currentPasswordValidationPS.executeQuery();
-			
-			if (!currentPasswordValidationRS.next()) {
-				loadData(request, response, connection, userID);
-				RequestDispatcher error = request
-						.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=401&userID=" + userID);
-				error.forward(request, response);
-				return;
-			}
-			
-			updatePasswordPS.setString(1, newPassword);
-			updatePasswordPS.setString(2, userID);
-			
-			int affectedRows = updatePasswordPS.executeUpdate();
-			
+		try (Connection connection = DBConnection.getConnection()) {
 			loadData(request, response, connection, userID);
+			int statusCode = userDAO.updateUserPassword(connection, userID, currentPassword, newPassword, confirmNewPassword);
+			System.out.println("statusCode: " + statusCode);
 			
-			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=200&userID=" + userID);
-				success.forward(request, response);
-			} else {
-				RequestDispatcher error = request
-						.getRequestDispatcher("publicAndCustomer/changePassword.jsp?statusCode=500&userID=" + userID);
-				error.forward(request, response);
-			}
+			DispatchUtil.dispatch(request, response, "publicAndCustomer/changePassword.jsp?statusCode=" + statusCode + "&userID=" + userID);
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			DispatchUtil.dispatch(request, response, "publicAndCustomer/changePassword.jsp?statusCode=500&userID=" + userID);
 		}
 	}
 

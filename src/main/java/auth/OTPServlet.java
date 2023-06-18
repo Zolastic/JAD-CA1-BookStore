@@ -24,6 +24,7 @@ import utils.OTPManagement;
 @WebServlet("/OTP")
 public class OTPServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private UserDAO userDAO = new UserDAO();
 	private UserOTPDAO userOTPDAO = new UserOTPDAO();
        
 	/**
@@ -52,7 +53,7 @@ public class OTPServlet extends HttpServlet {
 			otpPS.setString(1, otpUserID);
 			otpPS.setString(2, otp);
 			
-			User user = UserDAO.getUserInfo(connection, otpUserID);
+			User user = userDAO.getUserInfo(connection, otpUserID);
 			if (user == null) {
 				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401").forward(request, response);
 				return;

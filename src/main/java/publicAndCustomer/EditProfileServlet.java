@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import dao.UserDAO;
 import model.User;
 import utils.DBConnection;
+import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
 
 /**
@@ -24,6 +25,7 @@ import utils.HttpServletRequestUploadWrapper;
 @WebServlet("/EditProfile")
 public class EditProfileServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private UserDAO userDAO = new UserDAO();
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -55,7 +57,7 @@ public class EditProfileServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			String userID = request.getParameter("userID");
 			loadData(request, response, connection, userID);
-			request.getRequestDispatcher("publicAndCustomer/editProfile.jsp").forward(request, response);
+			DispatchUtil.dispatch(request, response, "publicAndCustomer/editProfile.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -64,10 +66,10 @@ public class EditProfileServlet extends HttpServlet {
 	
 	private void loadData(HttpServletRequest request, HttpServletResponse response, Connection connection,
 			String userID) throws SQLException, ServletException, IOException {
-		User user = UserDAO.getUserInfo(connection, userID);
+		User user = userDAO.getUserInfo(connection, userID);
 
 		if (user == null) {
-			response.sendRedirect(request.getContextPath() + "/publicAndCustomer/registrationPage.jsp");
+			DispatchUtil.dispatch(request, response, "/publicAndCustomer/registrationPage.jsp");
 			return;
 		}
 		request.setAttribute("user", user);
@@ -79,47 +81,22 @@ public class EditProfileServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String sql = "UPDATE users SET name = ?, email = ?, img = ? WHERE userID = ?;";
-		String sqlWithoutImage = "UPDATE users SET name = ?, email = ? WHERE userID = ?;";
-
+		String userID = null;
 		try (Connection connection = DBConnection.getConnection()) {
 			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
-	        String userID = requestWrapper.getParameter("userID");
+	        userID = requestWrapper.getParameter("userID");
 	        String name = requestWrapper.getParameter("name");
 	        String email = requestWrapper.getParameter("email");
 	        String image = requestWrapper.getBase64Parameter("image");
-	        System.out.println("image: " + image);
-			boolean noImage = image == null;
-			
-	        String sqlUpdate = noImage ? sqlWithoutImage : sql;
-	        
-	        PreparedStatement ps = connection.prepareStatement(sqlUpdate);
-	        		
-			ps.setString(1, name);
-			ps.setString(2, email);
-			if (noImage) {
-				ps.setString(3, userID);
-			} else {
-				ps.setString(3, image);
-				ps.setString(4, userID);
-			}
-
-			int affectedRows = ps.executeUpdate();
-			System.out.printf("affectedRows: " + affectedRows);
-			// Load data for page
+		
+			int statusCode = userDAO.updateUser(connection, name, email, image, userID);
 			loadData(request, response, connection, userID);
-
-			if (affectedRows > 0) {
-				RequestDispatcher success = request.getRequestDispatcher("publicAndCustomer/editProfile.jsp?statusCode=200&userID=" + userID);
-				success.forward(request, response);
-			} else {
-				RequestDispatcher error = request
-						.getRequestDispatcher("publicAndCustomer/editProfile.jsp?statusCode=500&&userID=" + userID);
-				error.forward(request, response);
-			}
+			
+			DispatchUtil.dispatch(request, response, "publicAndCustomer/editProfile.jsp?statusCode=" + statusCode + "&userID=" + userID);
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			DispatchUtil.dispatch(request, response, "publicAndCustomer/editProfile.jsp?statusCode=500&userID=" + userID);
 		}
 	}
 	
