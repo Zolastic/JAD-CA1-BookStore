@@ -51,8 +51,7 @@ public class CheckoutDAO {
 	}
 
 	// insert checkout items into DB transaction history after payment success
-	public String insertTransactionHistory(Connection connection, double subtotal, String custID, String address)
-			throws SQLException {
+	public String insertTransactionHistory(Connection connection, double subtotal, String custID, String address){
 		String transactionHistoryUUID = uuidGenerator();
 
 		String sql = "INSERT INTO transaction_history (transaction_historyID, transactionDate, subtotal, custID, address) VALUES (?, ?, ?, ?, ?)";
@@ -95,7 +94,7 @@ public class CheckoutDAO {
 
 	// insert checkout items into DB transaction history items after payment success
 	public Boolean insertTransactionHistoryItems(Connection connection, List<Book> checkoutItems,
-			String transactionHistoryUUID) throws SQLException {
+			String transactionHistoryUUID) {
 		Boolean success = true;
 		String sql = "INSERT INTO transaction_history_items (transaction_historyID, transaction_history_itemID, bookID, Qty) VALUES (?, ?, ?, ?)";
 

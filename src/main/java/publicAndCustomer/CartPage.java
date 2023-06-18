@@ -202,7 +202,6 @@ public class CartPage extends HttpServlet {
 	protected void checkout(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String checkoutItems = request.getParameter("selectedCartItems");
-
 		if (checkoutItems == null) {
 			String referer = request.getHeader("Referer");
 			referer = removeParameterFromUrl(referer);
@@ -212,7 +211,6 @@ public class CartPage extends HttpServlet {
 			Cookie checkoutItemsCookie = new Cookie("checkoutItems", encodedCheckoutItems);
 			checkoutItemsCookie.setMaxAge(5 * 60 * 60);
 			response.addCookie(checkoutItemsCookie);
-
 			response.sendRedirect("CheckoutPage?userIDAvailable=true");
 		}
 	}
