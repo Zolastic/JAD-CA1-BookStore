@@ -4,13 +4,15 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>
 <%@ page import="java.text.DecimalFormat"%>
 <%@ page import="java.io.*,java.net.*,java.util.*,java.sql.*"%>
 <%@ page import="utils.DBConnection"%>
+<%@page import="publicAndCustomer.Home"%>
+
 
 
 <!DOCTYPE html>
@@ -18,70 +20,43 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Home</title>
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
-<%@include file="../../tailwind-css.jsp"%>
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+	rel="stylesheet">
+<%@ include file="../../tailwind-css.jsp"%>
 </head>
 <body>
 	<%
-	ArrayList<model.Book> popularBooks = new ArrayList<>();
-	String validatedUserID = null;
-	try {
-		Connection connection = DBConnection.getConnection();
-		Statement statement = connection.createStatement();
-
-		ResultSet resultSet = statement.executeQuery(
-		"SELECT book.book_id, book.img,book.title,book.price, book.description,book.publication_date,book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(review.rating) AS DECIMAL(2,1)) AS average_rating, author.authorName,publisher.publisherName FROM book JOIN genre ON genre.genre_id = book.genre_id LEFT JOIN review ON review.bookID = book.book_id JOIN author ON book.authorID = author.authorID JOIN publisher ON book.publisherID = publisher.publisherID GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName ORDER BY book.sold DESC LIMIT 6;");
-
-		while (resultSet.next()) {
-			String bookID = resultSet.getString("book_id");
-			String iSBN = resultSet.getString("ISBN");
-			String title = resultSet.getString("title");
-			String author = resultSet.getString("authorName");
-			String publisher = resultSet.getString("publisherName");
-			String publication_date = resultSet.getString("publication_date");
-			String description = resultSet.getString("description");
-			String genre_name = resultSet.getString("genre_name");
-			String img = resultSet.getString("img");
-			int sold = resultSet.getInt("sold");
-			int inventory = resultSet.getInt("inventory");
-			double price = resultSet.getDouble("price");
-			double rating = resultSet.getDouble("average_rating");
-			Book popularBook = new Book(bookID, iSBN, title, author, publisher, publication_date, description, genre_name,
-			img, sold, inventory, price, rating);
-			popularBooks.add(popularBook);
-		}
-
-		String userID = (String) session.getAttribute("userID");
-		String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-		PreparedStatement ps = connection.prepareStatement(sqlStr);
-		ps.setString(1, userID);
-		ResultSet rs = ps.executeQuery();
-		rs.next();
-		int rowCount = rs.getInt(1);
-		if (rowCount > 0) {
-			validatedUserID = userID;
-		}
-
-		connection.close();
-	} catch (SQLException e) {
-		System.err.println("Error :" + e);
-	}
-	%>
-	<%
+	Home home = new Home();
+	home.setData(request);
+	List<Book> popularBooks = (List<Book>) request.getAttribute("popularBooks");
+	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	String urlToAllBooks;
-	if (validatedUserID == null) {
-		urlToAllBooks="/CA1-assignment/AllBooksPage";
+	boolean err = false;
+	if (popularBooks == null) {
+		err = true;
 	%>
-	<%@include file="navBar/headerNavPublic.html"%>
+	<!-- Error Loading Page -->
+	<div class="fixed inset-0 flex items-center justify-center">
+		<div class="bg-yellow-100 p-5 rounded-lg">
+			<i class="fas fa-exclamation-triangle text-yellow-700 mr-2"></i>
+			Error Loading Page
+		</div>
+	</div>
+	<%
+	}
+	if (validatedUserID == null) {
+	urlToAllBooks = "/CA1-assignment/AllBooksPage";
+	%>
+	<%@include file="publicAndCustomer/navBar/headerNavPublic.html"%>
 	<%
 	} else {
-		urlToAllBooks="/CA1-assignment/AllBooksPage?userIDAvailable=true";
+	urlToAllBooks = "/CA1-assignment/AllBooksPage?userIDAvailable=true";
 	%>
-	<%@include file="navBar/headerNavCustomer.jsp"%>
+	<%@include file="publicAndCustomer/navBar/headerNavCustomer.jsp"%>
 	<%
 	}
+	if (!err) {
 	%>
 	<div class="flex items-center justify-center mt-5">
 		<div
@@ -90,9 +65,11 @@
 				<div class="m-3">
 					<p class="text-slate-500 text-3xl italic">Searching for a book?
 						Browse & Buy Now!</p>
+					<!-- Button to All Books Page -->
 					<button
 						class="bg-slate-600 text-white hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110"
-						onclick="window.location.href = '<%=urlToAllBooks%>'">Explore All Books</button>
+						onclick="window.location.href = '<%=urlToAllBooks%>'">Explore
+						All Books</button>
 				</div>
 			</div>
 			<div>
@@ -101,6 +78,7 @@
 		</div>
 	</div>
 
+	<!-- Show popular books -->
 	<div class="flex items-center justify-center mt-20">
 		<div class="flex items-center mx-10 px-20 h-500 w-full">
 			<h1 class="text-4xl font-semibold italic mr-2">POPULAR</h1>
@@ -112,7 +90,7 @@
 		<div class="flex flex-wrap mx-10 px-10 w-full">
 			<%
 			int bookCount = 0;
-			for (model.Book book : popularBooks) {
+			for (Book book : popularBooks) {
 				double rating = book.getRating();
 				int filledStars = (int) rating;
 				boolean hasHalfStar = (rating - filledStars) >= 0.5;
@@ -124,13 +102,14 @@
 				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
 				%>
 				<div
-					class="m-4 p-6 bg-white border border-black rounded-lg w-80 shadow-lg transform hover:scale-110"
+					class="m-4 p-6 bg-white border border-black rounded-lg w-80 shadow-lg transform hover:scale-110 cursor-pointer"
 					onclick="window.location.href = '<%=urlToBookDetails%>'">
 					<div class="h-48 w-auto flex items-center justify-center mx-auto">
 						<%
 						if (book.getImg() != null) {
 						%>
-						<img class="h-48 object-contain" src="<%=book.getImg()%>">
+						<img class="h-48 object-contain"
+							src="data:image/png;base64, <%=book.getImg()%>">
 						<%
 						} else {
 						%>
@@ -201,7 +180,7 @@
 							<%=book.getGenreName()%>
 						</p>
 					</div>
-					
+
 
 				</div>
 
@@ -217,6 +196,7 @@
 		</div>
 
 	</div>
+	<!-- Button to navigate to all books -->
 	<div class="flex items-center justify-center m-10">
 		<button
 			class="bg-slate-600 text-white text-md hover:bg-slate-700 px-4 py-2 m-3 rounded mt-5 transform hover:scale-110"
@@ -224,6 +204,8 @@
 			EXPLORE ALL</button>
 	</div>
 
-
+	<%
+	}
+	%>
 </body>
 </html>

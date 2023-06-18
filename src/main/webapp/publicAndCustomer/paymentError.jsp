@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.*"%>
@@ -19,14 +19,13 @@
 <%@ include file="../../tailwind-css.jsp"%>
 </head>
 <body>
-	<%@ include file="navBar/headerNavCustomer.jsp"%>
+	<%@ include file="customerModal.jsp"%>
 	<%
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	String error = request.getParameter("error");
 	if (validatedUserID != null) {
 	%>
-	<div
-		class="bg-slate-200 flex items-center justify-center h-screen">
+	<div class="bg-slate-200 flex items-center justify-center h-screen">
 		<div
 			class="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto text-center">
 			<div class="flex items-center justify-center mb-6">
@@ -34,12 +33,14 @@
 				<%
 				if (error != null && error.equals("RefundFailed")) {
 				%>
+				<!-- If payment have been processed and have database error and refund failed -->
 				<h1 class="text-2xl font-bold">Payment unsuccessful, refund
 					failed.</h1>
 				<p class="mb-4">Please contact +65 6666 6666 for assistance.</p>
 				<%
 				} else {
 				%>
+				<!-- Payment unsuccessful -->
 				<h1 class="text-2xl font-bold">Payment Unsuccesful!</h1>
 				<%
 				}
@@ -55,10 +56,15 @@
 	} else {
 	%>
 	<script>
-		alert("Error loading page");
-		if (<%=validatedUserID%> == null) {
-			window.location.href = "registrationPage.jsp";
-		}
+		showModal("Error loading page");
+		var closeButton = document.getElementById("close");
+		closeButton.addEventListener("click", function() {
+			if (
+	<%=validatedUserID%>
+		== null) {
+				window.location.href = "registrationPage.jsp";
+			}
+		});
 	</script>
 	<%
 	}

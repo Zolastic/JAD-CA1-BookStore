@@ -7,7 +7,7 @@
 <title>Inkwell: Change Password</title>
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
-	href="<%=request.getContextPath()%>/publicAndCustomer/css/changePassword.css">
+	href="<%=request.getContextPath()%>/publicAndCustomer/css/feedbackMessages.css">
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 </head>
@@ -57,23 +57,23 @@
 					class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-amber-800 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Confirm New Password</label>
 			</div>
 			<div class="my-3">
-				<h1 id="changePasswordErrorMsg" class="tracking-wide hidden"></h1>
+				<h1 id="changePasswordErrorMsg" class="errorMessage tracking-wide hidden"></h1>
 				<%
 				if (statusCode != null) {
 					if (statusCode.equals("200")) {
 						%>
-						<h1 class="changePasswordSuccessMsg tracking-wide">Password Changed!</h1>
+						<h1 class="successMessage tracking-wide">Password Changed!</h1>
 						<%
 					} else if (statusCode.equals("400")) {
 						%>
 						<%
 					} else if (statusCode.equals("401")) {
 						%>
-						<h1 class="changePasswordErrorMsg tracking-wide">Uh-oh! Incorrect Current Password</h1>
+						<h1 class="errorMessage tracking-wide">Uh-oh! Incorrect Current Password</h1>
 						<%
 					} else if (statusCode.equals("500")) {
 						%>
-						<h1 class="changePasswordErrorMsg tracking-wide">Uh-oh! Internal Server Error</h1>
+						<h1 class="errorMessage tracking-wide">Uh-oh! Internal Server Error</h1>
 						<%
 					}
 				}

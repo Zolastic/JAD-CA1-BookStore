@@ -2,32 +2,29 @@ package publicAndCustomer;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import utils.DBConnection;
+import dao.VerifyUserDAO;
+
 
 /**
  * Servlet implementation class PaymentError
  */
 
 /**
- * Author(s): Soh Jian Min (P2238856)
- * Description: JAD CA1
+ * Author(s): Soh Jian Min (P2238856) Description: JAD CA1
  */
-
 
 @WebServlet("/PaymentError")
 public class PaymentError extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -45,16 +42,17 @@ public class PaymentError extends HttpServlet {
 			throws ServletException, IOException {
 		try (Connection connection = DBConnection.getConnection()) {
 			String error = request.getParameter("error");
-
+			// To better confirm user comes from appropriate link before checking, and in
+			// the previous page userID is available
 			String userIDAvailable = request.getParameter("userIDAvailable");
-
 			String userID = null;
 			if (userIDAvailable != null) {
 				if (userIDAvailable.equals("true")) {
 					userID = (String) request.getSession().getAttribute("userID");
 				}
 			}
-			userID = validateUserID(connection, userID);
+			// validate user
+			userID = verifyUserDAO.validateUserID(connection, userID);
 			if (userID == null) {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
@@ -76,21 +74,6 @@ public class PaymentError extends HttpServlet {
 			System.err.println("Error: \" + e);\r\n");
 		}
 
-	}
-
-	private String validateUserID(Connection connection, String userID) throws SQLException {
-		if (userID != null) {
-			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-			PreparedStatement ps = connection.prepareStatement(sqlStr);
-			ps.setString(1, userID);
-			ResultSet rs = ps.executeQuery();
-			rs.next();
-			int rowCount = rs.getInt(1);
-			if (rowCount < 1) {
-				userID = null;
-			}
-		}
-		return userID;
 	}
 
 	/**

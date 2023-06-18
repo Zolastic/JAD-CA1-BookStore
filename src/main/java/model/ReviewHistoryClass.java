@@ -13,8 +13,9 @@ public class ReviewHistoryClass {
 	private String review_text;
 	private double rating;
 	private String ratingDate;
+	private String transaction_history_itemID;
 	public ReviewHistoryClass(Book book, String review_id, String custID, String bookID, String review_text, double rating,
-			String ratingDate) {
+			String ratingDate, String transaction_history_itemID) {
 		super();
 		this.book = book;
 		this.review_id = review_id;
@@ -23,6 +24,13 @@ public class ReviewHistoryClass {
 		this.review_text = review_text;
 		this.rating = rating;
 		this.ratingDate = ratingDate;
+		this.transaction_history_itemID=transaction_history_itemID;
+	}
+	public String getTransaction_history_itemID() {
+		return transaction_history_itemID;
+	}
+	public void setTransaction_history_itemID(String transaction_history_itemID) {
+		this.transaction_history_itemID = transaction_history_itemID;
 	}
 	public Book getBook() {
 		return book;

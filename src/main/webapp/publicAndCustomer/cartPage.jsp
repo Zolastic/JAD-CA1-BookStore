@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="model.Book"%>
@@ -23,6 +23,7 @@
 <%@ include file="../../tailwind-css.jsp"%>
 </head>
 <body>
+	<%@ include file="customerModal.jsp"%>
 	<%
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	List<Book> cartItems = (List<Book>) request.getAttribute("cartItems");
@@ -34,13 +35,12 @@
 	String err = request.getParameter("error");
 	if (err != null) {
 		if (err.equals("true")) {
-			out.print("<script>alert('Internal Server Error')</script>");
+			out.print("<script>showModal('Internal Server Error')</script>");
 		}
 	}
 	if (cartID != null && validatedUserID != null) {
 	%>
 	<script>
-	
 	function selectCartItem(formID, scrollURL) {
 		let scrollPosition = window.scrollY;
         document.getElementById(scrollURL).value = scrollPosition;
@@ -82,7 +82,7 @@
             document.getElementById('selectedCartItems').value = selectedCartItemsString;
             document.getElementById('checkoutForm').submit();
         } else {
-            alert("Please select more than one book to proceed with checkout.");
+        	showModal("Please select more than one book to proceed with checkout.");
         }
         
         event.preventDefault();
@@ -91,7 +91,7 @@
 
 
     
-    function updateQuantity(change, bookID) {
+    function updateQuantity(change, bookID, current) {
         const currentOrInputQuantity = document.getElementById("quantityInput_" + bookID);
         const updatedQuantity = document.getElementById("updatedQuantity_" + bookID);
         const newQuantity = parseInt(currentOrInputQuantity.value) + change;
@@ -103,7 +103,25 @@
             document.getElementById('scrollPositionForQty_' + bookID).value = scrollPosition;
             document.getElementById('quantityForm_' + bookID).submit();
         } else {
-            currentOrInputQuantity.value = parseInt(currentOrInputQuantity.value);
+        	if(newQuantity <= 0){
+        		if(inventory==0){
+        			currentOrInputQuantity.value = current;
+        		}else{
+        			updatedQuantity.value = 1;
+                    let scrollPosition = window.scrollY;
+                    document.getElementById('scrollPositionForQty_' + bookID).value = scrollPosition;
+                    document.getElementById('quantityForm_' + bookID).submit();
+        		}
+        	}else{
+        		if(inventory==0){
+        			currentOrInputQuantity.value = current;
+        		}else{
+        			updatedQuantity.value = inventory;
+                    let scrollPosition = window.scrollY;
+                    document.getElementById('scrollPositionForQty_' + bookID).value = scrollPosition;
+                    document.getElementById('quantityForm_' + bookID).submit();
+        		}
+        	}
         }
 
         event.preventDefault();
@@ -119,13 +137,14 @@
     
     </script>
 
-
+	<!-- Show Cart Details only if user is logged in -->
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div class="mx-10 mb-60">
 		<h1 class="text-3xl font-bold italic my-6">
 			<i class="fas fa-shopping-cart text-blue-950 mr-2"></i>Your Cart
 		</h1>
 		<div class="flex flex-col mb-5">
+			<!-- if cart is empty -->
 			<%
 			if (cartItems == null || cartItems.isEmpty()) {
 			%>
@@ -145,10 +164,12 @@
 
 				<form id="selectCartItemForm_<%=item.getBookID()%>"
 					action="/CA1-assignment/CartPage" method="post">
+
 					<div
 						onclick="selectCartItem('selectCartItemForm_<%=item.getBookID()%>', 'scrollPositionForSelect_<%=item.getBookID()%>')">
 						<input type="checkbox" class="selectCheckbox mr-2 w-4 h-4"
-							<%=(item.getSelected() == 1) ? "checked" : ""%> />
+							<%=(item.getSelected() == 1 && item.getInventory() > 0) ? "checked" : ""%>
+							<%=(item.getInventory() == 0) ? "disabled" : ""%> />
 					</div>
 					<input type="hidden" class="bookIDInput" name="bookID"
 						value="<%=item.getBookID()%>" /> <input type="hidden"
@@ -160,11 +181,12 @@
 				</form>
 
 				<a href="<%=urlToBookDetails%>">
-					<div class="flex items-center h-30 m-6">
+					<div class="flex items-center h-32 m-6">
 						<%
 						if (item.getImg() != null) {
 						%>
-						<img class="h-full object-contain" src="<%=item.getImg()%>">
+						<img class="h-32 w-32 object-contain"
+							src="data:image/png;base64, <%=item.getImg()%>">
 						<%
 						} else {
 						%>
@@ -185,20 +207,21 @@
 					<p class="text-lg font-bold mr-6">
 						$<%=String.format("%.2f", item.getPrice())%>
 					</p>
+					<!-- Form action to update cart items quantity -->
 					<form id="quantityForm_<%=item.getBookID()%>"
 						action="/CA1-assignment/CartPage" method="post">
 						<button id="minusBtn"
 							class="text-gray-500 hover:text-black focus:outline-none"
-							onclick="updateQuantity(-1, <%=item.getBookID()%>)">
+							onclick="updateQuantity(-1, <%=item.getBookID()%>, <%=item.getQuantity()%>)">
 							<i class="fas fa-minus transform hover:scale-110"></i>
 						</button>
 						<input id="quantityInput_<%=item.getBookID()%>"
 							class="w-12 text-center" type="number" name="quantity"
 							value="<%=item.getQuantity()%>"
-							onchange="updateQuantity(0, <%=item.getBookID()%>)">
+							onchange="updateQuantity(0, <%=item.getBookID()%>,<%=item.getQuantity()%>)">
 						<button id="plusBtn"
 							class="text-gray-500 hover:text-black focus:outline-none"
-							onclick="updateQuantity(1, <%=item.getBookID()%>)">
+							onclick="updateQuantity(1, <%=item.getBookID()%>, <%=item.getQuantity()%>)">
 							<i class="fas fa-plus transform hover:scale-110"></i>
 						</button>
 						<input type="hidden" name="scrollPositionForQty"
@@ -211,7 +234,15 @@
 							type="hidden" id="inventory_<%=item.getBookID()%>"
 							value="<%=item.getInventory()%>">
 					</form>
-
+					<%
+					if (item.getInventory() == 0) {
+					%>
+					<div class="text-red-600 px-2 py-1 rounded-tr mx-5">No stock
+						left</div>
+					<%
+					}
+					%>
+					<!-- Form action to delete cart item -->
 					<form id="deleteCartItemForm_<%=item.getBookID()%>"
 						action="/CA1-assignment/CartPage" method="post">
 						<button id="deleteBtn"
@@ -225,12 +256,15 @@
 						<input type="hidden" name="cartID" value="<%=cartID%>"> <input
 							type="hidden" name="action" value="deleteCartItem">
 					</form>
+
 				</div>
 			</div>
+			<!-- Calculate subtotal -->
 			<%
-			subtotal += (item.getSelected() == 1) ? (item.getPrice() * item.getQuantity()) : 0;
+			subtotal += (item.getSelected() == 1 && item.getInventory() > 0) ? (item.getPrice() * item.getQuantity()) : 0;
 			}
 			%>
+			<!-- Fixed bottom div for select all and subtotal with their form action -->
 			<div
 				class="fixed bottom-0 left-0 w-full h-50 p-4 px-10 bg-white border border-t border-gray-200 shadow-lg">
 				<div class="flex justify-between items-center">
@@ -247,7 +281,6 @@
 							name="newSelection" id="newSelection" value="">
 					</form>
 					<div>
-
 						<p class="text-lg font-bold my-2">
 							Subtotal: $<%=String.format("%.2f", subtotal)%>
 						</p>
@@ -255,7 +288,7 @@
 							<form id="checkoutForm" action="/CA1-assignment/CartPage"
 								method="post">
 								<button
-									class="px-4 p-2 bg-slate-600 hover:bg-slate-700 hover:scale-110 text-white rounded hover:bg-blue-600"
+									class="px-4 p-2 bg-slate-600 hover:bg-slate-800 hover:scale-110 text-white rounded"
 									onclick="submitCheckoutForm()">Checkout</button>
 								<input type="hidden" id="selectedCartItems"
 									name="selectedCartItems" value=""> <input type="hidden"
@@ -273,14 +306,23 @@
 	<%
 	} else {
 	%>
+	<!-- If user is not logged in or have no cart -->
 	<script>
-    alert("Error loading page");
-    window.location.href = "home.jsp";
-  </script>
+	if (
+			<%=validatedUserID%>
+				== null) {
+					window.location.href = "registrationPage.jsp";
+				} else {
+					var closeButton = document.getElementById("close");
+					showModal("Error loading page");
+					closeButton.addEventListener("click", function() {
+						window.location.href = "/CA1-assignment/home.jsp";
+					});
+				}
+	
+	</script>
 	<%
 	}
 	%>
-
-
 </body>
 </html>

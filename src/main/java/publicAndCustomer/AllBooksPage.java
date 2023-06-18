@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import dao.BookDAO;
+import dao.VerifyUserDAO;
 import model.Book;
 import utils.DBConnection;
 
@@ -20,20 +20,20 @@ import utils.DBConnection;
  */
 
 /**
- * Author(s): Soh Jian Min (P2238856)
- * Description: JAD CA1
+ * Author(s): Soh Jian Min (P2238856) Description: JAD CA1
  */
 
 @WebServlet("/AllBooksPage")
 public class AllBooksPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	private BookDAO bookDAO = new BookDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public AllBooksPage() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -42,113 +42,64 @@ public class AllBooksPage extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		String url = null;
 		String userIDAvailable = request.getParameter("userIDAvailable");
 		String userID = null;
+		int totalPages=1;
+		int page = getPageFromParams(request);
 		if (userIDAvailable != null) {
 			if (userIDAvailable.equals("true")) {
 				userID = (String) request.getSession().getAttribute("userID");
 			}
 		}
-
 		List<Book> allBooks = new ArrayList<>();
 		try (Connection connection = DBConnection.getConnection()) {
 			String action = request.getParameter("action");
-
+			// If the user is searching for a book
 			if (action != null && action.equals("searchBookByTitle")) {
 				String searchInput = request.getParameter("searchInput");
 				if (searchInput != null) {
-
-					allBooks = searchBookByTitle(connection, ("%" + searchInput + "%"));
+					// Function to search to show the search results
+					allBooks = bookDAO.searchBookByTitle(connection, ("%" + searchInput + "%"), page);
+					totalPages =bookDAO.getTotalPagesForSearch(connection, ("%" + searchInput + "%"));
+					// Validate the user id
+					userID = verifyUserDAO.validateUserID(connection, userID);
 					request.setAttribute("searchExecuted", "true");
 					request.setAttribute("allBooks", allBooks);
+					request.setAttribute("totalPages", totalPages);
 					request.setAttribute("validatedUserID", userID);
-					RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/allBooksPage.jsp?action=searchBookByTitle&searchInput="+searchInput);
-					dispatcher.forward(request, response);
+					url = "publicAndCustomer/allBooksPage.jsp?action=searchBookByTitle&searchInput=" + searchInput;
 				}
-
+			} else {
+				userID = verifyUserDAO.validateUserID(connection, userID);
+				allBooks = bookDAO.getAllBooks(connection, page);
+				totalPages = bookDAO.getTotalPagesForAllBooks(connection);
+				request.setAttribute("totalPages", totalPages);
+				request.setAttribute("allBooks", allBooks);
+				request.setAttribute("validatedUserID", userID);
+				url = "publicAndCustomer/allBooksPage.jsp";
 			}
-//			else if (action != null && action.equals("searchBookByISBN")) {
-//				String searchInput = request.getParameter("searchInput");
-//				if (genreID != null && searchInput != null) {
-//					if (searchInput.length() != 0) {
-//						allGenreBook = searchBookByISBN(connection, genreID, searchInput);
-//					}
-//
-//				}
-//
-//			} 
-			else {
-				userID = validateUserID(connection, userID);
-
-				allBooks = getAllBooks(connection);
-			}
-
 			connection.close();
 		} catch (SQLException e) {
 			System.err.println("Error: " + e);
 		}
-
-		request.setAttribute("allBooks", allBooks);
-		request.setAttribute("validatedUserID", userID);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/allBooksPage.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher(url);
 		dispatcher.forward(request, response);
 	}
 
-	private String validateUserID(Connection connection, String userID) throws SQLException {
-		if (userID != null) {
-			String sqlStr = "SELECT COUNT(*) FROM users WHERE users.userID=?";
-			PreparedStatement ps = connection.prepareStatement(sqlStr);
-			ps.setString(1, userID);
-			ResultSet rs = ps.executeQuery();
-			rs.next();
-			int rowCount = rs.getInt(1);
-			if (rowCount < 1) {
-				userID = null;
+	// Get page from parameter
+	private int getPageFromParams(HttpServletRequest request) {
+		String pageStr = request.getParameter("page");
+		int page = 1; // Default page value is 1
+		if (pageStr != null) {
+			try {
+				page = Integer.parseInt(pageStr);
+			} catch (NumberFormatException e) {
+				// invalid set to page 1
+				page = 1;
 			}
 		}
-		return userID;
-	}
-
-	private List<Book> getAllBooks(Connection connection) throws SQLException {
-		List<Book> allBooks = new ArrayList<>();
-		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName\r\n"
-				+ "    FROM book\r\n" + "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
-				+ "    LEFT JOIN review ON review.bookID = book.book_id\r\n"
-				+ "    JOIN author ON book.authorID = author.authorID\r\n"
-				+ "    JOIN publisher ON book.publisherID = publisher.publisherID\r\n"
-				+ "    GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName;";
-		Statement statement = connection.createStatement();
-	    ResultSet rs = statement.executeQuery(sqlStr);
-		while (rs.next()) {
-			Book book = new Book(rs.getString("book_id"), rs.getString("ISBN"), rs.getString("title"),
-					rs.getString("authorName"), rs.getString("publisherName"), rs.getString("publication_date"),
-					rs.getString("description"), rs.getString("genre_name"), rs.getString("img"), rs.getInt("sold"),
-					rs.getInt("inventory"), rs.getDouble("price"), 1, rs.getDouble("average_rating"));
-			allBooks.add(book);
-		}
-		return allBooks;
-	}
-
-	private List<Book> searchBookByTitle(Connection connection, String searchInput) throws SQLException {
-		List<Book> searchResults = new ArrayList<>();
-		String sqlStr = "SELECT book.book_id, book.img, book.title, book.price, book.description, book.publication_date, book.ISBN, book.inventory, genre.genre_name, book.sold, CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating, author.authorName, publisher.publisherName\r\n"
-				+ "    FROM book\r\n" + "    JOIN genre ON genre.genre_id = book.genre_id\r\n"
-				+ "    LEFT JOIN review ON review.bookID = book.book_id\r\n"
-				+ "    JOIN author ON book.authorID = author.authorID\r\n"
-				+ "    JOIN publisher ON book.publisherID = publisher.publisherID\r\n"
-				+ "    WHERE book.title LIKE ?\r\n"
-				+ "    GROUP BY book.book_id, book.img, book.title, book.price, genre.genre_name, book.sold, book.inventory, author.authorName, publisher.publisherName;";
-		PreparedStatement ps = connection.prepareStatement(sqlStr);
-		ps.setString(1, searchInput);
-		ResultSet rs = ps.executeQuery();
-		while (rs.next()) {
-			Book searchResult = new Book(rs.getString("book_id"), rs.getString("ISBN"), rs.getString("title"),
-					rs.getString("authorName"), rs.getString("publisherName"), rs.getString("publication_date"),
-					rs.getString("description"), rs.getString("genre_name"), rs.getString("img"), rs.getInt("sold"),
-					rs.getInt("inventory"), rs.getDouble("price"), 1, rs.getDouble("average_rating"));
-			searchResults.add(searchResult);
-		}
-		return searchResults;
+		return page;
 	}
 
 	/**
@@ -157,7 +108,6 @@ public class AllBooksPage extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

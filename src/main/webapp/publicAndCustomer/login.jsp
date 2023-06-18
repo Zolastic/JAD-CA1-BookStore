@@ -4,7 +4,7 @@
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 
-<div class="w-1/2  h-full flex-wrap justify-center p-12">
+<div class="w-1/2  h-auto flex-wrap justify-center p-12">
 	<h1 class="loginTextHeader text-center text-3xl font-bold">LOG IN</h1>
 	<form class="mt-6" action="<%=request.getContextPath()%>/Login"
 		method="post">
@@ -36,7 +36,7 @@
 		<div class="field-wrapper flex justify-center my-2">
 			<span class="mr-1">Don't have an account?</span>
 			<a
-				href="<%=request.getContextPath()%>/publicAndCustomer/registrationPage.jsp?signUp=true"
+				href="<%=request.getContextPath()%>/publicAndCustomer/registrationPage.jsp?type=SignUp"
 				class="loginLinks">Sign Up!</a>
 		</div>
 		<div class="field-wrapper flex justify-center mt-5">

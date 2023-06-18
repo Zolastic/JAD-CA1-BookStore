@@ -32,6 +32,7 @@
 
 	int totalBooks = books.size();
 	int totalPages = (int) Math.ceil((double) totalBooks / itemsPerPage);
+	totalPages = totalPages == 0 ? 1 : totalPages;
 
 	String userInput = request.getParameter("userInput");
 

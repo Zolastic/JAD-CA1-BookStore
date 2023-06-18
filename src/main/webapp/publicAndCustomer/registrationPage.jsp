@@ -5,11 +5,17 @@
 <head>
 <meta charset="ISO-8859-1">
 <%
-String signUpState = request.getParameter("signUp");
-if (signUpState != null) {
+String registrationType = request.getParameter("type");
+if (registrationType != null) {
+	if (registrationType.equals("SignUp")) {
 %>
 <title>Inkwell: Sign Up</title>
 <%
+} else if (registrationType.equals("OTP")) {
+%>
+<title>Inkwell: OTP</title>
+<%
+}
 } else {
 %>
 <title>Inkwell: Login</title>
@@ -25,20 +31,26 @@ if (signUpState != null) {
 <body class="loginPageBody flex justify-center items-center">
 	<div class="containerZ main w-screen h-screen flex">
 		<div
-			class="cardZ flex w-2/3 h-3/5 justify-between mx-auto my-20 rounded-md overflow-hidden">
-			<div class="left  w-1/2 h-full flex-wrap py-7">
+			class="cardZ mb-2  flex w-2/3 h-4/5 justify-between mx-auto my-20 rounded-md ">
+			<div class="flex items-center justify-center left w-1/2 h-auto flex-wrap py-7 rounded-l-md">
 				<img
 					src="<%=request.getContextPath()%>/publicAndCustomer/img/personReadingBook.png"
 					alt="loginPhoto"
-					class="registrationPageFloatingImage w-3/5 mx-auto" />
-				<h1 class="text-center mt-2 text-white font-semibold text-xl">
+					class="registrationPageFloatingImage mx-auto h-auto w-auto object-contain" />
+				<h1 class="text-center -mt-3 text-white font-semibold text-xl">
 					Discover different dimensions with Inkwell.</h1>
 			</div>
 			<%
-			if (signUpState != null) {
+			if (registrationType != null) {
+				if (registrationType.equals("SignUp")) {
 			%>
 			<%@include file="./signUp.jsp"%>
 			<%
+			} else if (registrationType.equals("OTP")) {
+			%>
+			<%@include file="./otp.jsp"%>
+			<%
+			}
 			} else {
 			%>
 			<%@include file="./login.jsp"%>

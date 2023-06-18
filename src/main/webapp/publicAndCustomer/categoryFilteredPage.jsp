@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>
@@ -26,13 +26,16 @@
 	String action = request.getParameter("action");
 	String searchInput = request.getParameter("searchInput");
 	boolean err = false;
+	int totalPages = (int) request.getAttribute("totalPages");
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	if (allGenreBook == null || genreName == null) {
 		err = true;
 	%>
+	<!-- Error Loading Page -->
 	<div class="fixed inset-0 flex items-center justify-center">
-		<div class="bg-yellow-200 px-4 py-2 rounded-lg">
-			<i class="fas fa-exclamation-triangle mr-2"></i> Error Loading Page
+		<div class="bg-yellow-100 p-5 rounded-lg">
+			<i class="fas fa-exclamation-triangle text-yellow-700 mr-2"></i>
+			Error Loading Page
 		</div>
 	</div>
 	<%
@@ -49,18 +52,12 @@
 	}
 
 	if (!err) {
-	List<Book> booksOnCurrentPage = null;
-	int booksPerPage = 10;
-	int totalBooks = allGenreBook.size();
-	int totalPages = (int) Math.ceil((double) totalBooks / booksPerPage);
 	int currentPage = 1;
 	if (request.getParameter("page") != null) {
 		currentPage = Integer.parseInt(request.getParameter("page"));
 	}
-	int startIndex = (currentPage - 1) * booksPerPage;
-	int endIndex = Math.min(startIndex + booksPerPage, totalBooks);
-	booksOnCurrentPage = allGenreBook.subList(startIndex, endIndex);
 	%>
+	<!-- Allow searching books that is under the genre -->
 	<div class="mx-20 mb-60">
 		<div class="flex items-center justify-between">
 			<h1 class="text-4xl font-bold italic my-10"><%=genreName%></h1>
@@ -87,11 +84,12 @@
 		</div>
 
 		<%
-		if (booksOnCurrentPage.size() > 0) {
+		if (allGenreBook.size() > 0) {
 		%>
+		<!-- Show MAX 10 books per page -->
 		<div class="flex flex-wrap justify-center w-full">
 			<%
-			for (Book book : booksOnCurrentPage) {
+			for (Book book : allGenreBook) {
 				double rating = book.getRating();
 				int filledStars = (int) rating;
 				boolean hasHalfStar = (rating - filledStars) >= 0.5;
@@ -99,15 +97,14 @@
 				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
 			%>
 			<div
-				class="flex items-center justify-between border border-gray-300 rounded-lg my-4 p-5 shadow-lg w-full  transform hover:scale-110"
+				class="flex items-center justify-between border border-gray-300 rounded-lg my-4 p-5 shadow-lg w-full  transform hover:scale-110 cursor-pointer"
 				onclick="window.location.href = '<%=urlToBookDetails%>'">
-
-
 				<div class="flex items-center h-40 m-6">
 					<%
 					if (book.getImg() != null) {
 					%>
-					<img class="h-full object-contain" src="<%=book.getImg()%>">
+					<img class="h-full object-contain"
+						src="data:image/png;base64, <%=book.getImg()%>">
 					<%
 					} else {
 					%>
@@ -177,14 +174,18 @@
 			}
 			%>
 		</div>
-
+		<!-- Pagination -->
 		<div class="flex items-center justify-center mt-10">
 			<div class="flex space-x-4">
 				<a
 					href="<%=currentPage > 1
-		? ("/CA1-assignment/CategoryFilteredPage?page=" + (currentPage - 1) + "&genreName=" + genreName + "&genreID="
-				+ request.getParameter("genreID") + (validatedUserID != null ? "&userIDAvailable=true" : "")+(action!=null&&action.equals("searchBookByTitle")?("&action=searchBookByTitle&searchInput="+searchInput):""))
-		: "#"%>"
+				? ("/CA1-assignment/CategoryFilteredPage?page=" + (currentPage - 1) + "&genreName=" + genreName
+						+ "&genreID=" + request.getParameter("genreID")
+						+ (validatedUserID != null ? "&userIDAvailable=true" : "")
+						+ (action != null && action.equals("searchBookByTitle")
+								? ("&action=searchBookByTitle&searchInput=" + searchInput)
+								: ""))
+				: "#"%>"
 					class="bg-gray-200 text-gray-600 px-4 py-2 rounded <%=currentPage > 1 ? "" : "cursor-not-allowed opacity-50"%>">
 					<i class="fas fa-chevron-left"></i>
 				</a>
@@ -194,8 +195,9 @@
 					+ request.getParameter("genreID");
 					if (validatedUserID != null) {
 						pageLink += "&userIDAvailable=true";
-					}if(action!=null&&action.equals("searchBookByTitle")){
-						pageLink+=("&action=searchBookByTitle&searchInput="+searchInput);
+					}
+					if (action != null && action.equals("searchBookByTitle")) {
+						pageLink += ("&action=searchBookByTitle&searchInput=" + searchInput);
 					}
 				%>
 				<a href="<%=pageLink%>"
@@ -208,9 +210,13 @@
 				%>
 				<a
 					href="<%=currentPage < totalPages
-		? ("/CA1-assignment/CategoryFilteredPage?page=" + (currentPage + 1) + "&genreName=" + genreName + "&genreID="
-				+ request.getParameter("genreID") + (validatedUserID != null ? "&userIDAvailable=true" : "")+(action!=null&&action.equals("searchBookByTitle")?("&action=searchBookByTitle&searchInput="+searchInput):""))
-		: "#"%>"
+				? ("/CA1-assignment/CategoryFilteredPage?page=" + (currentPage + 1) + "&genreName=" + genreName
+						+ "&genreID=" + request.getParameter("genreID")
+						+ (validatedUserID != null ? "&userIDAvailable=true" : "")
+						+ (action != null && action.equals("searchBookByTitle")
+								? ("&action=searchBookByTitle&searchInput=" + searchInput)
+								: ""))
+				: "#"%>"
 					class="bg-gray-200 text-gray-600 px-4 py-2 rounded <%=currentPage < totalPages ? "" : "cursor-not-allowed opacity-50"%>">
 					<i class="fas fa-chevron-right"></i>
 				</a>
@@ -223,6 +229,7 @@
 		<%
 		} else {
 		%>
+		<!-- If no books in genre -->
 		<div class="flex items-center justify-center">
 			<div class="flex flex-col items-center">
 				<h2 class="text-lg mt-20 pt-10">No results</h2>

@@ -6,6 +6,8 @@
 <meta charset="ISO-8859-1">
 <title>Inkwell: Edit Profile</title>
 <%@include file="../tailwind-css.jsp"%>
+<link rel="stylesheet"
+	href="<%=request.getContextPath()%>/publicAndCustomer/css/feedbackMessages.css">
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
 </head>
@@ -13,18 +15,21 @@
 	<%@ page import="java.util.*, model.*"%>
 	<%
 	User user = (User) request.getAttribute("user");
-	String image = user.getImage() == null ? request.getContextPath() + "/publicAndCustomer/img/defaultUserPFP.png" : "data:image/png;base64, " + user.getImage();
+	String image = user.getImage() == null
+			? request.getContextPath() + "/publicAndCustomer/img/defaultUserPFP.png"
+			: "data:image/png;base64, " + user.getImage();
+	String statusCode = request.getParameter("statusCode");
 	%>
 
 	<%@include file="navBar/headerNavCustomer.jsp"%>
 	<div class="my-8 mx-48">
 		<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Edit
 			Profile</h1>
-		<form id="upload-form" action="<%=request.getContextPath()%>/EditProfile" method="post"
+		<form id="upload-form"
+			action="<%=request.getContextPath()%>/EditProfile" method="post"
 			enctype="multipart/form-data">
-			<input type="text" name="userID" id=""
-			value="<%=user.getUserID()%>" class="hidden"
-				placeholder=" " required />
+			<input type="text" name="userID" id="" value="<%=user.getUserID()%>"
+				class="hidden" placeholder=" " required />
 
 			<!-- profile picture/ image -->
 			<div class="flex items-center justify-center w-full">
@@ -43,9 +48,10 @@
 						<p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG,
 							JPG or GIF</p>
 					</div> <input id="dropzone-file" type="file" class="hidden" name="image"
-					value="<%=user.getImage()%>" />
-				</label>
-				<img id="pfp" class="pfpImage ml-2 border-2 border-pink-100 bg-gray-50 w-64 h-64 rounded-full flex justify-center items-center" src="<%= image %>">
+					value="<%=user.getImage()%>" onchange="handleFileSelect(event)" />
+				</label> <img id="pfp"
+					class="pfpImage ml-2 border-2 border-pink-100 bg-gray-50 w-64 h-64 rounded-full flex justify-center items-center"
+					src="<%=image%>">
 			</div>
 
 
@@ -66,6 +72,22 @@
 					class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-amber-800 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email</label>
 			</div>
 
+			<div class="-mt-1 mb-2">
+				<%
+				if (statusCode != null) {
+					if (statusCode.equals("200")) {
+				%>
+				<h1 class="successMessage">Profile successfully updated!</h1>
+				<%
+				} else {
+				%>
+				<h1 class="errorMessage">Uh-oh! Error</h1>
+				<%
+				}
+				}
+				%>
+			</div>
+
 			<button type="submit"
 				class="text-amber-800 bg-pink-100 hover:bg-pink-200 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Save
 				Changes!</button>
@@ -75,29 +97,38 @@
 <script>
 	function handleDragOver(e) {
 		e.preventDefault();
-		e.currentTarget.classList.add("border-blue-500"); // Add a visual indication when dragging over the dropzone
+		e.currentTarget.classList.add("border-pink-200");
 	}
 
 	function handleDragLeave(e) {
-		e.currentTarget.classList.remove("border-blue-500"); // Remove the visual indication when leaving the dropzone
+		e.currentTarget.classList.remove("border-pink-200");
 	}
 
 	function handleDrop(e) {
 		e.preventDefault();
-		e.currentTarget.classList.remove("border-blue-500"); // Remove the visual indication when dropping the file
+		e.currentTarget.classList.remove("border-pink-200");
 
-		const file = e.dataTransfer.files[0]; // Get the dropped file
-		// Do something with the file (e.g., upload it or display preview)
+		const file = e.dataTransfer.files[0];
 		const dropzoneFileInput = document.getElementById("dropzone-file");
-	    dropzoneFileInput.files = e.dataTransfer.files;
-	    //dropzoneFileInput.value = file.name;
+		dropzoneFileInput.files = e.dataTransfer.files;
 
-		// Example: Display a preview image
 		const reader = new FileReader();
 		reader.onload = function(e) {
 			const imagePreview = document.getElementById("pfp");
 			imagePreview.src = e.target.result;
 		};
+		reader.readAsDataURL(file);
+	}
+
+	function handleFileSelect(e) {
+		const file = event.target.files[0];
+		const reader = new FileReader();
+
+		reader.onload = function(e) {
+			const imagePreview = document.getElementById("pfp");
+			imagePreview.src = e.target.result;
+		};
+
 		reader.readAsDataURL(file);
 	}
 </script>

@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="com.stripe.Stripe"%>
@@ -25,22 +25,22 @@
 <%@ include file="../../tailwind-css.jsp"%>
 </head>
 <body>
+	<%@ include file="customerModal.jsp"%>
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
-
 	<div class="px-10 pt-10">
 		<%
 		String validatedUserID = (String) request.getAttribute("validatedUserID");
 		List<Book> checkoutItems = (List<Book>) request.getAttribute("checkoutItems");
 		double subtotal = 0.0;
-		if (checkoutItems != null && validatedUserID != null) {
+		if (checkoutItems != null && validatedUserID != null && checkoutItems.size()!=0) {
 			for (Book item : checkoutItems) {
-				subtotal += item.getPrice();
+				subtotal += (item.getPrice()*item.getQuantity());
 			}
 
 			subtotal = Math.round(subtotal * 100.0) / 100.0; // Round to 2 decimal places
 		%>
 		<h1 class="text-3xl font-bold mb-5">Checkout Details</h1>
-
+		<!-- Show all the books user selected to checkout -->
 		<div class="grid gap-4">
 			<%
 			for (Book item : checkoutItems) {
@@ -51,7 +51,7 @@
 						<%
 						if (item.getImg() != null) {
 						%>
-						<img class="h-full object-contain" src="<%=item.getImg()%>">
+						<img class="h-full object-contain" src="data:image/png;base64, <%=item.getImg()%>">
 						<%
 						} else {
 						%>
@@ -66,7 +66,7 @@
 							Author:
 							<%=item.getAuthor()%></p>
 						<p class="text-gray-600">
-							Price: $<%=item.getPrice()%></p>
+							Price: $<%=String.format("%.2f", item.getPrice())%></p>
 					</div>
 				</div>
 				<div>
@@ -80,10 +80,11 @@
 			}
 			%>
 		</div>
-
+		<!-- Form action for checkout -->
 		<div class="mt-2">
 			<form id="payment-form" action="/CA1-assignment/CheckoutPage"
 				method="post">
+				<!-- Input for user to key in address -->
 				<div class="p-2 rounded shadow my-8">
 					<h2 class="text-lg font-bold ">Address Details</h2>
 					<div class="border border-b border-gray-300 my-2"></div>
@@ -92,13 +93,13 @@
 							class="w-full border border-gray-300 rounded px-4 py-2" required>
 					</div>
 				</div>
+				<!-- Card elements -->
 				<div class="p-2 pb-10 rounded shadow ">
 					<h2 class="text-lg font-bold my-3">Card details</h2>
 					<div class="border border-b border-gray-300 mt-2"></div>
 					<div class="mt-8" id="card-element"></div>
 				</div>
-
-
+				<!-- Show the subtotal -->
 				<input type="hidden" name="subtotal" value="<%=subtotal%>">
 				<input type="hidden" name="action" value="payment">
 				<div
@@ -108,7 +109,7 @@
 							SubTotal:<%=subtotal%></h1>
 					</div>
 					<div>
-						<button id="submit-payment" type="submit"
+						<button type="submit"
 							class="px-4 py-2 bg-slate-600 hover:bg-slate-600 transform hover:scale-110 text-white rounded my-5">Pay
 							Now</button>
 					</div>
@@ -120,6 +121,7 @@
 	<script>
 		var stripe = Stripe('pk_test_51NHoftHrRFi94qYrhAbUZpgunskXTCLKbp23xS1ScnQve4rjrofdIKLKzPRckw8wk6WhZNKQbjitJLB3HgAVBPuN00s12twaBL');
 		var elements = stripe.elements();
+		<!-- Create card element -->
 		var cardElement = elements.create('card', {
 			hidePostalCode : true
 		});
@@ -129,7 +131,7 @@
 		var form = document.getElementById('payment-form');
 		form.addEventListener('submit', function(event) {
 			event.preventDefault();
-
+			<!-- Create payment method -->
 			stripe.createPaymentMethod({
 				type : 'card',
 				card : cardElement
@@ -137,6 +139,7 @@
 				if (result.error) {
 					console.error(result.error);
 				} else {
+					<!-- Create hidden input for paymentMethodId -->
 					var paymentMethodId = result.paymentMethod.id;
 					var paymentMethodInput = document.createElement('input');
 					paymentMethodInput.setAttribute('type', 'hidden');
@@ -148,24 +151,29 @@
 				}
 			});
 		});
+		<!-- Checkout cookies expires when exit page -->
 		window
 				.addEventListener(
 						'beforeunload',
 						function() {
-							document.cookie = "cookieName=; expires=Thu, 13 Nov 2003 00:00:00 UTC; path=/;";
+							document.cookie = "checkoutItems=; expires=Thu, 13 Nov 2003 00:00:00 UTC; path=/;";
 						});
 	</script>
 	<%
 	} else {
 	%>
 	<script>
-		alert("Error loading page");
+	showModal("Error loading page");
+	var closeButton = document.getElementById("close");
+	closeButton.addEventListener("click", function() {
 		if (<%=validatedUserID%> != null) {
 			window.location.href = "/CA1-assignment/CartPage?userIDAvailable=true";
 		} else {
 			window.location.href = "/CA1-assignment/CartPage";
 		}
+	});
 	</script>
+
 	<%
 	}
 	%>

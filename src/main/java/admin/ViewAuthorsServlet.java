@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import dao.AuthorDAO;
 import model.Author;
 import utils.DBConnection;
+import utils.DispatchUtil;
 
 /**
  * Servlet implementation class ViewAuthorsServlet
@@ -24,24 +25,15 @@ public class ViewAuthorsServlet extends HttpServlet {
 	private AuthorDAO authorDAO = new AuthorDAO();
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ViewAuthorsServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		try (Connection connection = DBConnection.getConnection()) {
 
 			loadData(request, connection);
-			request.getRequestDispatcher("viewAuthors.jsp").forward(request, response);
+			DispatchUtil.dispatch(request, response, "viewAuthors.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			// redirect to error page
@@ -60,7 +52,6 @@ public class ViewAuthorsServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

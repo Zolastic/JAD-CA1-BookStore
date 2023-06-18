@@ -4,7 +4,7 @@
   - @(#)
   - Description: JAD CA1
   --%>
-  
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="model.Book"%>
@@ -20,6 +20,7 @@
 <%@ include file="../../tailwind-css.jsp"%>
 </head>
 <body>
+	<%@ include file="customerModal.jsp"%>
 	<script>
     function decrementQuantity(bookID, currentQuantity) {
         if (currentQuantity > 1) {
@@ -36,18 +37,28 @@
     }
 
     function updateQuantity(bookID, newQuantity, inventory) {
-        if (newQuantity < 1 ) {
-        	window.location.href = "?bookID=" + bookID + "&quantity=" + 1;
-            alert("Invalid input!");
-            
-        }else if(newQuantity > inventory) {
-        	window.location.href = "?bookID=" + bookID + "&quantity=" + inventory;
-            alert("Invalid input!");
-        }
-        else {
-            window.location.href = "?bookID=" + bookID + "&quantity=" + newQuantity;
-        }
-    }
+    	  if (newQuantity < 1 ) {
+    	    showModal("Invalid input!");
+    	  } else if (newQuantity > inventory) {
+    	    showModal("Invalid input! There is only " + inventory + " left in stock!");
+    	  } else {
+    	    window.location.href = "?bookID=" + bookID + "&quantity=" + newQuantity;
+    	    return;
+    	  }
+
+    	  var closeButton = document.getElementById("close");
+    	  closeButton.addEventListener("click", function() {
+    	    if (newQuantity < 1 ) {
+    	      window.location.href = "?bookID=" + bookID + "&quantity=" + 1;
+    	    } else if (newQuantity > inventory) {
+    	      window.location.href = "?bookID=" + bookID + "&quantity=" + inventory;
+    	    }
+    	  });
+    	}
+
+  
+
+
 </script>
 	<%
 	Book bookDetails = (Book) request.getAttribute("bookDetails");
@@ -61,13 +72,13 @@
 		if (addToCartAction.equals("success")) {
 	%>
 	<script>
-	        alert("Item added to cart successfully");
+	showModal("Item added to cart successfully");
 	    </script>
 	<%
 	} else {
 	%>
 	<script>
-	        alert("Error adding to cart");
+	showModal("Error adding to cart");
 	    </script>
 	<%
 	}
@@ -76,10 +87,11 @@
 	if (bookDetails == null) {
 	err = true;
 	%>
+	<!-- Show Error -->
 	<div class="fixed inset-0 flex items-center justify-center">
-		<div class="bg-yellow-200 px-4 py-2 rounded-lg">
-			<i class="fas fa-exclamation-triangle mr-2"></i> Error, No books
-			found
+		<div class="bg-yellow-100 p-5 rounded-lg">
+			<i class="fas fa-exclamation-triangle text-yellow-700 mr-2"></i>
+			Error, No books found
 		</div>
 	</div>
 	<%
@@ -112,6 +124,7 @@
 	boolean hasHalfStar = (rating - filledStars) >= 0.5;
 	int emptyStars = 5 - filledStars - (hasHalfStar ? 1 : 0);
 	%>
+	<!-- Show Book Details -->
 	<div class="container mx-auto mt-8">
 		<div class="flex">
 			<div class="flex items-center justify-center w-2/3 px-10 py-2">
@@ -119,8 +132,8 @@
 					<%
 					if (bookDetails.getImg() != null) {
 					%>
-					<div class="flex items-center h-full">
-						<img class="max-w-full max-h-full" src="<%=bookDetails.getImg()%>">
+					<div class="flex items-center h-64 w-64">
+						<img class="object-contain" src="data:image/png;base64, <%=bookDetails.getImg()%>">
 					</div>
 					<%
 					} else {
@@ -203,8 +216,6 @@
 				}
 				%>
 
-
-
 				<div class="flex items-center mb-4">
 					<h2 class="text-1xl mr-3">Quantity:</h2>
 					<div
@@ -228,6 +239,7 @@
 				</div>
 
 				<div class="mr-4">
+					<!-- Form action for update quantity -->
 					<form action="/CA1-assignment/BookDetailsPage" method="post">
 						<input type="hidden" name="bookID" value="<%=bookID%>"> <input
 							type="hidden" name="quantity"
@@ -235,7 +247,7 @@
 							type="hidden" name="validatedUserID" value="<%=validatedUserID%>">
 						<input type="hidden" name="action" value="addToCart">
 						<%
-						if (bookDetails.getQuantity() != 0) {
+						if (bookDetails.getInventory() != 0) {
 						%>
 						<button type="submit"
 							class="bg-slate-500 hover:bg-slate-700 transform hover:scale-110 text-white px-4 py-2 rounded w-full">
@@ -245,8 +257,7 @@
 						<%
 						} else {
 						%>
-						<button
-							class="bg-slate-500 hover:bg-slate-700 transform hover:scale-110 text-white px-4 py-2 rounded w-full"
+						<button class="bg-gray-500 text-white px-4 py-2 rounded w-full"
 							disabled>
 							<i class="fas fa-shopping-cart text-white-500 mr-2"></i> Add to
 							Cart <i class="fas fa-shopping-cart text-white-500 ml-2"></i>
@@ -263,11 +274,13 @@
 		</div>
 		<div
 			class="flex items-center justify-between mt-10 mx-5 bg-gray-100 p-5">
-			<h1 class="text-4xl text-bold ">Description:</h1>
+			<h1 class="text-4xl text-bold ">Description</h1>
 		</div>
+		<!-- Book Description -->
 		<div class="flex items-center mx-5 border border-gray-100 p-5 ">
 			<p class="mb-4"><%=bookDetails.getDescription()%></p>
 		</div>
+		<!-- Show All Reviews of the book -->
 		<div
 			class="flex items-center justify-between mt-10 mx-5 bg-gray-100 p-5">
 			<h1 class="text-4xl text-bold ">Reviews</h1>
@@ -313,17 +326,19 @@
 					String userImg = (String) review.get("userImg");
 				%>
 				<div class="flex items-start space-x-4">
-					<%
-					if (userImg != null) {
-					%>
-					<img src="<%=userImg%>" class="rounded-full h-12 w-12">
-					<%
-					} else {
-					%>
-					<i class="fas fa-user-circle text-gray-400 text-3xl"></i>
-					<%
-					}
-					%>
+					<div class="h-8 w-8">
+						<%
+						if (userImg != null) {
+						%>
+						<img src="data:image/png;base64, <%=userImg%>" class="rounded-full object-contain">
+						<%
+						} else {
+						%>
+						<i class="fas fa-user-circle text-gray-400 text-3xl"></i>
+						<%
+						}
+						%>
+					</div>
 					<div>
 						<h1 class="font-semibold text-xl"><%=review.get("userName")%></h1>
 						<div class="flex items-center space-x-1">
@@ -373,5 +388,6 @@
 	<%
 	}
 	%>
+
 </body>
 </html>
