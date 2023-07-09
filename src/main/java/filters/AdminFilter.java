@@ -62,7 +62,7 @@ public class AdminFilter extends HttpFilter implements Filter {
 		
 		String role = (String) session.getAttribute("role");
 		if (!"admin".equalsIgnoreCase(role)) {
-			response.sendRedirect(request.getContextPath() + "/home.jsp");
+			response.sendRedirect(request.getContextPath() + "/publicAndCustomer/home.jsp");
 			return;
 		}
 		
