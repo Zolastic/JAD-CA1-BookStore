@@ -80,8 +80,7 @@
 				<a class="hover:cursor-pointer hover:text-amber-900"
 					href="<%=request.getContextPath()%>/admin/UserDetails?userID=<%=user.getUserID()%>"><h1
 						class="text-3xl font-bold"><%=user.getName()%></h1></a>
-
-
+				<p class="mt-5 text-lg"><%=user.getEmail()%></p>
 			</div>
 			<div class="flex-grow"></div>
 			<div class="flex">

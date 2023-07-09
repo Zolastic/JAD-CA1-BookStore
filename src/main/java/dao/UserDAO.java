@@ -146,11 +146,12 @@ public class UserDAO {
 	
 	public List<User> getUsers(Connection connection, String userInput) throws SQLException {
 		userInput = userInput == null ? "" : userInput;
-		String getUsersSql = "SELECT * FROM users WHERE name LIKE ?;";
+		String getUsersSql = "SELECT * FROM users WHERE name LIKE ? OR email LIKE ?;";
 		List<User> users = new ArrayList<>();
 		
 		try(PreparedStatement ps = connection.prepareStatement(getUsersSql)) {
 			ps.setString(1, "%" + userInput + "%");
+			ps.setString(2, "%" + userInput + "%");
 			ResultSet resultSet = ps.executeQuery();
 			
 			while (resultSet.next()) {
