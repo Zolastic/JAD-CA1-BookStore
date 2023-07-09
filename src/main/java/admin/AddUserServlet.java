@@ -21,7 +21,7 @@ import utils.OTPManagement;
  * Servlet implementation class AddUser
  */
 @WebServlet("/admin/AddUser")
-public class AddUser extends HttpServlet {
+public class AddUserServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserDAO userDAO = new UserDAO();
 	private CartDAO cartDAO = new CartDAO();
@@ -30,7 +30,7 @@ public class AddUser extends HttpServlet {
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public AddUser() {
+	public AddUserServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
