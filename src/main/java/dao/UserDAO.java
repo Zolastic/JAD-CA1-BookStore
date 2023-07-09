@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import model.User;
 
 public class UserDAO {
@@ -139,5 +142,30 @@ public class UserDAO {
 			
 			return affectedRows > 0 ? 200 : 500;
 		}
+	}
+	
+	public List<User> getUsers(Connection connection, String userInput) throws SQLException {
+		userInput = userInput == null ? "" : userInput;
+		String getUsersSql = "SELECT * FROM users WHERE name LIKE ?;";
+		List<User> users = new ArrayList<>();
+		
+		try(PreparedStatement ps = connection.prepareStatement(getUsersSql)) {
+			ps.setString(1, "%" + userInput + "%");
+			ResultSet resultSet = ps.executeQuery();
+			
+			while (resultSet.next()) {
+				String userID = resultSet.getString("userID");
+				String name = resultSet.getString("name");
+				String email = resultSet.getString("email");
+				String password = resultSet.getString("password");
+				String role = resultSet.getString("role");
+				String img = resultSet.getString("img");
+				String secret = resultSet.getString("secret");
+				User user = new User(userID, name, email, password, role, img, secret);
+				users.add(user);
+			}
+			resultSet.close();
+			return users;
+		} 
 	}
 }
