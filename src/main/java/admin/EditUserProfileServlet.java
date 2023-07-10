@@ -14,7 +14,6 @@ import dao.UserDAO;
 import model.User;
 import utils.DBConnection;
 import utils.DispatchUtil;
-import utils.HttpServletRequestUploadWrapper;
 
 /**
  * Servlet implementation class EditUserServlet

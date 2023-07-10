@@ -88,7 +88,7 @@
 					href="<%=request.getContextPath()%>/admin/EditUserProfile?userID=<%=user.getUserID()%>"><i
 					class="viewIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
 					<a
-					href="<%=request.getContextPath()%>/admin/EditUser?userID=<%=user.getUserID()%>"><i
+					href="<%=request.getContextPath()%>/admin/EditUserPassword?userID=<%=user.getUserID()%>"><i
 					class="viewIcons fa-solid fa-key fa-lg mx-3 hover:cursor-pointer"></i></a>
 				<a class="m-0 p-0 toggleButton" data-user-id="<%=user.getUserID()%>"
 					data-user-name="<%=user.getUserID()%>"> <i

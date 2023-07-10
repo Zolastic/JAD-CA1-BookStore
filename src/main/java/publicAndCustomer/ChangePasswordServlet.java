@@ -67,7 +67,7 @@ public class ChangePasswordServlet extends HttpServlet {
 			request.getRequestDispatcher("publicAndCustomer/changePassword.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			request.getRequestDispatcher("publicAndCustomer/profilePage.jsp").forward(request, response);
 		}
 	}
 	
