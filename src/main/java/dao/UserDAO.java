@@ -133,6 +133,23 @@ public class UserDAO {
 		return affectedRows > 0 ? 200 : 500;
 	}
 	
+	public int updateUserPassword(Connection connection, String userID, String newPassword, String confirmNewPassword) throws SQLException {
+		String updatePasswordSqlStr = "UPDATE users SET password = ? WHERE userID = ?;";
+		
+		PreparedStatement updatePasswordPS = connection.prepareStatement(updatePasswordSqlStr);
+		
+		if (!newPassword.equals(confirmNewPassword)) {
+			return 400;
+		}
+		
+		updatePasswordPS.setString(1, newPassword);
+		updatePasswordPS.setString(2, userID);
+		
+		int affectedRows = updatePasswordPS.executeUpdate();
+				
+		return affectedRows > 0 ? 200 : 500;
+	}
+	
 	public int deleteAccount(Connection connection, String userID) throws SQLException {
 		String sqlStr = " DELETE FROM users WHERE userID = ?;";
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
