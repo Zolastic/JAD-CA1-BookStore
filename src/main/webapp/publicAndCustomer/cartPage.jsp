@@ -262,7 +262,11 @@
 			<!-- Calculate subtotal -->
 			<%
 			subtotal += (item.getSelected() == 1 && item.getInventory() > 0) ? (item.getPrice() * item.getQuantity()) : 0;
+			
 			}
+			subtotal = Math.round(subtotal * 100.0) / 100.0; // Round to 2 decimal places
+			double gst = Math.round((subtotal / 100) * 8 * 100.0) / 100.0;
+			double totalAmt = Math.round((subtotal + gst) * 100.0) / 100.0;
 			%>
 			<!-- Fixed bottom div for select all and subtotal with their form action -->
 			<div
@@ -281,8 +285,14 @@
 							name="newSelection" id="newSelection" value="">
 					</form>
 					<div>
-						<p class="text-lg font-bold my-2">
+						<p class="text-md font-semibold my-2">
 							Subtotal: $<%=String.format("%.2f", subtotal)%>
+						</p>
+						<p class="text-md font-semibold my-2">
+						GST(8%): $<%=String.format("%.2f", gst)%>
+						</p>
+						<p class="text-lg font-bold my-2">
+						Total Amount: $<%=String.format("%.2f", totalAmt)%>
 						</p>
 						<div class="flex justify-end my-2">
 							<form id="checkoutForm" action="/CA1-assignment/CartPage"

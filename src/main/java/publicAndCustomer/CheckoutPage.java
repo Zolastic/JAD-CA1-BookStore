@@ -114,11 +114,11 @@ public class CheckoutPage extends HttpServlet {
 			throws ServletException, IOException {
 		Stripe.apiKey = STRIPE_SECRET_KEY;
 		String paymentMethodId = request.getParameter("paymentMethodId");
-		String subtotal = request.getParameter("subtotal");
+		String totalAmount = request.getParameter("totalAmount");
 		String address = request.getParameter("address");
 		String userID = (String) request.getSession().getAttribute("userID");
-		double amountInDollars = Double.parseDouble(subtotal);
-		// Stripe needs to take subtotal in cents
+		double amountInDollars = Double.parseDouble(totalAmount);
+		// Stripe needs to take totalAmount in cents
 		long amount = Math.round(amountInDollars * 100);
 		Cookie[] cookies = request.getCookies();
 		List<Book> checkoutItems = new ArrayList<>();

@@ -57,7 +57,13 @@
 
 	<%
 	} else {
+	double subtotal = 0.0;
+	double gst = 0.0;
+	double totalAmt = 0.0;
 	for (TransactionHistory transactionHistory : transactionHistories) {
+		totalAmt = transactionHistory.getTotalAmount();
+		subtotal = (totalAmt / 108) * 100;
+		gst = totalAmt - subtotal;
 	%>
 	<!-- Show all transaction histories, one history one div -->
 	<div class="m-5 shadow-lg p-2 mb-5 border border-gray-300">
@@ -148,9 +154,20 @@
 			%>
 		</div>
 		<div class="border border-gray-300"></div>
-		<div class="flex items-center justify-end m-2 mr-8">
-			<p class="font-bold text-lg italic">
-				Subtotal: $<%=transactionHistory.getSubtotal()%></p>
+		<div class="flex items-center justify-end mt-2 mr-8">
+			<p class="text-md font-semibold">
+				Subtotal: $<%=String.format("%.2f", subtotal)%>
+			</p>
+		</div>
+		<div class="flex items-center justify-end mt-2 mr-8">
+			<p class="text-md font-semibold">
+				GST(8%): $<%=String.format("%.2f", gst)%>
+			</p>
+		</div>
+		<div class="flex items-center justify-end mb-2 mr-8">
+			<p class="text-lg font-bold">
+				Total Amount Paid: $<%=String.format("%.2f", totalAmt)%>
+			</p>
 		</div>
 	</div>
 	<%
