@@ -40,6 +40,8 @@
 			}
 
 			subtotal = Math.round(subtotal * 100.0) / 100.0; // Round to 2 decimal places
+			double gst = Math.round((subtotal / 100) * 8 * 100.0) / 100.0;
+			double totalAmt = Math.round((subtotal + gst) * 100.0) / 100.0;
 		%>
 		<h1 class="text-3xl font-bold mb-5">Checkout Details</h1>
 		<!-- Show all the books user selected to checkout -->
@@ -120,13 +122,20 @@
 					<div class="mt-8" id="card-element"></div>
 				</div>
 				<!-- Show the subtotal -->
-				<input type="hidden" name="subtotal" value="<%=subtotal%>">
+				<input type="hidden" name="totalAmount" value="<%=totalAmt%>">
 				<input type="hidden" name="action" value="payment">
 				<div
 					class="bg-white flex justify-between rounded shadow px-5 py-5 h-30 mt-10">
 					<div>
-						<h1 class="py-5 font-bold text-2xl">
-							SubTotal:<%=subtotal%></h1>
+						<p class="text-md font-semibold my-2">
+							Subtotal: $<%=String.format("%.2f", subtotal)%>
+						</p>
+						<p class="text-md font-semibold my-2">
+							GST(8%): $<%=String.format("%.2f", gst)%>
+						</p>
+						<p class="text-lg font-bold my-2">
+							Total Amount: $<%=String.format("%.2f", totalAmt)%>
+						</p>
 					</div>
 					<div>
 						<button type="submit"

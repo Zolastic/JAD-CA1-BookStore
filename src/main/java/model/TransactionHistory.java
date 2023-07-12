@@ -9,19 +9,27 @@ import java.util.*;
 public class TransactionHistory {
     private String transactionHistoryID;
     private String transactionDate;
-    private double subtotal;
+    private double totalAmount;
     private String custID;
     private String addrId;
     private List<TransactionHistoryItem> transactionHistoryItems;
 
-    public TransactionHistory(String transactionHistoryID, String transactionDate, double subtotal, String custID, String addrId, List<TransactionHistoryItem> transactionHistoryItems) {
+    public TransactionHistory(String transactionHistoryID, String transactionDate, double totalAmount, String custID, String address, List<TransactionHistoryItem> transactionHistoryItems) {
         this.transactionHistoryID = transactionHistoryID;
         this.transactionDate = transactionDate;
-        this.subtotal = subtotal;
+        this.totalAmount = totalAmount;
         this.custID = custID;
         this.addrId=addrId;
         this.transactionHistoryItems = transactionHistoryItems;
     }
+
+	public double getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(double totalAmount) {
+		this.totalAmount = totalAmount;
+	}
 
 	public String getTransactionHistoryID() {
 		return transactionHistoryID;
@@ -37,14 +45,6 @@ public class TransactionHistory {
 
 	public void setTransactionDate(String transactionDate) {
 		this.transactionDate = transactionDate;
-	}
-
-	public double getSubtotal() {
-		return subtotal;
-	}
-
-	public void setSubtotal(double subtotal) {
-		this.subtotal = subtotal;
 	}
 
 	public String getCustID() {
