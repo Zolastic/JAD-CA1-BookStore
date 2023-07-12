@@ -11,15 +11,15 @@ public class TransactionHistory {
     private String transactionDate;
     private double subtotal;
     private String custID;
-    private String address;
+    private String addrId;
     private List<TransactionHistoryItem> transactionHistoryItems;
 
-    public TransactionHistory(String transactionHistoryID, String transactionDate, double subtotal, String custID, String address, List<TransactionHistoryItem> transactionHistoryItems) {
+    public TransactionHistory(String transactionHistoryID, String transactionDate, double subtotal, String custID, String addrId, List<TransactionHistoryItem> transactionHistoryItems) {
         this.transactionHistoryID = transactionHistoryID;
         this.transactionDate = transactionDate;
         this.subtotal = subtotal;
         this.custID = custID;
-        this.address = address;
+        this.addrId=addrId;
         this.transactionHistoryItems = transactionHistoryItems;
     }
 
@@ -55,12 +55,12 @@ public class TransactionHistory {
 		this.custID = custID;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getAddrId() {
+		return addrId;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setAddrId(String addrId) {
+		this.addrId = addrId;
 	}
 
 	public List<TransactionHistoryItem> getTransactionHistoryItems() {

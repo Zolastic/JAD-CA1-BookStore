@@ -12,6 +12,7 @@
 <%@ page import="com.stripe.param.PaymentIntentCreateParams"%>
 <%@ page import="com.stripe.exception.StripeException"%>
 <%@ page import="model.Book"%>
+<%@ page import="model.Address"%>
 <%@ page import="java.util.*"%>
 
 <!DOCTYPE html>
@@ -31,10 +32,11 @@
 		<%
 		String validatedUserID = (String) request.getAttribute("validatedUserID");
 		List<Book> checkoutItems = (List<Book>) request.getAttribute("checkoutItems");
+		List<Address> addresses = (List<Address>) request.getAttribute("addresses");
 		double subtotal = 0.0;
-		if (checkoutItems != null && validatedUserID != null && checkoutItems.size()!=0) {
+		if (checkoutItems != null && validatedUserID != null && checkoutItems.size() != 0) {
 			for (Book item : checkoutItems) {
-				subtotal += (item.getPrice()*item.getQuantity());
+				subtotal += (item.getPrice() * item.getQuantity());
 			}
 
 			subtotal = Math.round(subtotal * 100.0) / 100.0; // Round to 2 decimal places
@@ -51,7 +53,8 @@
 						<%
 						if (item.getImg() != null) {
 						%>
-						<img class="h-full object-contain" src="data:image/png;base64, <%=item.getImg()%>">
+						<img class="h-full object-contain"
+							src="data:image/png;base64, <%=item.getImg()%>">
 						<%
 						} else {
 						%>
@@ -85,14 +88,31 @@
 			<form id="payment-form" action="/CA1-assignment/CheckoutPage"
 				method="post">
 				<!-- Input for user to key in address -->
+				<!-- Input for user to select address -->
 				<div class="p-2 rounded shadow my-8">
-					<h2 class="text-lg font-bold ">Address Details</h2>
+					<h2 class="text-lg font-bold">Address Details</h2>
 					<div class="border border-b border-gray-300 my-2"></div>
 					<div class="my-5">
-						<label>Full Address:</label> <input type="text" name="address"
+						<label>Select Address:</label> <select name="addrId"
 							class="w-full border border-gray-300 rounded px-4 py-2" required>
+							<option value="">Choose an address</option>
+							<%
+							for (Address addr : addresses) {
+							%>
+							<option value="<%=addr.getAddrId()%>">
+								<%=addr.getUnit_number()%>,
+								<%=addr.getBlock_number()%>,
+								<%=addr.getStreet_address()%>,
+								<%=addr.getPostal_code()%>,
+								<%=addr.getCountry()%>
+							</option>
+							<%
+							}
+							%>
+						</select>
 					</div>
 				</div>
+
 				<!-- Card elements -->
 				<div class="p-2 pb-10 rounded shadow ">
 					<h2 class="text-lg font-bold my-3">Card details</h2>

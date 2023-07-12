@@ -42,7 +42,7 @@ public class TransactionHistoryDAO {
 							resultSet.getString("transaction_history.transactionDate"),
 							resultSet.getDouble("transaction_history.subtotal"),
 							resultSet.getString("transaction_history.custID"),
-							resultSet.getString("transaction_history.address"), new ArrayList<>());
+							resultSet.getString("transaction_history.addrId"), new ArrayList<>());
 					transactionHistories.add(transactionHistory);
 				}
 				TransactionHistoryItem transactionHistoryItem = new TransactionHistoryItem(
