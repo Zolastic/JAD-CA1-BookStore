@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import model.User;
 
 public class UserDAO {
@@ -130,6 +133,23 @@ public class UserDAO {
 		return affectedRows > 0 ? 200 : 500;
 	}
 	
+	public int updateUserPassword(Connection connection, String userID, String newPassword, String confirmNewPassword) throws SQLException {
+		String updatePasswordSqlStr = "UPDATE users SET password = ? WHERE userID = ?;";
+		
+		PreparedStatement updatePasswordPS = connection.prepareStatement(updatePasswordSqlStr);
+		
+		if (!newPassword.equals(confirmNewPassword)) {
+			return 400;
+		}
+		
+		updatePasswordPS.setString(1, newPassword);
+		updatePasswordPS.setString(2, userID);
+		
+		int affectedRows = updatePasswordPS.executeUpdate();
+				
+		return affectedRows > 0 ? 200 : 500;
+	}
+	
 	public int deleteAccount(Connection connection, String userID) throws SQLException {
 		String sqlStr = " DELETE FROM users WHERE userID = ?;";
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
@@ -138,6 +158,48 @@ public class UserDAO {
 			int affectedRows = ps.executeUpdate();
 			
 			return affectedRows > 0 ? 200 : 500;
+		}
+	}
+	
+	public List<User> getUsers(Connection connection, String userInput) throws SQLException {
+		userInput = userInput == null ? "" : userInput;
+		String getUsersSql = "SELECT * FROM users WHERE name LIKE ? OR email LIKE ?;";
+		List<User> users = new ArrayList<>();
+		
+		try(PreparedStatement ps = connection.prepareStatement(getUsersSql)) {
+			ps.setString(1, "%" + userInput + "%");
+			ps.setString(2, "%" + userInput + "%");
+			ResultSet resultSet = ps.executeQuery();
+			
+			while (resultSet.next()) {
+				String userID = resultSet.getString("userID");
+				String name = resultSet.getString("name");
+				String email = resultSet.getString("email");
+				String password = resultSet.getString("password");
+				String role = resultSet.getString("role");
+				String img = resultSet.getString("img");
+				String secret = resultSet.getString("secret");
+				User user = new User(userID, name, email, password, role, img, secret);
+				users.add(user);
+			}
+			resultSet.close();
+			return users;
+		} 
+	}
+	
+	public int verifyUserIsAdmin(Connection connection, String userID) throws SQLException {
+		String sqlStr = "SELECT role FROM users WHERE userID = ?;";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, userID);
+
+			ResultSet resultSet = ps.executeQuery();
+			
+			if (resultSet.next()) {
+				String role = resultSet.getString("role");
+				return role.equals("admin") ? 200 : 401;
+			}
+			
+			return 500;
 		}
 	}
 }

@@ -36,7 +36,7 @@
 
 	String userInput = request.getParameter("userInput");
 
-	String pageURL = String.format("%s/admin/ViewBooks?%spage=", request.getContextPath(),
+	String pageURL = String.format("%s/admin/ViewBestSellingBooks?page=", request.getContextPath(),
 			userInput == null ? "" : "userInput=" + userInput + "&");
 	%>
 	<header class="viewHeader mt-16">
@@ -114,6 +114,7 @@
 					<a class="hover:cursor-pointer hover:text-amber-900"
 						href="<%=request.getContextPath()%>/admin/BookDetails?bookID=<%=book.getBookID()%>"><h1
 							class="text-3xl font-bold"><%=book.getTitle()%></h1></a>
+					<p class="mt-5 text-lg text-[#926b6a]">Sold: <span class="text-[#57687c]"><%= book.getSold() %></span></p>
 					<p class="mt-5 text-lg"><%=book.getDescription()%></p>
 					<p class="mt-5 text-sm">
 						Author:
@@ -131,7 +132,6 @@
 					<%
 					}
 					%>
-
 
 				</div>
 				<div class="flex-grow"></div>
