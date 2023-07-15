@@ -85,9 +85,8 @@ public class AddAddressPage extends HttpServlet {
 	        String countryName = countryData[1];
 
 	        try (Connection connection = DBConnection.getConnection()) {
-	            String addrId = uuidGenerator();
-	            System.out.print(addrId);
-	            Address addr = new Address(addrId, unit_number, block_number, street_address, postal_code, countryId,
+	            String addr_id = uuidGenerator();
+	            Address addr = new Address(addr_id, unit_number, block_number, street_address, postal_code, countryId,
 	                    countryName);
 	            int rowsAffected = addressDAO.insertNewAddress(connection, addr, userId);
 	            if (rowsAffected > 0) {

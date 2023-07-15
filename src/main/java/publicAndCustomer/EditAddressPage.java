@@ -37,11 +37,8 @@ public class EditAddressPage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try (Connection connection = DBConnection.getConnection()) {
-			System.out.println("bye");
 			String userIDAvailable = request.getParameter("userIDAvailable");
-			String addrId = request.getParameter("addrId");
-			System.out.print(userIDAvailable);
-			System.out.print(addrId);
+			String addr_id = request.getParameter("addr_id");
 			String userID = null;
 			if (userIDAvailable != null) {
 				if (userIDAvailable.equals("true")) {
@@ -54,12 +51,12 @@ public class EditAddressPage extends HttpServlet {
 				dispatcher.forward(request, response);
 				return;
 			}
-			if (addrId == null) {
+			if (addr_id == null) {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/modifyAddressPage.jsp");
 				dispatcher.forward(request, response);
 				return;
 			}
-			Address addressDetails = addressDAO.getAddressByAddrId(connection, addrId);
+			Address addressDetails = addressDAO.getAddressByAddrId(connection, addr_id);
 			List<Country> countries = countryDAO.getAllCountry(connection);
 			connection.close();
 			request.setAttribute("addressDetails", addressDetails);
@@ -77,35 +74,35 @@ public class EditAddressPage extends HttpServlet {
 	protected void submitEditAddress(HttpServletRequest request, HttpServletResponse response)
 		    throws ServletException, IOException {
 		System.out.println("hi im here");
-		    String addrId = request.getParameter("addrId");
+		    String addr_id = request.getParameter("addr_id");
 		    String unit_number = request.getParameter("unit_number");
 		    String block_number = request.getParameter("block_number");
 		    String street_address = request.getParameter("street_address");
 		    String postal_code = request.getParameter("postal_code");
 		    String countryInfo = request.getParameter("country");
 
-		    if (addrId == null || unit_number == null || block_number == null || street_address == null || postal_code == null || countryInfo == null) {
+		    if (addr_id == null || unit_number == null || block_number == null || street_address == null || postal_code == null || countryInfo == null) {
 		        String referer = request.getHeader("Referer");
-		        response.sendRedirect(referer + "&error=emptyInput" + "&addrId=" + addrId);
+		        response.sendRedirect(referer + "&error=emptyInput" + "&addr_id=" + addr_id);
 		    } else {
 		        String[] countryData = countryInfo.split(",");
 		        String countryId = countryData[0];
 		        String countryName = countryData[1];
 
 		        try (Connection connection = DBConnection.getConnection()) {
-		            Address addr = new Address(addrId, unit_number, block_number, street_address, postal_code, countryId, countryName);
+		            Address addr = new Address(addr_id, unit_number, block_number, street_address, postal_code, countryId, countryName);
 		            int rowsAffected = addressDAO.editAddress(connection, addr);
 		            if (rowsAffected > 0) {
 		                String referer = request.getHeader("Referer");
-		                response.sendRedirect(referer + "&addrId=" + addrId + "&success=true");
+		                response.sendRedirect(referer + "&addr_id=" + addr_id + "&success=true");
 		            } else {
 		                String referer = request.getHeader("Referer");
-		                response.sendRedirect(referer + "&error=errEdit&addrId=" + addrId);
+		                response.sendRedirect(referer + "&error=errEdit&addr_id=" + addr_id);
 		            }
 		        } catch (SQLException e) {
 		            System.err.println("Error: " + e);
 		            String referer = request.getHeader("Referer");
-		            response.sendRedirect(referer + "&error=conndbError" + "&addrId=" + addrId);
+		            response.sendRedirect(referer + "&error=conndbError" + "&addr_id=" + addr_id);
 		        }
 		    }
 		}

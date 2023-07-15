@@ -72,8 +72,8 @@
 							method="post">
 							<button type="submit"
 								class="mr-2 px-4 py-2 bg-gray-300 rounded text-gray-800">Edit</button>
-							<input type="hidden" name="addrId"
-								value="<%=address.getAddrId()%>">
+							<input type="hidden" name="addr_id"
+								value="<%=address.getAddr_id() %>">
 						</form>
 
 					</div>

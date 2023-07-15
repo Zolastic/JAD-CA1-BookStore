@@ -99,13 +99,13 @@
 					</div>
 					<div class="border border-b border-gray-300 my-2"></div>
 					<div class="flex my-5">
-						<label class="mr-2">Select Address:</label> <select name="addrId"
+						<label class="mr-2">Select Address:</label> <select name="addr_id"
 							class="w-full border border-gray-300 rounded px-4 py-2" required>
 							<option value="">Choose an address</option>
 							<%
 							for (Address addr : addresses) {
 							%>
-							<option value="<%=addr.getAddrId()%>">
+							<option value="<%=addr.getAddr_id()%>">
 								<%=addr.getCountryName()%>
 								<%=addr.getPostal_code()%>,
 								<%=addr.getBlock_number()%>,
