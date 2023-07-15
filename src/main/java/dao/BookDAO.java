@@ -237,6 +237,98 @@ public class BookDAO {
 		return affectedRows > 0 ? 200 : 500;
 	}
 	
+	public List<Book> getBestSellingBooks(Connection connection) throws SQLException {
+		String sqlStr = "SELECT book.book_id as bookId, book.img, book.title, book.price, book.description, \r\n"
+				+ "book.publication_date as publicationDate, book.ISBN, book.inventory, genre.genre_name as genreName, book.sold, \r\n"
+				+ "ROUND(AVG(IFNULL(rating, 0)), 1) as rating , author.authorName, publisher.publisherName \r\n"
+				+ "FROM book \r\n" + "JOIN genre ON genre.genre_id = book.genre_id \r\n"
+				+ "LEFT JOIN review ON review.bookID = book.book_id \r\n"
+				+ "JOIN author ON book.authorID = author.authorID \r\n"
+				+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n"
+				+ "GROUP BY book.book_id, book.img, book.title, book.price, \r\n"
+				+ "genre.genre_name, book.sold, book.inventory, author.authorName, \r\n"
+				+ "publisher.publisherName ORDER BY sold DESC LIMIT 20;\r\n" + "";
+
+		try (Statement statement = connection.createStatement();
+				PreparedStatement ps = connection.prepareStatement(sqlStr);) {
+
+			ResultSet resultSet = ps.executeQuery();
+
+			List<Book> books = new ArrayList<>();
+			while (resultSet.next()) {
+				Book book = new Book();
+				book.setBookID(resultSet.getString("bookId"));
+				book.setImg(resultSet.getString("img"));
+				book.setTitle(resultSet.getString("title"));
+				book.setDescription(resultSet.getString("description"));
+				book.setAuthor(resultSet.getString("authorName"));
+				book.setRating(resultSet.getDouble("rating"));
+				book.setSold(resultSet.getInt("sold"));
+				books.add(book);
+			}
+			resultSet.close();
+			return books;
+		}
+	}
+	
+	public List<Book> getLeastSellingBooks(Connection connection) throws SQLException {
+		String sqlStr = "SELECT * FROM book ORDER BY sold LIMIT 20;";
+
+		try (Statement statement = connection.createStatement();
+				PreparedStatement ps = connection.prepareStatement(sqlStr);) {
+
+			ResultSet resultSet = ps.executeQuery();
+
+			List<Book> books = new ArrayList<>();
+			while (resultSet.next()) {
+				Book book = new Book();
+				book.setBookID(resultSet.getString("bookId"));
+				book.setImg(resultSet.getString("img"));
+				book.setTitle(resultSet.getString("title"));
+				book.setDescription(resultSet.getString("description"));
+				book.setAuthor(resultSet.getString("authorName"));
+				book.setRating(resultSet.getDouble("rating"));
+				book.setSold(resultSet.getInt("sold"));
+				books.add(book);
+			}
+			resultSet.close();
+			return books;
+		}
+	} 
+	
+	public List<Book> getBooksWithLowStockLevel(Connection connection) throws SQLException {
+		String sqlStr = "SELECT * FROM book WHERE inventory < 10;";
+
+		try (Statement statement = connection.createStatement();
+				PreparedStatement ps = connection.prepareStatement(sqlStr);) {
+
+			ResultSet resultSet = ps.executeQuery();
+
+			List<Book> books = new ArrayList<>();
+			while (resultSet.next()) {
+				String bookID = resultSet.getString("bookID");
+				String isbn = resultSet.getString("isbn");
+				String title = resultSet.getString("title");
+				String author = resultSet.getString("authorName");
+				String publisher = resultSet.getString("publisherName");
+				String publication_date = resultSet.getString("publicationDate");
+				String description = resultSet.getString("description");
+				String img = resultSet.getString("img");
+				String genreName = resultSet.getString("genreName");
+				int sold = resultSet.getInt("sold");
+				int inventory = resultSet.getInt("inventory");
+				double price = resultSet.getDouble("price");
+				double rating = resultSet.getDouble("rating");
+				books.add(new Book(bookID, isbn, title, author, publisher, publication_date, description, genreName,
+						img, sold, inventory, price, rating));
+			}
+			resultSet.close();
+			return books;
+		}
+	}
+	
+	
+	
 	// Users & Public
 	// Function to get specific book details
 		public Book getBookDetailsForCustomer(Connection connection, String bookID) {

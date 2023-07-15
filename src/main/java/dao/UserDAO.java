@@ -186,4 +186,20 @@ public class UserDAO {
 			return users;
 		} 
 	}
+	
+	public int verifyUserIsAdmin(Connection connection, String userID) throws SQLException {
+		String sqlStr = "SELECT role FROM users WHERE userID = ?;";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, userID);
+
+			ResultSet resultSet = ps.executeQuery();
+			
+			if (resultSet.next()) {
+				String role = resultSet.getString("role");
+				return role.equals("admin") ? 200 : 401;
+			}
+			
+			return 500;
+		}
+	}
 }
