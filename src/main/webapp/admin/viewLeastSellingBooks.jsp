@@ -36,7 +36,7 @@
 
 	String userInput = request.getParameter("userInput");
 
-	String pageURL = String.format("%s/admin/ViewBestSellingBooks?page=", request.getContextPath(),
+	String pageURL = String.format("%s/admin/ViewLeastSellingBooks?page=", request.getContextPath(),
 			userInput == null ? "" : "userInput=" + userInput + "&");
 	%>
 	<header class="viewHeader mt-16">

@@ -73,13 +73,16 @@
 				class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
 				<ul class="py-2 text-sm text-gray-700"
 					aria-labelledby="dropdownDefaultButton">
+					<li><a href="<%=request.getContextPath()%>/admin/ViewBooks"
+						class="block px-4 py-2 hover:bg-pink-100">Nothing</a>
+					</li>
 					<li><a href="<%=request.getContextPath()%>/admin/ViewBestSellingBooks"
 						class="block px-4 py-2 hover:bg-pink-100">Best Selling Books</a>
 					</li>
-					<li><a href="#"
+					<li><a href="<%=request.getContextPath()%>/admin/ViewLeastSellingBooks"
 						class="block px-4 py-2 hover:bg-pink-100">Least Selling Books</a>
 					</li>
-					<li><a href="#"
+					<li><a href="<%=request.getContextPath()%>/admin/ViewBooksWithLowStock"
 						class="block px-4 py-2 hover:bg-pink-100">Books Low on Stock</a>
 					</li>
 				</ul>
