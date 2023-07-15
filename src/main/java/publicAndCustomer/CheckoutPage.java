@@ -121,7 +121,7 @@ public class CheckoutPage extends HttpServlet {
 			throws ServletException, IOException {
 		Stripe.apiKey = STRIPE_SECRET_KEY;
 		String paymentMethodId = request.getParameter("paymentMethodId");
-		String saddrId = request.getParameter("addrId");
+		String addr_id = request.getParameter("addr_id");
 		String totalAmount = request.getParameter("totalAmount");
 		String userID = (String) request.getSession().getAttribute("userID");
 		double amountInDollars = Double.parseDouble(totalAmount);
@@ -159,9 +159,8 @@ public class CheckoutPage extends HttpServlet {
 					}
 				}
 			}
-			if (userID != null && (saddrId != null||saddrId!="0")&& checkoutItemsArrayString.size() != 0) {
+			if (userID != null && addr_id != null&& checkoutItemsArrayString.size() != 0) {
 				try {
-					int addrId=Integer.parseInt(saddrId);
 					// get the Book Class version of checkout items
 					checkoutItems = checkoutDAO.getCheckoutItems(connection, userID, checkoutItemsArrayString);
 					// Create payment intent's parameters
@@ -174,7 +173,7 @@ public class CheckoutPage extends HttpServlet {
 						// If insertion of transaction history or transaction history items failed do a
 						// refund
 						String transactionHistoryUUID = checkoutDAO.insertTransactionHistory(connection, amountInDollars, userID,
-								addrId, paymentIntent.getId());
+								addr_id, paymentIntent.getId());
 						if (transactionHistoryUUID != null) {
 							Boolean success = checkoutDAO.insertTransactionHistoryItems(connection, checkoutItems,
 									transactionHistoryUUID);

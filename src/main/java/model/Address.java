@@ -1,7 +1,7 @@
 package model;
 
 public class Address {
-	private String addrId;
+	private String addr_id;
 	private String unit_number;
 	private String block_number;
 	private String street_address;
@@ -9,10 +9,10 @@ public class Address {
 	private String countryId;
 	private String countryName;
 
-	public Address(String addrId, String unit_number, String block_number, String street_address, String postal_code,
+	public Address(String addr_id, String unit_number, String block_number, String street_address, String postal_code,
 			String countryId, String countryName) {
 		super();
-		this.addrId = addrId;
+		this.addr_id = addr_id;
 		this.unit_number = unit_number;
 		this.block_number = block_number;
 		this.street_address = street_address;
@@ -29,12 +29,12 @@ public class Address {
 		this.countryName = countryName;
 	}
 
-	public String getAddrId() {
-		return addrId;
+	public String getAddr_id() {
+		return addr_id;
 	}
 
-	public void setAddrId(String addrId) {
-		this.addrId = addrId;
+	public void setAddr_id(String addr_id) {
+		this.addr_id = addr_id;
 	}
 
 	public String getUnit_number() {
