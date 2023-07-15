@@ -22,6 +22,12 @@ public class Book {
 	private int Quantity;
 	private int Selected;
 	
+	
+	
+	public Book() {
+		super();
+	}
+
 	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
 			String description, String genreName, String img, int sold, int inventory, double price, double rating) {
 		BookID = bookID;

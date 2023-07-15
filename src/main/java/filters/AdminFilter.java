@@ -1,6 +1,8 @@
 package filters;
 
 import java.io.IOException;
+import java.sql.Connection;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -13,11 +15,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import dao.UserDAO;
+import utils.DBConnection;
+
 /**
  * Servlet Filter implementation class AdminFilter
  */
 @WebFilter(urlPatterns = {"/admin/*"})
 public class AdminFilter extends HttpFilter implements Filter {
+	private UserDAO userDAO = new UserDAO();
        
     /**
      * @see HttpFilter#HttpFilter()
@@ -60,10 +66,20 @@ public class AdminFilter extends HttpFilter implements Filter {
 			return;
 		}
 		
-		String role = (String) session.getAttribute("role");
-		if (!"admin".equalsIgnoreCase(role)) {
-			response.sendRedirect(request.getContextPath() + "/publicAndCustomer/home.jsp");
-			return;
+//		String role = (String) session.getAttribute("role");
+//		if (!"admin".equalsIgnoreCase(role)) {
+//			response.sendRedirect(request.getContextPath() + "/home.jsp");
+//			return;
+//		}
+		
+		try (Connection connection = DBConnection.getConnection();) {
+			int statusCodeForVerifyRole = userDAO.verifyUserIsAdmin(connection, userID);
+			if (statusCodeForVerifyRole != 200) {
+				response.sendRedirect(request.getContextPath() + "/home.jsp");
+				return;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 		
 		chain.doFilter(request, response);
