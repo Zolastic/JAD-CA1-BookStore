@@ -174,7 +174,7 @@ public class CheckoutPage extends HttpServlet {
 						// If insertion of transaction history or transaction history items failed do a
 						// refund
 						String transactionHistoryUUID = checkoutDAO.insertTransactionHistory(connection, amountInDollars, userID,
-								addrId);
+								addrId, paymentIntent.getId());
 						if (transactionHistoryUUID != null) {
 							Boolean success = checkoutDAO.insertTransactionHistoryItems(connection, checkoutItems,
 									transactionHistoryUUID);

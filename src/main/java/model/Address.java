@@ -6,17 +6,27 @@ public class Address {
 	private String block_number;
 	private String street_address;
 	private String postal_code;
-	private String country;
+	private String countryId;
+	private String countryName;
 
 	public Address(String addrId, String unit_number, String block_number, String street_address, String postal_code,
-			String country) {
+			String countryId, String countryName) {
 		super();
 		this.addrId = addrId;
 		this.unit_number = unit_number;
 		this.block_number = block_number;
 		this.street_address = street_address;
 		this.postal_code = postal_code;
-		this.country = country;
+		this.countryId = countryId;
+		this.countryName = countryName;
+	}
+
+	public String getCountryName() {
+		return countryName;
+	}
+
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
 	}
 
 	public String getAddrId() {
@@ -59,12 +69,12 @@ public class Address {
 		this.postal_code = postal_code;
 	}
 
-	public String getCountry() {
-		return country;
+	public String getCountryId() {
+		return countryId;
 	}
 
-	public void setCountry(String country) {
-		this.country = country;
+	public void setCountryId(String countryId) {
+		this.countryId = countryId;
 	}
 
 }

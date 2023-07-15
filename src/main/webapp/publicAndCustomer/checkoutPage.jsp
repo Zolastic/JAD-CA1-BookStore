@@ -89,31 +89,37 @@
 		<div class="mt-2">
 			<form id="payment-form" action="/CA1-assignment/CheckoutPage"
 				method="post">
-				<!-- Input for user to key in address -->
 				<!-- Input for user to select address -->
 				<div class="p-2 rounded shadow my-8">
-					<h2 class="text-lg font-bold">Address Details</h2>
+					<div class="w-full flex justify-between">
+						<h2 class="text-lg font-bold">Address Details</h2>
+						<button type="button"
+							class="ml-2 px-4 py-2 bg-gray-300 rounded text-gray-800"
+							id="modAddr">Modify Address</button>
+					</div>
 					<div class="border border-b border-gray-300 my-2"></div>
-					<div class="my-5">
-						<label>Select Address:</label> <select name="addrId"
+					<div class="flex my-5">
+						<label class="mr-2">Select Address:</label> <select name="addrId"
 							class="w-full border border-gray-300 rounded px-4 py-2" required>
 							<option value="">Choose an address</option>
 							<%
 							for (Address addr : addresses) {
 							%>
 							<option value="<%=addr.getAddrId()%>">
-								<%=addr.getUnit_number()%>,
+								<%=addr.getCountryName()%>
+								<%=addr.getPostal_code()%>,
 								<%=addr.getBlock_number()%>,
 								<%=addr.getStreet_address()%>,
-								<%=addr.getPostal_code()%>,
-								<%=addr.getCountry()%>
+								<%=addr.getUnit_number()%>
 							</option>
 							<%
 							}
 							%>
 						</select>
+
 					</div>
 				</div>
+
 
 				<!-- Card elements -->
 				<div class="p-2 pb-10 rounded shadow ">
@@ -187,20 +193,30 @@
 						function() {
 							document.cookie = "checkoutItems=; expires=Thu, 13 Nov 2003 00:00:00 UTC; path=/;";
 						});
+		var modAddrButton = document.getElementById("modAddr");
+		modAddrButton.addEventListener("click", function() {
+			if (<%=validatedUserID%> != null) {
+				window.location.href = "/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=checkout";
+			} else {
+				window.location.href = "/CA1-assignment/ModifyAddressPage?from=checkout";
+			}
+		});
 	</script>
 	<%
 	} else {
 	%>
 	<script>
-	showModal("Error loading page");
-	var closeButton = document.getElementById("close");
-	closeButton.addEventListener("click", function() {
-		if (<%=validatedUserID%> != null) {
-			window.location.href = "/CA1-assignment/CartPage?userIDAvailable=true";
-		} else {
-			window.location.href = "/CA1-assignment/CartPage";
-		}
-	});
+	if (
+			<%=validatedUserID%>
+				== null) {
+					window.location.href = "registrationPage.jsp";
+				} else {
+					var closeButton = document.getElementById("close");
+					showModal("Error loading page");
+					closeButton.addEventListener("click", function() {
+						window.location.href = "/CA1-assignment/CartPage?userIDAvailable=true";
+					});
+				}
 	</script>
 
 	<%
