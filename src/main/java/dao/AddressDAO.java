@@ -137,7 +137,7 @@ public class AddressDAO {
 		}
 	}
 
-	public ArrayList<Address> getAddressesByPostalCode(Connection connection) throws SQLException {
+	public ArrayList<Address> getAddressesOrderByPostalCode(Connection connection) throws SQLException {
 		String getAddressesSql = "SELECT * FROM address ORDER BY postal_code;";
 		ArrayList<Address> addresses = new ArrayList<>();
 

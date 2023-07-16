@@ -76,13 +76,13 @@ public class EditBookServlet extends HttpServlet {
 			bookID = requestWrapper.getParameter("bookID");
 			String title = requestWrapper.getParameter("title");
 			double price = Double.parseDouble(requestWrapper.getParameter("price"));
-			int author = Integer.parseInt(requestWrapper.getParameter("author"));
-			int publisher = Integer.parseInt(requestWrapper.getParameter("publisher"));
+			String author = requestWrapper.getParameter("author");
+			String publisher = requestWrapper.getParameter("publisher");
 			int quantity = Integer.parseInt(requestWrapper.getParameter("quantity"));
 			String pubDate = requestWrapper.getParameter("date");
 			String isbn = requestWrapper.getParameter("isbn");
 			String description = requestWrapper.getParameter("description");
-			int genreId = Integer.parseInt(requestWrapper.getParameter("genre"));
+			String genreId = requestWrapper.getParameter("genre");
 			int sold = Integer.parseInt(requestWrapper.getParameter("sold"));
 			String image = requestWrapper.getBase64Parameter("image");
 			
