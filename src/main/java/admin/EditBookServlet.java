@@ -51,12 +51,10 @@ public class EditBookServlet extends HttpServlet {
 	}
 
 	private void loadData(HttpServletRequest request, Connection connection, String bookID) throws SQLException {
-		System.out.println("enter func");
 		List<Genre> genres = genreDAO.getGenres(connection);
 		List<Author> authors = authorDAO.getAuthors(connection);
 		List<Publisher> publishers = publisherDAO.getPublishers(connection);
 		Book book = bookDAO.getBook(connection, bookID);
-		System.out.println("book: " + book);
 		request.setAttribute("genres", genres);
 		request.setAttribute("authors", authors);
 		request.setAttribute("publishers", publishers);
@@ -76,16 +74,15 @@ public class EditBookServlet extends HttpServlet {
 			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 
 			bookID = requestWrapper.getParameter("bookID");
-			System.out.println("bookID: " + bookID);
 			String title = requestWrapper.getParameter("title");
 			double price = Double.parseDouble(requestWrapper.getParameter("price"));
-			String author = requestWrapper.getParameter("author");
-			String publisher = requestWrapper.getParameter("publisher");
+			int author = Integer.parseInt(requestWrapper.getParameter("author"));
+			int publisher = Integer.parseInt(requestWrapper.getParameter("publisher"));
 			int quantity = Integer.parseInt(requestWrapper.getParameter("quantity"));
 			String pubDate = requestWrapper.getParameter("date");
 			String isbn = requestWrapper.getParameter("isbn");
 			String description = requestWrapper.getParameter("description");
-			String genreId = requestWrapper.getParameter("genre");
+			int genreId = Integer.parseInt(requestWrapper.getParameter("genre"));
 			int sold = Integer.parseInt(requestWrapper.getParameter("sold"));
 			String image = requestWrapper.getBase64Parameter("image");
 			

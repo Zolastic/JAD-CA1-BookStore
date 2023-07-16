@@ -9,19 +9,37 @@ import java.util.*;
 public class TransactionHistory {
     private String transactionHistoryID;
     private String transactionDate;
-    private double subtotal;
+    private double totalAmount;
     private String custID;
-    private String address;
+    private String addr_id;
+    private String paymentIntentId;
     private List<TransactionHistoryItem> transactionHistoryItems;
 
-    public TransactionHistory(String transactionHistoryID, String transactionDate, double subtotal, String custID, String address, List<TransactionHistoryItem> transactionHistoryItems) {
+    public TransactionHistory(String transactionHistoryID, String transactionDate, double totalAmount, String custID, List<TransactionHistoryItem> transactionHistoryItems, String addr_id, String paymentIntentId) {
         this.transactionHistoryID = transactionHistoryID;
         this.transactionDate = transactionDate;
-        this.subtotal = subtotal;
+        this.totalAmount = totalAmount;
         this.custID = custID;
-        this.address = address;
+        this.addr_id=addr_id;
         this.transactionHistoryItems = transactionHistoryItems;
+        this.paymentIntentId=paymentIntentId;
     }
+
+	public String getPaymentIntentId() {
+		return paymentIntentId;
+	}
+
+	public void setPaymentIntentId(String paymentIntentId) {
+		this.paymentIntentId = paymentIntentId;
+	}
+
+	public double getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(double totalAmount) {
+		this.totalAmount = totalAmount;
+	}
 
 	public String getTransactionHistoryID() {
 		return transactionHistoryID;
@@ -39,14 +57,6 @@ public class TransactionHistory {
 		this.transactionDate = transactionDate;
 	}
 
-	public double getSubtotal() {
-		return subtotal;
-	}
-
-	public void setSubtotal(double subtotal) {
-		this.subtotal = subtotal;
-	}
-
 	public String getCustID() {
 		return custID;
 	}
@@ -55,12 +65,12 @@ public class TransactionHistory {
 		this.custID = custID;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getAddrId() {
+		return addr_id;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setAddrId(String addrId) {
+		this.addr_id = addrId;
 	}
 
 	public List<TransactionHistoryItem> getTransactionHistoryItems() {

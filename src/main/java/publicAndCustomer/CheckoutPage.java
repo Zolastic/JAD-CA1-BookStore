@@ -18,11 +18,13 @@ import com.stripe.model.Refund;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.RefundCreateParams;
 import model.Book;
+import model.Address;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import utils.DBConnection;
 import dao.VerifyUserDAO;
 import dao.CheckoutDAO;
+import dao.AddressDAO;
 
 /**
  * Servlet implementation class CheckoutPage
@@ -39,6 +41,7 @@ public class CheckoutPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private CheckoutDAO checkoutDAO = new CheckoutDAO();
+	private AddressDAO addressDAO = new AddressDAO();
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -63,6 +66,7 @@ public class CheckoutPage extends HttpServlet {
 				}
 			}
 			List<Book> checkoutItems = new ArrayList<>();
+			List<Address> addresses = new ArrayList<>();
 			String checkoutItemsString = null;
 			List<Map<String, Object>> checkoutItemsArrayString = new ArrayList<>();
 
@@ -96,8 +100,11 @@ public class CheckoutPage extends HttpServlet {
 				}
 			}
 			checkoutItems = checkoutDAO.getCheckoutItems(connection, userID, checkoutItemsArrayString);
+			addresses = addressDAO.getAddressByUserId(connection, userID);
+			
 			connection.close();
 			request.setAttribute("checkoutItems", checkoutItems);
+			request.setAttribute("addresses", addresses);
 			request.setAttribute("validatedUserID", userID);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/checkoutPage.jsp");
 			dispatcher.forward(request, response);
@@ -114,11 +121,11 @@ public class CheckoutPage extends HttpServlet {
 			throws ServletException, IOException {
 		Stripe.apiKey = STRIPE_SECRET_KEY;
 		String paymentMethodId = request.getParameter("paymentMethodId");
-		String subtotal = request.getParameter("subtotal");
-		String address = request.getParameter("address");
+		String addr_id = request.getParameter("addr_id");
+		String totalAmount = request.getParameter("totalAmount");
 		String userID = (String) request.getSession().getAttribute("userID");
-		double amountInDollars = Double.parseDouble(subtotal);
-		// Stripe needs to take subtotal in cents
+		double amountInDollars = Double.parseDouble(totalAmount);
+		// Stripe needs to take totalAmount in cents
 		long amount = Math.round(amountInDollars * 100);
 		Cookie[] cookies = request.getCookies();
 		List<Book> checkoutItems = new ArrayList<>();
@@ -152,7 +159,7 @@ public class CheckoutPage extends HttpServlet {
 					}
 				}
 			}
-			if (userID != null && address != null && checkoutItemsArrayString.size() != 0) {
+			if (userID != null && addr_id != null&& checkoutItemsArrayString.size() != 0) {
 				try {
 					// get the Book Class version of checkout items
 					checkoutItems = checkoutDAO.getCheckoutItems(connection, userID, checkoutItemsArrayString);
@@ -166,7 +173,7 @@ public class CheckoutPage extends HttpServlet {
 						// If insertion of transaction history or transaction history items failed do a
 						// refund
 						String transactionHistoryUUID = checkoutDAO.insertTransactionHistory(connection, amountInDollars, userID,
-								address);
+								addr_id, paymentIntent.getId());
 						if (transactionHistoryUUID != null) {
 							Boolean success = checkoutDAO.insertTransactionHistoryItems(connection, checkoutItems,
 									transactionHistoryUUID);

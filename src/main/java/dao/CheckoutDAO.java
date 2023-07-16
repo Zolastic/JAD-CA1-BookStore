@@ -51,24 +51,26 @@ public class CheckoutDAO {
 	}
 
 	// insert checkout items into DB transaction history after payment success
-	public String insertTransactionHistory(Connection connection, double subtotal, String custID, String address){
+	public String insertTransactionHistory(Connection connection, double totalAmount, String custID, String addr_id, String paymentIntentId){
 		String transactionHistoryUUID = uuidGenerator();
 
-		String sql = "INSERT INTO transaction_history (transaction_historyID, transactionDate, subtotal, custID, address) VALUES (?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO transaction_history (transaction_historyID, transactionDate, totalAmount, custID, addr_id, paymentIntentId) VALUES (?, ?, ?, ?, ?, ?)";
 		String transactionDate = getCurrentDateTime();
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
 			statement.setString(1, transactionHistoryUUID);
 			statement.setString(2, transactionDate);
-			statement.setDouble(3, subtotal);
+			statement.setDouble(3, totalAmount);
 			statement.setString(4, custID);
-			statement.setString(5, address);
+			statement.setString(5, addr_id);
+			statement.setString(6, paymentIntentId);
 
 			int rowsAffected = statement.executeUpdate();
 
 			statement.close();
 
 			if (rowsAffected == 1) {
+				System.out.print("a");
 				return transactionHistoryUUID;
 			} else {
 				return null;

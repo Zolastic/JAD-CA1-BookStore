@@ -1,72 +1,82 @@
 package model;
 
 public class Address {
-	private String addressID;
-	private String unitNumber;
-	private String blockNumber;
-	private String streetAddress;
-	private String postalCode;
-	private String countryID;
-	private String userID;
-	
-	public Address() {
+
+	private String addr_id;
+	private String unit_number;
+	private String block_number;
+	private String street_address;
+	private String postal_code;
+	private String countryId;
+	private String countryName;
+
+	public Address(String addr_id, String unit_number, String block_number, String street_address, String postal_code,
+			String countryId, String countryName) {
+		super();
+		this.addr_id = addr_id;
+		this.unit_number = unit_number;
+		this.block_number = block_number;
+		this.street_address = street_address;
+		this.postal_code = postal_code;
+		this.countryId = countryId;
+		this.countryName = countryName;
 	}
 
-	public String getAddressID() {
-		return addressID;
+	public String getCountryName() {
+		return countryName;
 	}
 
-	public void setAddressID(String addressID) {
-		this.addressID = addressID;
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
 	}
 
-	public String getUnitNumber() {
-		return unitNumber;
+	public String getAddr_id() {
+		return addr_id;
 	}
 
-	public void setUnitNumber(String unitNumber) {
-		this.unitNumber = unitNumber;
+	public void setAddr_id(String addr_id) {
+		this.addr_id = addr_id;
 	}
 
-	public String getBlockNumber() {
-		return blockNumber;
+	public String getUnit_number() {
+		return unit_number;
 	}
 
-	public void setBlockNumber(String blockNumber) {
-		this.blockNumber = blockNumber;
+	public void setUnit_number(String unit_number) {
+		this.unit_number = unit_number;
 	}
 
-	public String getStreetAddress() {
-		return streetAddress;
+	public String getBlock_number() {
+		return block_number;
 	}
 
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
+	public void setBlock_number(String block_number) {
+		this.block_number = block_number;
 	}
 
-	public String getPostalCode() {
-		return postalCode;
+	public String getStreet_address() {
+		return street_address;
 	}
 
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
+	public void setStreet_address(String street_address) {
+		this.street_address = street_address;
 	}
 
-	public String getCountryID() {
-		return countryID;
+	public String getPostal_code() {
+		return postal_code;
 	}
 
-	public void setCountryID(String countryID) {
-		this.countryID = countryID;
+	public void setPostal_code(String postal_code) {
+		this.postal_code = postal_code;
 	}
 
-	public String getUserID() {
-		return userID;
+	public String getCountryId() {
+		return countryId;
 	}
 
-	public void setUserID(String userID) {
-		this.userID = userID;
+	public void setCountryId(String countryId) {
+		this.countryId = countryId;
 	}
-	
-	
+
+
 }

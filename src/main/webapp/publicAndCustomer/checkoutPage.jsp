@@ -12,6 +12,7 @@
 <%@ page import="com.stripe.param.PaymentIntentCreateParams"%>
 <%@ page import="com.stripe.exception.StripeException"%>
 <%@ page import="model.Book"%>
+<%@ page import="model.Address"%>
 <%@ page import="java.util.*"%>
 
 <!DOCTYPE html>
@@ -31,13 +32,16 @@
 		<%
 		String validatedUserID = (String) request.getAttribute("validatedUserID");
 		List<Book> checkoutItems = (List<Book>) request.getAttribute("checkoutItems");
+		List<Address> addresses = (List<Address>) request.getAttribute("addresses");
 		double subtotal = 0.0;
-		if (checkoutItems != null && validatedUserID != null && checkoutItems.size()!=0) {
+		if (checkoutItems != null && validatedUserID != null && checkoutItems.size() != 0) {
 			for (Book item : checkoutItems) {
-				subtotal += (item.getPrice()*item.getQuantity());
+				subtotal += (item.getPrice() * item.getQuantity());
 			}
 
 			subtotal = Math.round(subtotal * 100.0) / 100.0; // Round to 2 decimal places
+			double gst = Math.round((subtotal / 100) * 8 * 100.0) / 100.0;
+			double totalAmt = Math.round((subtotal + gst) * 100.0) / 100.0;
 		%>
 		<h1 class="text-3xl font-bold mb-5">Checkout Details</h1>
 		<!-- Show all the books user selected to checkout -->
@@ -51,7 +55,8 @@
 						<%
 						if (item.getImg() != null) {
 						%>
-						<img class="h-full object-contain" src="data:image/png;base64, <%=item.getImg()%>">
+						<img class="h-full object-contain"
+							src="data:image/png;base64, <%=item.getImg()%>">
 						<%
 						} else {
 						%>
@@ -84,15 +89,38 @@
 		<div class="mt-2">
 			<form id="payment-form" action="/CA1-assignment/CheckoutPage"
 				method="post">
-				<!-- Input for user to key in address -->
+				<!-- Input for user to select address -->
 				<div class="p-2 rounded shadow my-8">
-					<h2 class="text-lg font-bold ">Address Details</h2>
+					<div class="w-full flex justify-between">
+						<h2 class="text-lg font-bold">Address Details</h2>
+						<button type="button"
+							class="ml-2 px-4 py-2 bg-gray-300 rounded text-gray-800"
+							id="modAddr">Modify Address</button>
+					</div>
 					<div class="border border-b border-gray-300 my-2"></div>
-					<div class="my-5">
-						<label>Full Address:</label> <input type="text" name="address"
+					<div class="flex my-5">
+						<label class="mr-2">Select Address:</label> <select name="addr_id"
 							class="w-full border border-gray-300 rounded px-4 py-2" required>
+							<option value="">Choose an address</option>
+							<%
+							for (Address addr : addresses) {
+							%>
+							<option value="<%=addr.getAddr_id()%>">
+								<%=addr.getCountryName()%>
+								<%=addr.getPostal_code()%>,
+								Block <%=addr.getBlock_number()%>,
+								<%=addr.getStreet_address()%>,
+								#<%=addr.getUnit_number()%>
+							</option>
+							<%
+							}
+							%>
+						</select>
+
 					</div>
 				</div>
+
+
 				<!-- Card elements -->
 				<div class="p-2 pb-10 rounded shadow ">
 					<h2 class="text-lg font-bold my-3">Card details</h2>
@@ -100,13 +128,20 @@
 					<div class="mt-8" id="card-element"></div>
 				</div>
 				<!-- Show the subtotal -->
-				<input type="hidden" name="subtotal" value="<%=subtotal%>">
+				<input type="hidden" name="totalAmount" value="<%=totalAmt%>">
 				<input type="hidden" name="action" value="payment">
 				<div
 					class="bg-white flex justify-between rounded shadow px-5 py-5 h-30 mt-10">
 					<div>
-						<h1 class="py-5 font-bold text-2xl">
-							SubTotal:<%=subtotal%></h1>
+						<p class="text-md font-semibold my-2">
+							Subtotal: $<%=String.format("%.2f", subtotal)%>
+						</p>
+						<p class="text-md font-semibold my-2">
+							GST(8%): $<%=String.format("%.2f", gst)%>
+						</p>
+						<p class="text-lg font-bold my-2">
+							Total Amount: $<%=String.format("%.2f", totalAmt)%>
+						</p>
 					</div>
 					<div>
 						<button type="submit"
@@ -158,20 +193,30 @@
 						function() {
 							document.cookie = "checkoutItems=; expires=Thu, 13 Nov 2003 00:00:00 UTC; path=/;";
 						});
+		var modAddrButton = document.getElementById("modAddr");
+		modAddrButton.addEventListener("click", function() {
+			if (<%=validatedUserID%> != null) {
+				window.location.href = "/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=checkout";
+			} else {
+				window.location.href = "/CA1-assignment/ModifyAddressPage?from=checkout";
+			}
+		});
 	</script>
 	<%
 	} else {
 	%>
 	<script>
-	showModal("Error loading page");
-	var closeButton = document.getElementById("close");
-	closeButton.addEventListener("click", function() {
-		if (<%=validatedUserID%> != null) {
-			window.location.href = "/CA1-assignment/CartPage?userIDAvailable=true";
-		} else {
-			window.location.href = "/CA1-assignment/CartPage";
-		}
-	});
+	if (
+			<%=validatedUserID%>
+				== null) {
+					window.location.href = "registrationPage.jsp";
+				} else {
+					var closeButton = document.getElementById("close");
+					showModal("Error loading page");
+					closeButton.addEventListener("click", function() {
+						window.location.href = "/CA1-assignment/CartPage?userIDAvailable=true";
+					});
+				}
 	</script>
 
 	<%

@@ -38,11 +38,14 @@ public class TransactionHistoryDAO {
 					}
 				}
 				if (transactionHistory == null) {
-					transactionHistory = new TransactionHistory(transactionHistoryID,
+					transactionHistory = new TransactionHistory(
+							transactionHistoryID,
 							resultSet.getString("transaction_history.transactionDate"),
-							resultSet.getDouble("transaction_history.subtotal"),
+							resultSet.getDouble("transaction_history.totalAmount"),
 							resultSet.getString("transaction_history.custID"),
-							resultSet.getString("transaction_history.address"), new ArrayList<>());
+							new ArrayList<>(),
+							resultSet.getString("transaction_history.addr_id"),
+							resultSet.getString("transaction_history.paymentIntentId"));
 					transactionHistories.add(transactionHistory);
 				}
 				TransactionHistoryItem transactionHistoryItem = new TransactionHistoryItem(
