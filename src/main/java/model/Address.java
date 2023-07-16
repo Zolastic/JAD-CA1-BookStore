@@ -9,6 +9,12 @@ public class Address {
 	private String postal_code;
 	private String countryId;
 	private String countryName;
+	private String userID;
+	
+	
+
+	public Address() {
+	}
 
 	public Address(String addr_id, String unit_number, String block_number, String street_address, String postal_code,
 			String countryId, String countryName) {
@@ -78,5 +84,14 @@ public class Address {
 		this.countryId = countryId;
 	}
 
+	public String getUserID() {
+		return userID;
+	}
+
+	public void setUserID(String userID) {
+		this.userID = userID;
+	}
+
+	
 
 }
