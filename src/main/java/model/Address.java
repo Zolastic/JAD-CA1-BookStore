@@ -1,6 +1,7 @@
 package model;
 
 public class Address {
+
 	private String addr_id;
 	private String unit_number;
 	private String block_number;
@@ -76,5 +77,6 @@ public class Address {
 	public void setCountryId(String countryId) {
 		this.countryId = countryId;
 	}
+
 
 }

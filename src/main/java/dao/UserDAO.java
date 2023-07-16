@@ -5,8 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
+import model.Address;
 import model.User;
 
 public class UserDAO {
@@ -161,10 +161,10 @@ public class UserDAO {
 		}
 	}
 	
-	public List<User> getUsers(Connection connection, String userInput) throws SQLException {
+	public ArrayList<User> getUsers(Connection connection, String userInput) throws SQLException {
 		userInput = userInput == null ? "" : userInput;
 		String getUsersSql = "SELECT * FROM users WHERE name LIKE ? OR email LIKE ?;";
-		List<User> users = new ArrayList<>();
+		ArrayList<User> users = new ArrayList<>();
 		
 		try(PreparedStatement ps = connection.prepareStatement(getUsersSql)) {
 			ps.setString(1, "%" + userInput + "%");
@@ -201,5 +201,35 @@ public class UserDAO {
 			
 			return 500;
 		}
+	}
+	
+	public ArrayList<User> getUserIDByPostalCode(Connection connection, ArrayList<Address> addresses) throws SQLException{
+		String getUsersSql = "SELECT userID, name, email, img FROM users WHERE userId = ?;";
+		ArrayList<User> users = new ArrayList<>();
+		
+		if (addresses.isEmpty()) {
+			return null;
+		}
+		
+		try(PreparedStatement ps = connection.prepareStatement(getUsersSql)) {
+			for (Address address : addresses) {
+				ps.setString(1, address.getUserID());
+				ResultSet resultSet = ps.executeQuery();
+				
+				if (resultSet.next()) {
+					String userID = resultSet.getString("userID");
+					String name = resultSet.getString("name");
+					String email = resultSet.getString("email");
+					String password = resultSet.getString("password");
+					String role = resultSet.getString("role");
+					String img = resultSet.getString("img");
+					String secret = resultSet.getString("secret");
+					User user = new User(userID, name, email, password, role, img, secret);
+					users.add(user);
+				}
+				resultSet.close();
+			}
+			return users;
+		} 
 	}
 }
