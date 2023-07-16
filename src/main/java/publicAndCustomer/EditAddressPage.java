@@ -84,7 +84,7 @@ public class EditAddressPage extends HttpServlet {
 		        String referer = request.getHeader("Referer");
 		        response.sendRedirect(referer + "&error=emptyInput" + "&addr_id=" + addr_id);
 		    } else {
-		        String[] countryData = countryInfo.split(",");
+		        String[] countryData = countryInfo.split("|");
 		        String countryId = countryData[0];
 		        String countryName = countryData[1];
 
