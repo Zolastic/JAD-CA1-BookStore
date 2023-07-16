@@ -108,9 +108,9 @@
 							<option value="<%=addr.getAddr_id()%>">
 								<%=addr.getCountryName()%>
 								<%=addr.getPostal_code()%>,
-								<%=addr.getBlock_number()%>,
+								Block <%=addr.getBlock_number()%>,
 								<%=addr.getStreet_address()%>,
-								<%=addr.getUnit_number()%>
+								#<%=addr.getUnit_number()%>
 							</option>
 							<%
 							}

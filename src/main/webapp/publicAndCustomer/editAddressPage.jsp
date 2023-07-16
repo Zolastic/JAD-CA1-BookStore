@@ -55,14 +55,15 @@
 	<%
 	}
 	}
-	if (validatedUserID != null && addr != null && countries != null) {
+	if (validatedUserID != null && addr != null && countries != null && pageBack!=null) {
 	%>
 	<div class="flex items-center justify-center mt-16">
 		<form action="/CA1-assignment/EditAddressPage?userIDAvailable=true&from=<%=pageBack%>"
 			method="post" id="editAddressForm"
 			class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
 			<h1 class="text-3xl font-bold my-2 mb-5">Edit Your Address</h1>
-			<input type="hidden" name="action" value="addr.getAddr_id()%>">
+			<input type="hidden" name="action" value="submitEdit">
+			<input type="hidden" name="addr_id" value="<%=addr.getAddr_id() %>">
 			<div class="mb-4 flex">
 				<label for="unit_number" class="font-bold w-32">Unit Number:</label>
 				<input type="text" name="unit_number" id="unit_number"
@@ -120,8 +121,23 @@
 	} else {
 	%>
 	<script>
-        showModal("Error loading page");
-    </script>
+            if (<%=validatedUserID%> == null) {
+                window.location.href = "registrationPage.jsp";
+            } else if(<%=pageBack%>==null){
+            	var closeButton = document.getElementById("close");
+				showModal("Error loading page");
+				closeButton.addEventListener("click", function() {
+					window.location.href = "/CA1-assignment/home.jsp";
+				});
+            }
+            else {
+                var closeButton = document.getElementById("close");
+                showModal("Error loading page");
+                closeButton.addEventListener("click", function() {
+                    window.location.href = "/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=<%=pageBack%>";
+                });
+            }
+        </script>
 	<%
 	}
 	%>

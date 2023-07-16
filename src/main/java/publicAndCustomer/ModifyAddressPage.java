@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ public class ModifyAddressPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private AddressDAO addressDAO = new AddressDAO();
+
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
@@ -52,11 +54,11 @@ public class ModifyAddressPage extends HttpServlet {
 
 			userID = verifyUserDAO.validateUserID(connection, userID);
 			if (userID == null) {
-				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
 				return;
 			}
-			
+
 			addresses = addressDAO.getAddressByUserId(connection, userID);
 
 			connection.close();
@@ -71,14 +73,47 @@ public class ModifyAddressPage extends HttpServlet {
 		}
 	}
 
+	// Handle delete cart items
+	protected void deleteAddressAction(HttpServletRequest request, HttpServletResponse response)
+	        throws ServletException, IOException {
+	    String addr_id = request.getParameter("addr_id");
+	    String pageBack = request.getParameter("from");
+	    if (addr_id == null || pageBack == null) {
+	        response.sendRedirect("/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=" + pageBack + "&deleteError=true");
+	    } else {
+	        try (Connection connection = DBConnection.getConnection()) {
+	            boolean deleteSuccess = addressDAO.deleteAddr(addr_id);
+	            if (deleteSuccess) {
+	                response.sendRedirect("/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=" + pageBack);
+	            } else {
+	                response.sendRedirect("/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=" + pageBack + "&deleteError=true");
+	            }
+	        } catch (SQLException e) {
+	            System.err.println("Error: " + e);
+	            if (e instanceof SQLIntegrityConstraintViolationException) {
+	                response.sendRedirect("/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=" + pageBack + "&deleteError=fkConstraint");
+	            } else {
+	                response.sendRedirect("/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=" + pageBack + "&deleteError=otherError");
+	            }
+	        }
+	    }
+	}
+
+
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		String action = request.getParameter("action");
+		if (action != null && action.equals("deleteAddress")) {
+			deleteAddressAction(request, response);
+		} else {
+			doGet(request, response);
+		}
+		
 	}
 
 }

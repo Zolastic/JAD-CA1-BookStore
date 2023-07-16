@@ -23,8 +23,10 @@
 		let modalMessage = document.getElementById("modalMessageYesCancel");
 		let yesButton = document.getElementById("yes");
 		let cancelButton = document.getElementById("cancel");
-		let scrollPosition = window.scrollY;
-		document.getElementById(scrollURL).value = scrollPosition;
+		if (scrollURL != null) {
+			let scrollPosition = window.scrollY;
+			document.getElementById(scrollURL).value = scrollPosition;
+		}
 
 		modalMessage.innerText = message;
 		modal.classList.remove("hidden");

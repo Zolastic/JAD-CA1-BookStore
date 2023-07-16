@@ -46,7 +46,7 @@ public class AddAddressPage extends HttpServlet {
 			}
 			userID = verifyUserDAO.validateUserID(connection, userID);
 			if (userID == null) {
-				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
 				return;
 			}
