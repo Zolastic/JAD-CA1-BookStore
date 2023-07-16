@@ -47,7 +47,7 @@ public class EditAddressPage extends HttpServlet {
 			}
 			userID = verifyUserDAO.validateUserID(connection, userID);
 			if (userID == null) {
-				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
 				return;
 			}
@@ -73,7 +73,6 @@ public class EditAddressPage extends HttpServlet {
 	// Handle submit edit
 	protected void submitEditAddress(HttpServletRequest request, HttpServletResponse response)
 		    throws ServletException, IOException {
-		System.out.println("hi im here");
 		    String addr_id = request.getParameter("addr_id");
 		    String unit_number = request.getParameter("unit_number");
 		    String block_number = request.getParameter("block_number");

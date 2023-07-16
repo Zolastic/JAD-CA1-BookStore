@@ -21,21 +21,45 @@
 </head>
 <body>
 	<%@ include file="customerModal.jsp"%>
+	<%@ include file="customerModalYesCancel.jsp"%>
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div class="px-10 pt-10">
 		<%
 		String validatedUserID = (String) request.getAttribute("validatedUserID");
 		String pageBack = request.getParameter("from");
+		String deleteError = request.getParameter("deleteError");
 		List<Address> addresses = (List<Address>) request.getAttribute("addresses");
+		String urlBack = "";
+		if (pageBack != null) {
+			if (pageBack.equals("profile")) {
+				urlBack = "/CA1-assignment/ProfilePage?userID=" + validatedUserID;
+			} else {
+				urlBack = "/CA1-assignment/CheckoutPage?userIDAvailable=true";
+			}
+		}
+
+		if (deleteError != null) {
+			if (deleteError.equals("fkConstraint")) {
+				out.print("<script>showModal('Error Deleting Address, You Have Purchased With This Address')</script>");
+			}else{
+				out.print("<script>showModal('Error Deleting Address, Try Again Later')</script>");
+			}
+		}
+		if (validatedUserID != null && addresses != null && pageBack != null) {
 		%>
-		<h1 class="text-3xl font-bold mb-5">Your Address</h1>
-		<%
-		if (validatedUserID != null && addresses != null) {
-		%>
+
+		<div class="flex items-center justify-between">
+			<h1 class="text-3xl font-bold mb-5">Your Address</h1>
+			<span class="cursor-pointer text-gray-500 hover:text-gray-700"
+				onclick="goBack()"> <i
+				class="fas fa-times fa-2x m-5 pt-2 mr-10"></i>
+			</span>
+
+		</div>
 		<!-- Add New Address button -->
-		<div class="flex justify-end mb-5">
+		<div class="flex justify-start mb-5">
 			<button type="button"
-				class="px-4 py-2 bg-gray-300 rounded text-gray-800"
+				class="px-4 py-2 text-white rounded bg-slate-500 hover:bg-slate-600"
 				id="insertNewAddr">Add New Address</button>
 		</div>
 		<!-- Show all the addresses -->
@@ -67,14 +91,26 @@
 							Unit Number<%=address.getUnit_number()%></p>
 					</div>
 					<div class="flex items-center">
-						<form id="payment-form"
+						<form id="edit-form"
 							action="/CA1-assignment/EditAddressPage?userIDAvailable=true&from=<%=pageBack%>"
 							method="post">
-							<button type="submit"
-								class="mr-2 px-4 py-2 bg-gray-300 rounded text-gray-800">Edit</button>
+							<button type="submit" class="text-gray-800 hover:text-black mx-3">
+								<i class="fas fa-edit transform hover:scale-110"></i>
+							</button>
 							<input type="hidden" name="addr_id"
-								value="<%=address.getAddr_id() %>">
+								value="<%=address.getAddr_id()%>">
 						</form>
+						<form id="delete-form_<%=address.getAddr_id()%>"
+							action="/CA1-assignment/ModifyAddressPage" method="post">
+							<input type="hidden" name="action" value="deleteAddress">
+							<input type="hidden" name="addr_id"
+								value="<%=address.getAddr_id()%>"> <input type="hidden"
+								name="from" value="<%=pageBack%>">
+						</form>
+						<button class="text-red-600 hover:text-red-800 mx-3 mr-4"
+							onclick="showModalYesCancel('Are you sure you want to delete this address?', 'delete-form_<%=address.getAddr_id()%>', null)">
+							<i class="fas fa-trash-alt transform hover:scale-110"></i>
+						</button>
 
 					</div>
 				</div>
@@ -84,35 +120,45 @@
 			%>
 		</div>
 		<script>
-    		var newAddrBttn = document.getElementById("insertNewAddr");
-   			newAddrBttn.addEventListener("click", function() {
-        		var url = "/CA1-assignment/AddAddressPage?userIDAvailable=true&from=<%=pageBack%>";
-				window.location.href = url;
-			});
-		</script>
+            var newAddrBttn = document.getElementById("insertNewAddr");
+            newAddrBttn.addEventListener("click", function() {
+                var url = "/CA1-assignment/AddAddressPage?userIDAvailable=true&from=<%=pageBack%>";
+                window.location.href = url;
+            });
+        </script>
+
 
 		<%
 		} else {
 		%>
 		<script>
-			if (
-		<%=validatedUserID%>
-			== null) {
-				window.location.href = "registrationPage.jsp";
-			} else {
-				var closeButton = document.getElementById("close");
+            if (<%=validatedUserID%> == null) {
+                window.location.href = "registrationPage.jsp";
+            } else if(<%=pageBack%>==null){
+            	var closeButton = document.getElementById("close");
 				showModal("Error loading page");
-				closeButton
-						.addEventListener(
-								"click",
-								function() {
-									window.location.href = "/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=<%=pageBack%>";
-								});
-			}
-		</script>
+				closeButton.addEventListener("click", function() {
+					window.location.href = "/CA1-assignment/home.jsp";
+				});
+            }
+            else {
+                var closeButton = document.getElementById("close");
+                showModal("Error loading page");
+                closeButton.addEventListener("click", function() {
+                    window.location.href = "/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=<%=pageBack%>";
+                });
+            }
+        </script>
 		<%
 		}
 		%>
+
 	</div>
+	<script>
+        function goBack() {
+            var urlBack = '<%=urlBack%>';
+			window.location.href = urlBack;
+		}
+	</script>
 </body>
 </html>

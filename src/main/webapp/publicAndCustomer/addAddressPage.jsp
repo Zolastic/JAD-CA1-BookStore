@@ -38,7 +38,7 @@
 			out.print("<script>showModal('Internal Server Error')</script>");
 		} else if (err.equals("emptyInput")) {
 			out.print("<script>showModal('Empty Input Fields!')</script>");
-		}else{
+		} else {
 			out.print("<script>showModal('Error Occured, Try Again Later')</script>");
 		}
 	}
@@ -56,15 +56,16 @@
 	<%
 	}
 	}
-	if (validatedUserID != null && countries != null) {
+	if (validatedUserID != null && countries != null && pageBack != null) {
 	%>
 	<div class="flex items-center justify-center mt-16">
-		<form action="/CA1-assignment/AddAddressPage?userIDAvailable=true&from=<%=pageBack%>"
+		<form
+			action="/CA1-assignment/AddAddressPage?userIDAvailable=true&from=<%=pageBack%>"
 			method="post" id="editAddressForm"
 			class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
 			<h1 class="text-3xl font-bold my-2 mb-5">Add An Address</h1>
 			<input type="hidden" name="action" value="submitInsertAddr">
-				<input type="hidden" name="userId" value=<%=validatedUserID %>>
+			<input type="hidden" name="userId" value=<%=validatedUserID%>>
 			<div class="mb-4 flex">
 				<label for="unit_number" class="font-bold w-32">Unit Number:</label>
 				<input type="text" name="unit_number" id="unit_number"
@@ -87,7 +88,7 @@
 					class="border border-gray-300 p-2 rounded ml-2 w-64" required>
 			</div>
 			<div class="mb-4 flex">
-				<label for="country" class="font-bold w-32" >Country:</label> <select
+				<label for="country" class="font-bold w-32">Country:</label> <select
 					name="country" id="country"
 					class="border border-gray-300 p-2 rounded ml-2 w-64"
 					style="width: 100%">
@@ -115,8 +116,23 @@
 	} else {
 	%>
 	<script>
-        showModal("Error loading page");
-    </script>
+            if (<%=validatedUserID%> == null) {
+                window.location.href = "registrationPage.jsp";
+            } else if(<%=pageBack%>==null){
+            	var closeButton = document.getElementById("close");
+				showModal("Error loading page");
+				closeButton.addEventListener("click", function() {
+					window.location.href = "/CA1-assignment/home.jsp";
+				});
+            }
+            else {
+                var closeButton = document.getElementById("close");
+                showModal("Error loading page");
+                closeButton.addEventListener("click", function() {
+                    window.location.href = "/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=<%=pageBack%>";
+			});
+		}
+	</script>
 	<%
 	}
 	%>
@@ -127,18 +143,17 @@
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 	<script>
-        // Initialize Select2 on the country dropdown
-        $(document).ready(function() {
-            $('#country').select2({
-                templateSelection: function(data) {
-                    return data.text;
-                },
-                templateResult: function(data) {
-                    return data.text;
-                }
-            });
-        });
-        
-    </script>
+		// Initialize Select2 on the country dropdown
+		$(document).ready(function() {
+			$('#country').select2({
+				templateSelection : function(data) {
+					return data.text;
+				},
+				templateResult : function(data) {
+					return data.text;
+				}
+			});
+		});
+	</script>
 </body>
 </html>

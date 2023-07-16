@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 import model.Address;
+import utils.DBConnection;
 
 public class AddressDAO {
 
@@ -121,6 +122,19 @@ public class AddressDAO {
 	        rowsAffected = 0;
 	    }
 	    return rowsAffected;
+	}
+	
+	public boolean deleteAddr(String addr_id) {
+		try (Connection connection = DBConnection.getConnection()) {
+			String deleteQuery = "DELETE FROM address WHERE addr_id=?;";
+			PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
+			deleteStatement.setString(1, addr_id);
+			int rowsAffected = deleteStatement.executeUpdate();
+			return rowsAffected > 0;
+		} catch (SQLException e) {
+			System.err.println("Error: " + e);
+			return false;
+		}
 	}
 
 }
