@@ -46,7 +46,8 @@
     } else {
         for (TransactionHistory transactionHistory : transactionHistories) {
             double totalAmt = transactionHistory.getTotalAmount();
-            double subtotal = (totalAmt / 108) * 100;
+            double gstPercent=transactionHistory.getGstPercent();
+            double subtotal = (totalAmt / (100+gstPercent)) * 100;
             double gst = totalAmt - subtotal;
 %>
 <!-- Show the transaction history -->

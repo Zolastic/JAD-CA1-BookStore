@@ -121,8 +121,10 @@ public class CheckoutPage extends HttpServlet {
 			throws ServletException, IOException {
 		Stripe.apiKey = STRIPE_SECRET_KEY;
 		String paymentMethodId = request.getParameter("paymentMethodId");
-		String addr_id = request.getParameter("addr_id");
+		String addr=request.getParameter("addr");
 		String totalAmount = request.getParameter("totalAmount");
+		String sgstPercent = request.getParameter("gstPercent");
+		double gstPercent=Double.parseDouble(sgstPercent);
 		String userID = (String) request.getSession().getAttribute("userID");
 		double amountInDollars = Double.parseDouble(totalAmount);
 		// Stripe needs to take totalAmount in cents
@@ -132,6 +134,9 @@ public class CheckoutPage extends HttpServlet {
 		String checkoutItemsString = null;
 		List<Map<String, Object>> checkoutItemsArrayString = new ArrayList<>();
 		try (Connection connection = DBConnection.getConnection()) {
+			String[] addrData = addr.split("~");
+	        String addr_id = addrData[0];
+	        String fullAddr = addrData[1];
 			if (cookies != null) {
 				// Get the checkout items in cookies
 				for (Cookie cookie : cookies) {
@@ -173,7 +178,7 @@ public class CheckoutPage extends HttpServlet {
 						// If insertion of transaction history or transaction history items failed do a
 						// refund
 						String transactionHistoryUUID = checkoutDAO.insertTransactionHistory(connection, amountInDollars, userID,
-								addr_id, paymentIntent.getId());
+								addr_id, paymentIntent.getId(), gstPercent, fullAddr);
 						if (transactionHistoryUUID != null) {
 							Boolean success = checkoutDAO.insertTransactionHistoryItems(connection, checkoutItems,
 									transactionHistoryUUID);

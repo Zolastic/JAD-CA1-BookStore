@@ -14,8 +14,10 @@ public class TransactionHistory {
     private String addr_id;
     private String paymentIntentId;
     private List<TransactionHistoryItem> transactionHistoryItems;
+    private double gstPercent;
+    private String fullAddr;
 
-    public TransactionHistory(String transactionHistoryID, String transactionDate, double totalAmount, String custID, List<TransactionHistoryItem> transactionHistoryItems, String addr_id, String paymentIntentId) {
+    public TransactionHistory(String transactionHistoryID, String transactionDate, double totalAmount, String custID, List<TransactionHistoryItem> transactionHistoryItems, String addr_id, String paymentIntentId, double gstPercent, String fullAddr) {
         this.transactionHistoryID = transactionHistoryID;
         this.transactionDate = transactionDate;
         this.totalAmount = totalAmount;
@@ -23,7 +25,36 @@ public class TransactionHistory {
         this.addr_id=addr_id;
         this.transactionHistoryItems = transactionHistoryItems;
         this.paymentIntentId=paymentIntentId;
+        this.gstPercent=gstPercent;
+        this.fullAddr=fullAddr;
     }
+    
+
+	public String getFullAddr() {
+		return fullAddr;
+	}
+
+
+	public void setFullAddr(String fullAddr) {
+		this.fullAddr = fullAddr;
+	}
+
+
+	public String getAddr_id() {
+		return addr_id;
+	}
+
+	public void setAddr_id(String addr_id) {
+		this.addr_id = addr_id;
+	}
+
+	public double getGstPercent() {
+		return gstPercent;
+	}
+
+	public void setGstPercent(double gstPercent) {
+		this.gstPercent = gstPercent;
+	}
 
 	public String getPaymentIntentId() {
 		return paymentIntentId;
@@ -65,13 +96,6 @@ public class TransactionHistory {
 		this.custID = custID;
 	}
 
-	public String getAddrId() {
-		return addr_id;
-	}
-
-	public void setAddrId(String addrId) {
-		this.addr_id = addrId;
-	}
 
 	public List<TransactionHistoryItem> getTransactionHistoryItems() {
 		return transactionHistoryItems;
