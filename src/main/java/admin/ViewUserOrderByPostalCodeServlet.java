@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.AddressDAO;
+import dao.UserAddressDAO;
 import dao.UserDAO;
-import model.Address;
-import model.User;
+import model.UserAddress;
 import utils.DBConnection;
 import utils.DispatchUtil;
 
@@ -22,10 +22,9 @@ import utils.DispatchUtil;
  * Servlet implementation class ViewUserByPostalCodeServlet
  */
 @WebServlet("/admin/ViewUserByPostalCode")
-public class ViewUserByPostalCodeServlet extends HttpServlet {
+public class ViewUserOrderByPostalCodeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private AddressDAO addressDAO = new AddressDAO();
-	private UserDAO userDAO = new UserDAO();
+	private UserAddressDAO userAddressDAO = new UserAddressDAO();
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -44,10 +43,8 @@ public class ViewUserByPostalCodeServlet extends HttpServlet {
 	}
 
 	private void loadData(HttpServletRequest request, Connection connection) throws SQLException {
-		ArrayList<Address> addresses = addressDAO.getAddressesOrderByPostalCode(connection);
-		ArrayList<User> users = userDAO.getUserIDOrderByPostalCode(connection, addresses);
-		request.setAttribute("addresses", addresses);
-		request.setAttribute("users", users);
+		ArrayList<UserAddress> users = userAddressDAO.getUserOrderByPostalCode(connection);
+		request.setAttribute("addresses", users);
 	}
 
 	/**
