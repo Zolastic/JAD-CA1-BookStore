@@ -38,13 +38,14 @@ public class ViewUserOrderByPostalCodeServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "viewUsersOrderByPostalCode.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			DispatchUtil.dispatch(request, response, "viewUsers.jsp?statusCode=500");
+			DispatchUtil.dispatch(request, response, "viewUsersOrderByPostalCode.jsp?statusCode=500");
 		}
 	}
 
 	private void loadData(HttpServletRequest request, Connection connection) throws SQLException {
 		ArrayList<UserAddress> users = userAddressDAO.getUserOrderByPostalCode(connection);
-		request.setAttribute("addresses", users);
+		System.out.println("users: " + users);
+		request.setAttribute("users", users);
 	}
 
 	/**

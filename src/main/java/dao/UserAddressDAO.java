@@ -33,6 +33,7 @@ public class UserAddressDAO {
 				user.setPostalCode(resultSet.getString("postal_code"));
 				user.setCountryID(resultSet.getString("countryId"));
 				user.setUserID(resultSet.getString("userId"));
+				System.out.println("user from DAO: " + users);
 				users.add(user);
 			}
 			resultSet.close();
