@@ -40,7 +40,8 @@
 			}
 
 			subtotal = Math.round(subtotal * 100.0) / 100.0; // Round to 2 decimal places
-			double gst = Math.round((subtotal / 100) * 8 * 100.0) / 100.0;
+			double gstPercent=8;
+			double gst = Math.round((subtotal / 100) * gstPercent * 100.0) / 100.0;
 			double totalAmt = Math.round((subtotal + gst) * 100.0) / 100.0;
 		%>
 		<h1 class="text-3xl font-bold mb-5">Checkout Details</h1>
@@ -99,19 +100,18 @@
 					</div>
 					<div class="border border-b border-gray-300 my-2"></div>
 					<div class="flex my-5">
-						<label class="mr-2">Select Address:</label> <select name="addr_id"
+						<label class="mr-2">Select Address:</label> <select name="addr"
 							class="w-full border border-gray-300 rounded px-4 py-2" required>
 							<option value="">Choose an address</option>
 							<%
 							for (Address addr : addresses) {
+								String fullAddr=addr.getCountryName()+" "+addr.getPostal_code()+", Block "+addr.getBlock_number()+", "+addr.getStreet_address()+", #"+addr.getUnit_number();
+								 String value = addr.getAddr_id() + "~" + fullAddr;
 							%>
-							<option value="<%=addr.getAddr_id()%>">
-								<%=addr.getCountryName()%>
-								<%=addr.getPostal_code()%>,
-								Block <%=addr.getBlock_number()%>,
-								<%=addr.getStreet_address()%>,
-								#<%=addr.getUnit_number()%>
+							<option value="<%=value%>">
+								<%=fullAddr%>
 							</option>
+							
 							<%
 							}
 							%>
@@ -129,6 +129,7 @@
 				</div>
 				<!-- Show the subtotal -->
 				<input type="hidden" name="totalAmount" value="<%=totalAmt%>">
+				<input type="hidden" name="gstPercent" value="<%=gstPercent%>">
 				<input type="hidden" name="action" value="payment">
 				<div
 					class="bg-white flex justify-between rounded shadow px-5 py-5 h-30 mt-10">
@@ -137,7 +138,7 @@
 							Subtotal: $<%=String.format("%.2f", subtotal)%>
 						</p>
 						<p class="text-md font-semibold my-2">
-							GST(8%): $<%=String.format("%.2f", gst)%>
+							GST(<%=gstPercent%>%): $<%=String.format("%.2f", gst)%>
 						</p>
 						<p class="text-lg font-bold my-2">
 							Total Amount: $<%=String.format("%.2f", totalAmt)%>

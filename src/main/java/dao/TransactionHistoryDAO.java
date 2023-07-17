@@ -45,7 +45,9 @@ public class TransactionHistoryDAO {
 							resultSet.getString("transaction_history.custID"),
 							new ArrayList<>(),
 							resultSet.getString("transaction_history.addr_id"),
-							resultSet.getString("transaction_history.paymentIntentId"));
+							resultSet.getString("transaction_history.paymentIntentId"),
+							resultSet.getDouble("transaction_history.gstPercent"),
+							resultSet.getString("transaction_history.fullAddr"));
 					transactionHistories.add(transactionHistory);
 				}
 				TransactionHistoryItem transactionHistoryItem = new TransactionHistoryItem(

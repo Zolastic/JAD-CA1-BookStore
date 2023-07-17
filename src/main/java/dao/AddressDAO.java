@@ -137,27 +137,4 @@ public class AddressDAO {
 		}
 	}
 
-	public ArrayList<Address> getAddressesOrderByPostalCode(Connection connection) throws SQLException {
-		String getAddressesSql = "SELECT * FROM address ORDER BY postal_code;";
-		ArrayList<Address> addresses = new ArrayList<>();
-
-		try (PreparedStatement ps = connection.prepareStatement(getAddressesSql)) {
-
-			ResultSet resultSet = ps.executeQuery();
-
-			while (resultSet.next()) {
-				Address address = new Address();
-				address.setAddr_id(resultSet.getString("addr_id"));
-				address.setUnit_number(resultSet.getString("unit_number"));
-				address.setBlock_number(resultSet.getString("block_number"));
-				address.setStreet_address(resultSet.getString("street_address"));
-				address.setPostal_code(resultSet.getString("postal_code"));
-				address.setCountryId(resultSet.getString("countryId"));
-				address.setUserID(resultSet.getString("userId"));
-			}
-			resultSet.close();
-			return addresses;
-		}
-	}
-
 }
