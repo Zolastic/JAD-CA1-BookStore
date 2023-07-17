@@ -57,7 +57,35 @@
 		</div>
 	</header>
 
-	<div class="flex flex-col">
+	<div class="flex space-x-2">
+		<div class="my-5 mx-10">
+			<button id="dropdownDefaultButton" data-dropdown-toggle="dropdown"
+				class="text-amber-800 bg-pink-100 hover:bg-pink-100 focus:ring-4 focus:outline-none focus:ring-pink-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+				type="button">
+				Filter By  
+				<svg class="w-2.5 h-2.5 ml-2.5" aria-hidden="true"
+					xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+    <path stroke="currentColor" stroke-linecap="round"
+						stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+  </svg>
+			</button>
+			<div id="dropdown"
+				class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
+				<ul class="py-2 text-sm text-gray-700"
+					aria-labelledby="dropdownDefaultButton">
+					<li><a href="<%=request.getContextPath()%>/admin/ViewUsers"
+						class="block px-4 py-2 hover:bg-pink-100">Nothing</a>
+					</li>
+					<li><a href="<%=request.getContextPath()%>/admin/ViewUserByPostalCode"
+						class="block px-4 py-2 hover:bg-pink-100">Postal Code</a>
+					</li>
+				</ul>
+			</div>
+
+
+		</div>
+		
+		<div class="flex flex-col grow">
 		<%
 		if (users.size() > 0) {
 			for (UserAddress user : usersPerPage) {
@@ -160,6 +188,16 @@
 				</div>
 			</div>
 		</div>
+		
+		<script>
+			const dropdownButton = document
+					.getElementById('dropdownDefaultButton');
+			const dropdownMenu = document.getElementById('dropdown');
+
+			dropdownButton.addEventListener('click', function() {
+				dropdownMenu.classList.toggle('hidden');
+			});
+		</script>
 
 		<script>
 			const items = document.getElementsByClassName('toggleButton');
@@ -188,6 +226,8 @@
 					});
 		</script>
 	</div>
-
+		
+	</div>
+	
 </body>
 </html>
