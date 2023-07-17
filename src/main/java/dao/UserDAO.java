@@ -203,7 +203,7 @@ public class UserDAO {
 		}
 	}
 	
-	public ArrayList<User> getUserIDByPostalCode(Connection connection, ArrayList<Address> addresses) throws SQLException{
+	public ArrayList<User> getUserIDOrderByPostalCode(Connection connection, ArrayList<Address> addresses) throws SQLException{
 		String getUsersSql = "SELECT userID, name, email, img FROM users WHERE userId = ?;";
 		ArrayList<User> users = new ArrayList<>();
 		
@@ -217,14 +217,11 @@ public class UserDAO {
 				ResultSet resultSet = ps.executeQuery();
 				
 				if (resultSet.next()) {
-					String userID = resultSet.getString("userID");
-					String name = resultSet.getString("name");
-					String email = resultSet.getString("email");
-					String password = resultSet.getString("password");
-					String role = resultSet.getString("role");
-					String img = resultSet.getString("img");
-					String secret = resultSet.getString("secret");
-					User user = new User(userID, name, email, password, role, img, secret);
+					User user = new User();
+					user.setUserID(resultSet.getString("userID"));
+					user.setName(resultSet.getString("name"));
+					user.setEmail(resultSet.getString("email"));
+					user.setImage(resultSet.getString("img"));
 					users.add(user);
 				}
 				resultSet.close();

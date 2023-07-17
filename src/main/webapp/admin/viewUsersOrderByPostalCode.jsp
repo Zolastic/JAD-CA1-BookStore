@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Admin: View Users</title>
+<title>Admin: View Users Order By Postal Code</title>
 <%@include file="../tailwind-css.jsp"%>
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/admin/css/viewManagementSystem.css">
@@ -15,7 +15,7 @@
 	<%@ page import="java.util.*, model.*"%>
 	<%@include file="./navbar.jsp"%>
 	<%
-	List<User> users = (List<User>) request.getAttribute("users");
+	List<UserAddress> users = (List<UserAddress>) request.getAttribute("users");
 	String sCurrentPage = request.getParameter("page");
 
 	if (sCurrentPage == null) {
@@ -28,7 +28,7 @@
 	int startIndex = (iCurrentPage - 1) * itemsPerPage;
 	int endIndex = Math.min(startIndex + itemsPerPage, users.size());
 
-	List<User> usersPerPage = users.subList(startIndex, endIndex);
+	List<UserAddress> usersPerPage = users.subList(startIndex, endIndex);
 
 	int totalUsers = users.size();
 	int totalPages = (int) Math.ceil((double) totalUsers / itemsPerPage);
@@ -88,7 +88,7 @@
 		<div class="flex flex-col grow">
 		<%
 		if (users.size() > 0) {
-			for (User user : usersPerPage) {
+			for (UserAddress user : usersPerPage) {
 		%>
 		<div class="flex py-3 my-5 mx-10 rounded-lg shadow-lg bg-gray-50">
 			<a class="hover:cursor-pointer hover:text-amber-900"
@@ -98,16 +98,20 @@
 				%> <img alt=""
 				src="<%=request.getContextPath()%>/admin/img/defaultUserPFP.png"
 				class="w-48 h-48 mx-10 object-cover rounded-full"> <%
-		 } else {
-		 %> <img alt="" src="data:image/png;base64, <%=user.getImage()%>"
-						class="w-48 h-48 mx-10 object-cover rounded-full"> <%
-		 }
-		 %>
+ } else {
+ %> <img alt="" src="data:image/png;base64, <%=user.getImage()%>"
+				class="w-48 h-48 mx-10 object-cover rounded-full"> <%
+ }
+ %>
 			</a>
 			<div class="flex flex-col ml-10">
 				<a class="hover:cursor-pointer hover:text-amber-900"
 					href="<%=request.getContextPath()%>/admin/UserDetails?userID=<%=user.getUserID()%>"><h1
 						class="text-3xl font-bold"><%=user.getName()%></h1></a>
+				<p class="mt-5 text-lg">Postal Code: <%=user.getPostalCode()%></p>
+				<p class="mt-5 text-lg">Street Address: <%=user.getStreetAddress()%></p>
+				<p class="mt-5 text-lg">Block: <%=user.getBlockNumber()%></p>
+				<p class="mt-5 text-lg">Unit No.: <%=user.getUnitNumber()%></p>
 				<p class="mt-5 text-lg"><%=user.getEmail()%></p>
 			</div>
 			<div class="flex-grow"></div>
@@ -115,7 +119,7 @@
 				<a
 					href="<%=request.getContextPath()%>/admin/EditUserProfile?userID=<%=user.getUserID()%>"><i
 					class="viewIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
-					<a
+				<a
 					href="<%=request.getContextPath()%>/admin/EditUserPassword?userID=<%=user.getUserID()%>"><i
 					class="viewIcons fa-solid fa-key fa-lg mx-3 hover:cursor-pointer"></i></a>
 				<a class="m-0 p-0 toggleButton" data-user-id="<%=user.getUserID()%>"
@@ -222,7 +226,8 @@
 					});
 		</script>
 	</div>
+		
 	</div>
-
+	
 </body>
 </html>
