@@ -98,8 +98,8 @@ public class BookDAO {
 		}
 	}
 	
-	public int addBook(String title, Double price, int author, int publisher, int quantity, String pubDate, String isbn, String description,
-			int genreId, String image) throws SQLException {
+	public int addBook(String title, Double price, String author, String publisher, int quantity, String pubDate, String isbn, String description,
+			String genreId, String image) throws SQLException {
 		String sqlStr = "INSERT INTO BOOK (title, price, authorID, publisherID, inventory, publication_date, ISBN, description, genre_id, img, book_id)\r\n"
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		try (Connection conn = DBConnection.getConnection();
@@ -107,13 +107,13 @@ public class BookDAO {
 	        
 			ps.setString(1, title);
 			ps.setDouble(2, price);
-			ps.setInt(3, author);
-			ps.setInt(4, publisher);
+			ps.setString(3, author);
+			ps.setString(4, publisher);
 			ps.setInt(5, quantity);
 			ps.setString(6, pubDate);
 			ps.setString(7, isbn);
 			ps.setString(8, description);
-			ps.setInt(9, genreId);
+			ps.setString(9, genreId);
 			ps.setString(10, image);
 			ps.setString(11, (UUID.randomUUID()).toString());
 			
@@ -197,8 +197,8 @@ public class BookDAO {
 		}
 	}
 	
-	public int updateBook(Connection connection, String bookID, String title, Double price, int author, int publisher, int quantity, String pubDate, String isbn, String description,
-			int genreId, int sold, String image) throws SQLException {
+	public int updateBook(Connection connection, String bookID, String title, Double price, String author, String publisher, int quantity, String pubDate, String isbn, String description,
+			String genreId, int sold, String image) throws SQLException {
 		String sqlStrWithImage = " UPDATE book SET title = ?, price = ?, authorID = ?, publisherID = ?, inventory = ?, \r\n"
 				+ " publication_date = ?, ISBN = ?, description = ?,\r\n" + " genre_id = ?, sold = ?, img = ?\r\n"
 				+ " WHERE book_id = ?;";
@@ -215,13 +215,13 @@ public class BookDAO {
 
 		ps.setString(1, title);
 		ps.setDouble(2, price);
-		ps.setInt(3, author);
-		ps.setInt(4, publisher);
+		ps.setString(3, author);
+		ps.setString(4, publisher);
 		ps.setInt(5, quantity);
 		ps.setString(6, pubDate);
 		ps.setString(7, isbn);
 		ps.setString(8, description);
-		ps.setInt(9, genreId);
+		ps.setString(9, genreId);
 		ps.setInt(10, sold);
 
 		if (noImage) {

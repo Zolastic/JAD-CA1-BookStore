@@ -206,4 +206,33 @@ public class UserDAO {
 			return 500;
 		}
 	}
+
+	
+	public ArrayList<User> getUserIDOrderByPostalCode(Connection connection, ArrayList<Address> addresses) throws SQLException{
+		String getUsersSql = "SELECT userID, name, email, img FROM users WHERE userId = ?;";
+		ArrayList<User> users = new ArrayList<>();
+		
+		if (addresses.isEmpty()) {
+			return null;
+		}
+		
+		try(PreparedStatement ps = connection.prepareStatement(getUsersSql)) {
+			for (Address address : addresses) {
+				ps.setString(1, address.getUserID());
+				ResultSet resultSet = ps.executeQuery();
+				
+				if (resultSet.next()) {
+					User user = new User();
+					user.setUserID(resultSet.getString("userID"));
+					user.setName(resultSet.getString("name"));
+					user.setEmail(resultSet.getString("email"));
+					user.setImage(resultSet.getString("img"));
+					users.add(user);
+				}
+				resultSet.close();
+			}
+			return users;
+		} 
+	}
+
 }
