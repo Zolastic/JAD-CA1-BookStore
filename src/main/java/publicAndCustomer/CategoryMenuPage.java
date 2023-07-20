@@ -28,13 +28,6 @@ public class CategoryMenuPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private GenreDAO genreDAO=new GenreDAO();
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public CategoryMenuPage() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse

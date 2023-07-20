@@ -29,13 +29,6 @@ public class Review extends HttpServlet {
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private BookDAO bookDAO = new BookDAO();
 	private ReviewDAO reviewDAO = new ReviewDAO();
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public Review() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
