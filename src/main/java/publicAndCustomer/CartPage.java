@@ -33,13 +33,6 @@ public class CartPage extends HttpServlet {
 	private CartDAO cartDAO = new CartDAO();
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public CartPage() {
-		super();
-	}
-
-	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */

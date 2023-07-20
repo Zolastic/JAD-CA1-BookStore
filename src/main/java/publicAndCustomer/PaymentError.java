@@ -27,14 +27,6 @@ public class PaymentError extends HttpServlet {
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public PaymentError() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */

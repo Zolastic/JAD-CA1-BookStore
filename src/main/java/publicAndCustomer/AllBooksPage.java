@@ -30,13 +30,6 @@ public class AllBooksPage extends HttpServlet {
 	private BookDAO bookDAO = new BookDAO();
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public AllBooksPage() {
-		super();
-	}
-
-	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */

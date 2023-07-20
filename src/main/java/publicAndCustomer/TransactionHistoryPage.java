@@ -27,12 +27,6 @@ public class TransactionHistoryPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private TransactionHistoryDAO transactionHistoryDAO = new TransactionHistoryDAO();
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public TransactionHistoryPage() {
-		super();
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse

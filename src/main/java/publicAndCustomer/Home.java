@@ -18,18 +18,11 @@ import dao.VerifyUserDAO;
 /**
  * Servlet implementation class Home
  */
-@WebServlet("/")
+@WebServlet("/Home")
 public class Home extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private BookDAO bookDAO = new BookDAO();
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public Home() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse

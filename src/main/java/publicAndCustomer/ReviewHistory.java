@@ -28,13 +28,6 @@ public class ReviewHistory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private ReviewDAO reviewDAO = new ReviewDAO();
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ReviewHistory() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
