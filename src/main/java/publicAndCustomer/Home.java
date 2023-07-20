@@ -18,7 +18,7 @@ import dao.VerifyUserDAO;
 /**
  * Servlet implementation class Home
  */
-@WebServlet("/Home")
+@WebServlet("/")
 public class Home extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
