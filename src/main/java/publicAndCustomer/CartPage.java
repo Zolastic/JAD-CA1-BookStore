@@ -71,9 +71,9 @@ public class CartPage extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/cartPage.jsp");
 			dispatcher.forward(request, response);
 		} catch (SQLException e) {
+			System.err.println("Error: " + e);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/login.jsp");
 			dispatcher.forward(request, response);
-			System.err.println("Error: " + e);
 		}
 	}
 
