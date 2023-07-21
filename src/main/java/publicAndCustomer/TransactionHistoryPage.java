@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-import model.TransactionHistory;
+import model.TransactionHistoryWithItems;
 import dao.VerifyUserDAO;
 import dao.TransactionHistoryDAO;
 import utils.DBConnection;
@@ -36,7 +36,7 @@ public class TransactionHistoryPage extends HttpServlet {
 			throws ServletException, IOException {
 		String userIDAvailable = request.getParameter("userIDAvailable");
 		String scrollPosition = request.getParameter("scrollPosition");
-		List<TransactionHistory> transactionHistories = new ArrayList<>();
+		List<TransactionHistoryWithItems> transactionHistories = new ArrayList<>();
 		String userID = null;
 		if (userIDAvailable != null && userIDAvailable.equals("true")) {
 			userID = (String) request.getSession().getAttribute("userID");
