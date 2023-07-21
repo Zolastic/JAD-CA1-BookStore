@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import model.Book;
-import model.TransactionHistory;
+import model.TransactionHistoryWithItems;
 import model.User;
 
 
@@ -30,7 +30,7 @@ public class SalesManagementServlet extends HttpServlet {
         // Retrieve data from the database and populate the necessary ArrayLists
         List<User> topCustomers = new ArrayList<>(); // Replace with actual code to fetch top customers
         List<Book> topSalesBooks = new ArrayList<>(); // Replace with actual code to fetch top sales books
-        List<TransactionHistory> salesData = new ArrayList<>(); // Replace with actual code to fetch sales data
+        List<TransactionHistoryWithItems> salesData = new ArrayList<>(); // Replace with actual code to fetch sales data
 
         // Set the retrieved data as attributes to be used in the JSP file
         request.setAttribute("topCustomers", topCustomers);
