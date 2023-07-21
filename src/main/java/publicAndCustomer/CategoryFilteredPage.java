@@ -31,14 +31,6 @@ public class CategoryFilteredPage extends HttpServlet {
 	private GenreDAO genreDAO = new GenreDAO();
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public CategoryFilteredPage() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */

@@ -42,13 +42,6 @@ public class CheckoutPage extends HttpServlet {
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private CheckoutDAO checkoutDAO = new CheckoutDAO();
 	private AddressDAO addressDAO = new AddressDAO();
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public CheckoutPage() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse

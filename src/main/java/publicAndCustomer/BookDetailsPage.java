@@ -36,10 +36,6 @@ public class BookDetailsPage extends HttpServlet {
 	private ReviewDAO reviewDAO = new ReviewDAO();
 	private CartDAO cartDAO = new CartDAO();
 
-	public BookDetailsPage() {
-		super();
-	}
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String bookID = request.getParameter("bookID");
