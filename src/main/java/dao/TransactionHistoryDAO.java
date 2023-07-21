@@ -6,14 +6,39 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import model.Book;
 import model.TransactionHistory;
-import model.TransactionHistoryItem;
+import model.TransactionHistoryItemBook;
+import model.TransactionHistoryWithItems;
 
 public class TransactionHistoryDAO {
+
+	public List<TransactionHistory> getUserTransactionHistories(Connection connection, String userID) throws SQLException {
+		String sqlStr = "SELECT * FROM transaction_history WHERE custID = ?;";
+		ArrayList<TransactionHistory> TransactionHistories = new ArrayList<>();
+
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, userID);
+			ResultSet resultSet = ps.executeQuery();
+
+			while (resultSet.next()) {
+				TransactionHistory transactionHistory = new TransactionHistory();
+				transactionHistory.setTransactionHistoryID(resultSet.getString("transaction_historyID"));
+				transactionHistory.setTransactionDate(resultSet.getString("transactionDate"));
+				transactionHistory.setTotalAmount(resultSet.getDouble("totalAmount"));
+				transactionHistory.setAddressID(resultSet.getString("addr_id"));
+				transactionHistory.setPaymentInpaymentIntentID(resultSet.getString("paymentIntentId"));
+				TransactionHistories.add(transactionHistory);
+			}
+			resultSet.close();
+			return TransactionHistories;
+		}
+	}
+
 	// To get all transaction history of the user
-	public List<TransactionHistory> getTransactionHistories(Connection connection, String userID) {
-		List<TransactionHistory> transactionHistories = new ArrayList<>();
+	public List<TransactionHistoryWithItems> getTransactionHistories(Connection connection, String userID) {
+		List<TransactionHistoryWithItems> transactionHistories = new ArrayList<>();
 		String query = "SELECT transaction_history.*, transaction_history_items.*,book.*, genre.genre_name,CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating,author.authorName, publisher.publisherName\r\n"
 				+ "FROM transaction_history\r\n"
 				+ "JOIN transaction_history_items ON transaction_history.transaction_historyID = transaction_history_items.transaction_historyID\r\n"
@@ -30,27 +55,25 @@ public class TransactionHistoryDAO {
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next()) {
 				String transactionHistoryID = resultSet.getString("transaction_history.transaction_historyID");
-				TransactionHistory transactionHistory = null;
-				for (TransactionHistory history : transactionHistories) {
+				TransactionHistoryWithItems transactionHistory = null;
+				for (TransactionHistoryWithItems history : transactionHistories) {
 					if (history.getTransactionHistoryID().equals(transactionHistoryID)) {
 						transactionHistory = history;
 						break;
 					}
 				}
 				if (transactionHistory == null) {
-					transactionHistory = new TransactionHistory(
-							transactionHistoryID,
+					transactionHistory = new TransactionHistoryWithItems(transactionHistoryID,
 							resultSet.getString("transaction_history.transactionDate"),
 							resultSet.getDouble("transaction_history.totalAmount"),
-							resultSet.getString("transaction_history.custID"),
-							new ArrayList<>(),
+							resultSet.getString("transaction_history.custID"), new ArrayList<>(),
 							resultSet.getString("transaction_history.addr_id"),
 							resultSet.getString("transaction_history.paymentIntentId"),
 							resultSet.getDouble("transaction_history.gstPercent"),
 							resultSet.getString("transaction_history.fullAddr"));
 					transactionHistories.add(transactionHistory);
 				}
-				TransactionHistoryItem transactionHistoryItem = new TransactionHistoryItem(
+				TransactionHistoryItemBook transactionHistoryItem = new TransactionHistoryItemBook(
 						resultSet.getString("transaction_history_items.transaction_history_itemID"),
 						resultSet.getString("transaction_history_items.bookID"),
 						resultSet.getInt("transaction_history_items.qty"),
@@ -63,7 +86,8 @@ public class TransactionHistoryDAO {
 						resultSet.getInt("book.inventory"), resultSet.getDouble("book.price"),
 						resultSet.getDouble("average_rating"));
 				transactionHistoryItem.setBook(book);
-				List<TransactionHistoryItem> transactionHistoryItems = transactionHistory.getTransactionHistoryItems();
+				List<TransactionHistoryItemBook> transactionHistoryItems = transactionHistory
+						.getTransactionHistoryItems();
 				transactionHistoryItems.add(transactionHistoryItem);
 				transactionHistory.setTransactionHistoryItems(transactionHistoryItems);
 			}

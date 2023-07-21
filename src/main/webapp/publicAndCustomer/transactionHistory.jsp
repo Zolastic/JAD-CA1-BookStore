@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="model.Book"%>
-<%@ page import="model.TransactionHistory"%>
-<%@ page import="model.TransactionHistoryItem"%>
+<%@ page import="model.TransactionHistoryWithItems"%>
+<%@ page import="model.TransactionHistoryItemBook"%>
 <%@ page import="java.util.*"%>
 <!DOCTYPE html>
 <html>
@@ -14,7 +14,7 @@
 </head>
 <body>
 <%
-    List<TransactionHistory> transactionHistories = (List<TransactionHistory>) request.getAttribute("transactionHistories");
+List<TransactionHistoryWithItems> transactionHistories = (List<TransactionHistoryWithItems>) request.getAttribute("transactionHistories");
     String validatedUserID = (String) request.getAttribute("validatedUserID");
     String scrollPosition = (String) request.getAttribute("scrollPosition");
     if (validatedUserID != null && transactionHistories != null) {
@@ -33,7 +33,7 @@
 </div>
 
 <%
-    if (transactionHistories.size() == 0) {
+if (transactionHistories.size() == 0) {
 %>
 <!-- If user has no transaction history -->
 <div class="fixed inset-0 flex flex-col items-center justify-center mt-10">
@@ -43,8 +43,8 @@
     </button>
 </div>
 <%
-    } else {
-        for (TransactionHistory transactionHistory : transactionHistories) {
+} else {
+        for (TransactionHistoryWithItems transactionHistory : transactionHistories) {
             double totalAmt = transactionHistory.getTotalAmount();
             double gstPercent=transactionHistory.getGstPercent();
             double subtotal = (totalAmt / (100+gstPercent)) * 100;
@@ -55,15 +55,16 @@
     <div class="flex items-center m-2">
         <p class="italic text-lg">
             Transaction Date:
-            <%= (new java.text.SimpleDateFormat("dd MMMM yyyy, hh:mm:ss a")).format(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(transactionHistory.getTransactionDate()))%>
+            <%=(new java.text.SimpleDateFormat("dd MMMM yyyy, hh:mm:ss a")).format(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(transactionHistory.getTransactionDate()))%>
         </p>
     </div>
     <div class="border border-gray-300"></div>
 
     <ul>
-        <% List<TransactionHistoryItem> transactionHistoryItems = transactionHistory.getTransactionHistoryItems();
-        for (TransactionHistoryItem transactionItem : transactionHistoryItems) {
-            String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + transactionItem.getBook().getBookID();
+        <%
+        List<TransactionHistoryItemBook> transactionHistoryItems = transactionHistory.getTransactionHistoryItems();
+                                for (TransactionHistoryItemBook transactionItem : transactionHistoryItems) {
+                                    String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + transactionItem.getBook().getBookID();
         %>
         <li class="flex items-center justify-between p-4 px-3 border-b border-gray-300">
             <div class="flex items-center">
