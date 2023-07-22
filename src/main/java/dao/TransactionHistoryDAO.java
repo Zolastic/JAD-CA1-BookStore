@@ -72,6 +72,18 @@ public class TransactionHistoryDAO {
 			return affectedRows > 0 ? 200 : 500;
 		} 
 	}
+	
+	public int deleteTransactionHistory(Connection connection, String transactionHistoryID) throws SQLException {
+		String sqlStr = "DELETE FROM transaction_history WHERE transaction_historyID = ?";
+		
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, transactionHistoryID);
+			
+			int affectedRows = ps.executeUpdate();
+			
+			return affectedRows > 0 ? 200 : 500;
+		} 
+	}
 
 	// To get all transaction history of the user
 	public List<TransactionHistoryWithItems> getTransactionHistoriesOfUser(Connection connection, String userID) {

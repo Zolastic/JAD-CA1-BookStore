@@ -128,7 +128,9 @@
 						class="viewIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>
 					<a class="m-0 p-0 toggleButton"
 						data-order-id="<%=transactionHistoryWithItem.getTransactionHistoryID()%>"
-						data-order-name="<%=transactionHistoryWithItem.getTransactionHistoryID()%>">
+						data-order-name="<%=transactionHistoryWithItem.getTransactionHistoryID()%>"
+						data-order-userID="<%=transactionHistoryWithItem.getCustID()%>"
+						>
 						<i
 						class="viewIcons fa-solid fa-trash fa-lg mx-3 hover:cursor-pointer"></i>
 					</a>
@@ -139,8 +141,7 @@
 			} else {
 			%>
 			<div class="flex justify-center items-center mt-5">
-				<h1 class="text-xl font-semibold">There is no such Order in the
-					store!</h1>
+				<h1 class="text-xl font-semibold">There are no orders made by this member!</h1>
 			</div>
 			<%
 			}
@@ -172,13 +173,15 @@
 				<div class="bg-white p-8 rounded shadow-lg rounded-lg">
 					<h2 class="text-2xl m-0 p-0">Are you sure you want</h2>
 					<h2 class="text-2xl m-0 p-0">
-						to Delete <span id="orderTitle" class="m-0 p-0 text-2xl font-bold"></span>
+						to Delete Order: <span id="orderTitle" class="m-0 p-0 text-2xl font-bold"></span>
 					</h2>
 					<div class="flex mt-5">
 						<form id="deleteForm" method="post"
 							action="<%=request.getContextPath()%>/admin/DeleteOrder">
 							<input type="hidden" id="transactionHistoryID"
-								name="transactionHistoryID" value="">
+								name="transactionHistoryID" value="" />
+							<input type="hidden" id="userID"
+								name="userID" value="" />
 							<button type="submit"
 								class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-purple-200">
 								<span
@@ -215,12 +218,16 @@
 									function() {
 										const transactionHistoryID = this
 												.getAttribute("data-order-id");
-										const userName = this
+										const orderName = this
 												.getAttribute("data-order-name");
+										const userID = this
+										.getAttribute("data-order-userID");
 
-										document.getElementById("orderTitle").textContent = userName;
+										document.getElementById("orderTitle").textContent = orderName;
 										document
 												.getElementById("transactionHistoryID").value = transactionHistoryID;
+										document
+										.getElementById("userID").value = userID;
 
 										document.getElementById("modal").classList
 												.toggle("hidden");
