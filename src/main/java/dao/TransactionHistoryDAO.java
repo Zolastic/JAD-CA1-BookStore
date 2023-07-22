@@ -35,9 +35,58 @@ public class TransactionHistoryDAO {
 			return TransactionHistories;
 		}
 	}
+	
+	public TransactionHistory getTransactionHistoryByID(Connection connection, String transactionHistoryID) throws SQLException {
+		String sqlStr = "SELECT * FROM transaction_history WHERE transaction_historyID = ?;\r\n";
+		
+		TransactionHistory transactionHistory = new TransactionHistory();
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, transactionHistoryID);
+			
+			ResultSet resultSet = ps.executeQuery();
+			
+			if (resultSet.next()) {
+				transactionHistory.setTransactionHistoryID(transactionHistoryID);
+				transactionHistory.setTransactionDate(resultSet.getString("transactionDate"));
+				transactionHistory.setTotalAmount(resultSet.getDouble("totalAmount"));
+				transactionHistory.setAddressID(resultSet.getString("addr_id"));
+				transactionHistory.setPaymentInpaymentIntentID(resultSet.getString("paymentIntentId"));
+				transactionHistory.setGstPercentage(resultSet.getDouble("gstPercent"));
+				transactionHistory.setFullAddress(resultSet.getString("fullAddr"));
+			}
+		}
+		
+		return transactionHistory;
+	}
+	
+	public int updateTransactionHistoryAddress(Connection connection, String fullAddress, String transactionHistoryID) throws SQLException {
+		
+		String sqlStr = "UPDATE transaction_history SET fullAddr = ? WHERE transaction_historyID = ?;";
+		
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, fullAddress);
+			ps.setString(2, transactionHistoryID);
+			
+			int affectedRows = ps.executeUpdate();
+			
+			return affectedRows > 0 ? 200 : 500;
+		} 
+	}
+	
+	public int deleteTransactionHistory(Connection connection, String transactionHistoryID) throws SQLException {
+		String sqlStr = "DELETE FROM transaction_history WHERE transaction_historyID = ?";
+		
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, transactionHistoryID);
+			
+			int affectedRows = ps.executeUpdate();
+			
+			return affectedRows > 0 ? 200 : 500;
+		} 
+	}
 
 	// To get all transaction history of the user
-	public List<TransactionHistoryWithItems> getTransactionHistories(Connection connection, String userID) {
+	public List<TransactionHistoryWithItems> getTransactionHistoriesOfUser(Connection connection, String userID) {
 		List<TransactionHistoryWithItems> transactionHistories = new ArrayList<>();
 		String query = "SELECT transaction_history.*, transaction_history_items.*,book.*, genre.genre_name,CAST(AVG(IFNULL(review.rating,0)) AS DECIMAL(2,1)) AS average_rating,author.authorName, publisher.publisherName\r\n"
 				+ "FROM transaction_history\r\n"

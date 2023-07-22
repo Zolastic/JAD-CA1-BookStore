@@ -49,7 +49,7 @@ public class TransactionHistoryPage extends HttpServlet {
 				dispatcher.forward(request, response);
 				return;
 			}
-			transactionHistories = transactionHistoryDAO.getTransactionHistories(connection, userID);
+			transactionHistories = transactionHistoryDAO.getTransactionHistoriesOfUser(connection, userID);
 		} catch (Exception e) {
 			System.err.println("Error: " + e);
 		}

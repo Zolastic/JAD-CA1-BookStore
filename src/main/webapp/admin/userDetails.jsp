@@ -18,7 +18,7 @@
 	<%@include file="./navbar.jsp"%>
 	<%
 	User user = (User) request.getAttribute("user");
-	// List<Book> books = (List<Book>) request.getAttribute("books");
+	// TransactionHistoryWithItems transactionHistoryWithItems = (TransactionHistoryWithItems) request.getAttribute("transactionHistoryWithItems");
 	%>
 
 	<div class="flex rounded-lg shadow-lg bg-gray-50 pt-3 pb-96 mt-28">
@@ -39,7 +39,7 @@
 		<div class="flex flex-col ml-10">
 			<h1 class="text-3xl font-bold tracking-wide"><%=user.getName()%>
 			</h1>
-			<p class="mt-5 text-lg font-semibold"><%=user.getEmail()%></p>
+			<p class="mt-5 text-lg font-semibold"><%=user.getEmail()%></p>		
 		</div>
 		<div class="flex-grow"></div>
 		<div class="flex">
