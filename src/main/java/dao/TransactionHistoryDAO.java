@@ -1,28 +1,10 @@
 package dao;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.Clob;
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.NClob;
-import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
-import java.sql.Ref;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.RowId;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import model.Book;
@@ -32,27 +14,27 @@ import model.TransactionHistoryWithItems;
 
 public class TransactionHistoryDAO {
 
-//	public List<TransactionHistory> getUserTransactionHistories(Connection connection, String userID) throws SQLException {
-//		String sqlStr = "SELECT * FROM transaction_history WHERE custID = ?;";
-//		ArrayList<TransactionHistory> TransactionHistories = new ArrayList<>();
-//
-//		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-//			ps.setString(1, userID);
-//			ResultSet resultSet = ps.executeQuery();
-//
-//			while (resultSet.next()) {
-//				TransactionHistory transactionHistory = new TransactionHistory();
-//				transactionHistory.setTransactionHistoryID(resultSet.getString("transaction_historyID"));
-//				transactionHistory.setTransactionDate(resultSet.getString("transactionDate"));
-//				transactionHistory.setTotalAmount(resultSet.getDouble("totalAmount"));
-//				transactionHistory.setAddressID(resultSet.getString("addr_id"));
-//				transactionHistory.setPaymentInpaymentIntentID(resultSet.getString("paymentIntentId"));
-//				TransactionHistories.add(transactionHistory);
-//			}
-//			resultSet.close();
-//			return TransactionHistories;
-//		}
-//	}
+	public List<TransactionHistory> getUserTransactionHistories(Connection connection, String userID) throws SQLException {
+		String sqlStr = "SELECT * FROM transaction_history WHERE custID = ?;";
+		ArrayList<TransactionHistory> TransactionHistories = new ArrayList<>();
+
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, userID);
+			ResultSet resultSet = ps.executeQuery();
+
+			while (resultSet.next()) {
+				TransactionHistory transactionHistory = new TransactionHistory();
+				transactionHistory.setTransactionHistoryID(resultSet.getString("transaction_historyID"));
+				transactionHistory.setTransactionDate(resultSet.getString("transactionDate"));
+				transactionHistory.setTotalAmount(resultSet.getDouble("totalAmount"));
+				transactionHistory.setAddressID(resultSet.getString("addr_id"));
+				transactionHistory.setPaymentInpaymentIntentID(resultSet.getString("paymentIntentId"));
+				TransactionHistories.add(transactionHistory);
+			}
+			resultSet.close();
+			return TransactionHistories;
+		}
+	}
 	
 	public TransactionHistory getTransactionHistoryByID(Connection connection, String transactionHistoryID) throws SQLException {
 		String sqlStr = "SELECT * FROM transaction_history WHERE transaction_historyID = ?;\r\n";
@@ -84,6 +66,18 @@ public class TransactionHistoryDAO {
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
 			ps.setString(1, fullAddress);
 			ps.setString(2, transactionHistoryID);
+			
+			int affectedRows = ps.executeUpdate();
+			
+			return affectedRows > 0 ? 200 : 500;
+		} 
+	}
+	
+	public int deleteTransactionHistory(Connection connection, String transactionHistoryID) throws SQLException {
+		String sqlStr = "DELETE FROM transaction_history WHERE transaction_historyID = ?";
+		
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, transactionHistoryID);
 			
 			int affectedRows = ps.executeUpdate();
 			
