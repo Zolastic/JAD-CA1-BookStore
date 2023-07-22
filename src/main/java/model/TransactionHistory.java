@@ -7,6 +7,8 @@ public class TransactionHistory {
 	private String customerID;
 	private String addressID;
 	private String paymentInpaymentIntentID;
+	private double gstPercentage;
+	private String fullAddress;
 	
 	public TransactionHistory() {
 	}
@@ -58,6 +60,23 @@ public class TransactionHistory {
 	public void setPaymentInpaymentIntentID(String paymentInpaymentIntentID) {
 		this.paymentInpaymentIntentID = paymentInpaymentIntentID;
 	}
+
+	public double getGstPercentage() {
+		return gstPercentage;
+	}
+
+	public void setGstPercentage(double gstPercentage) {
+		this.gstPercentage = gstPercentage;
+	}
+
+	public String getFullAddress() {
+		return fullAddress;
+	}
+
+	public void setFullAddress(String fullAddress) {
+		this.fullAddress = fullAddress;
+	}
+	
 	
 	
 }
