@@ -29,7 +29,7 @@
         <a href="<%=request.getContextPath()%>/admin/ViewGenres" class="block py-2 pl-3 pr-4 text-gray-100 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-100 md:p-0 ">Genres</a>
       </li>
       <li>
-        <a href="<%=request.getContextPath()%>/admin/SalesManagementServlet" class="block py-2 pl-3 pr-4 text-gray-100 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-100 md:p-0 ">Sales</a>
+        <a href="<%=request.getContextPath()%>/admin/SalesDashboardServlet" class="block py-2 pl-3 pr-4 text-gray-100 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-100 md:p-0 ">Sales</a>
       </li>
     </ul>
   </div>

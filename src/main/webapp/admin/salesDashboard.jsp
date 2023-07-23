@@ -6,9 +6,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sales Report</title>
-<!-- Include Tailwind CSS -->
+<title>Sales Dashboard</title>
 <%@include file="../tailwind-css.jsp"%>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <%@ page
 	import="java.util.*, model.BookReport, model.TopCustomerSalesReport, model.OverallSalesReport"%>
 <%@ page import="com.google.gson.Gson"%>
@@ -35,53 +36,111 @@
 	String dataPointsForTopBooks = new Gson().toJson(pieChartData);
 	%>
 	<%@include file="./navbar.jsp"%>
-	<div class="container mx-auto bg-slate-600 pt-20 ">
-		<div class="flex justify-center items-center">
-			<h1 class="text-3xl font-bold my-6 text-white">Sales Inquiry and Reporting</h1>
+
+	<div class="container mx-auto bg-slate-600 py-20 ">
+		<div class="flex justify-end space-x-4 p-2 mr-5">
+			<a href="<%=request.getContextPath()%>/admin/SalesDashboardServlet"
+				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
+				<i class="fas fa-chart-line mr-2"></i> Sales Dashboard
+			</a> <a href="<%=request.getContextPath()%>/admin/generateSalesReport.jsp"
+				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
+				<i class="fas fa-file-alt mr-2"></i> Generate Sales Report
+			</a> <a href="#"
+				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
+				<i class="fas fa-filter mr-2"></i> Filter Customer List By Book
+			</a>
 		</div>
 		<div class="flex justify-between items-center">
-			<!-- Top 5 sales books with graph -->
-			<div id="TopBooksChartContainer" style="height: 300px; width: 35%;" class="m-5 ml-10"></div>
+			<div id="TopBooksChartContainer" style="height: 290px; width: 40%;"
+				class="m-5 ml-10"></div>
 
-			<!-- Overall sales past 12 months with graph -->
 			<div id="overallSalesChartContainer"
-				style="height: 350px; width: 45%;" class="m-5 mx-5 mr-10"></div>
+				style="height: 330px; width: 50%;" class="m-5 mx-5 mr-10"></div>
 		</div>
 
-		<!-- Sales by date, period, and month -->
-		<h2 class="text-2xl font-bold my-4">Sales by Date, Period, and
-			Month</h2>
-		<!-- Place your HTML code for sales inquiry here -->
-
-		<!-- Top 10 customers -->
-		<h2 class="text-2xl font-bold my-4">Top 10 Customers</h2>
-		<!-- Place your HTML code for top 10 customers here -->
-	</div>
-	<!-- Other HTML and JSP code above -->
-	<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
-	<script>
-    // Extracting data from the JSP attribute and converting it to a JavaScript object
+		<!-- Top 10 Customers Table -->
+		<div class="relative overflow-x-auto mx-10 bg-white p-5">
+			<h2 class="text-2xl font-bold my-4">Top 10 Customers</h2>
+			<table
+				class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+				<thead
+					class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+					<tr>
+						<th scope="col" class="px-6 py-3">Rank</th>
+						<th scope="col" class="px-6 py-3">User</th>
+						<th scope="col" class="px-6 py-3">Total Books Bought</th>
+						<th scope="col" class="px-6 py-3">Total Order Made</th>
+						<th scope="col" class="px-6 py-3">Total Spend With GST</th>
+						<th scope="col" class="px-6 py-3">Total Spend W/O GST</th>
+						<th scope="col" class="px-6 py-3">Total GST Paid</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%
+					int rank = 1;
+					for (TopCustomerSalesReport customerReport : topCustomers) {
+					%>
+					<tr
+						class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+						<td class="px-6 py-4"><%=rank%></td>
+						<td scope="row"
+							class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+							<div class="h-8 w-8">
+								<%
+								if (customerReport.getUserDetails().getImage() != null) {
+								%>
+								<img
+									src="data:image/png;base64, <%=customerReport.getUserDetails().getImage()%>"
+									class="rounded-full object-contain">
+								<%
+								} else {
+								%>
+								<i class="fas fa-user-circle text-gray-400 text-3xl"></i>
+								<%
+								}
+								%>
+							</div>
+							<div class="pl-3">
+								<div class="text-base font-semibold"><%=customerReport.getUserDetails().getName()%></div>
+								<div class="font-normal text-gray-500"><%=customerReport.getUserDetails().getEmail()%></div>
+							</div>
+						</td>
+						<td class="px-6 py-4"><%=customerReport.getTotalBooksBought()%></td>
+						<td class="px-6 py-4"><%=customerReport.getTotalOrderMade()%></td>
+						<td class="px-6 py-4">$<%=String.format("%.2f", customerReport.getTotalSpendwithGST())%></td>
+						<td class="px-6 py-4">$<%=String.format("%.2f", customerReport.getTotalSpendwithoutGST())%></td>
+						<td class="px-6 py-4">$<%=String.format("%.2f", customerReport.getGst())%></td>
+					</tr>
+					<%
+					rank++;
+					}
+					%>
+				</tbody>
+			</table>
+		</div>
+		<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+		<script>
+		 function isActiveTab(tabName) {
+		        var currentURL = '<%=request.getRequestURI()%>';
+		        return currentURL.includes(tabName);
+		    }
+		 
     var dataPointsForSalesReport = [
         <%for (OverallSalesReport report : past12MonthsSalesData) {%>
             { label: formatDate('<%=report.getTransactionDate()%>'), y: <%=String.format("%.2f", report.getTotalEarningWithoutGST())%> },
         <%}%>
     ];
 
-    // Function to format date e.g., '2023, February'
     function formatDate(dateString) {
-        // Extracting year and month from the transactionDate (assumed to be in YYYYMM format)
         var year = dateString.substring(0, 4);
         var month = dateString.substring(4);
 
-        // Convert month number to month name
         var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         var monthName = monthNames[parseInt(month) - 1];
 
-        // Returning formatted date string e.g., '2023, February'
         return year + ', ' + monthName;
     }
 
-    // Rendering the chart
     window.onload = function() {
         var chartForSalesReport = new CanvasJS.Chart("overallSalesChartContainer", {
         	animationEnabled: true,

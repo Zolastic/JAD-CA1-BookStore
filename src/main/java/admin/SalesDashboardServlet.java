@@ -23,8 +23,8 @@ import dao.SalesReportDAO;
 /**
  * Servlet implementation class SalesManagementServlet
  */
-@WebServlet("/admin/SalesManagementServlet")
-public class SalesManagementServlet extends HttpServlet {
+@WebServlet("/admin/SalesDashboardServlet")
+public class SalesDashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private SalesReportDAO salesReportDAO = new SalesReportDAO();
 
