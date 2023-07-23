@@ -66,7 +66,7 @@ public class OTPServlet extends HttpServlet {
 			session.removeAttribute("otpUserID");
 	        session.setAttribute("userID", otpUserID);
 	        session.setAttribute("role", role);
-	        request.getRequestDispatcher("home.jsp").forward(request, response);
+	        request.getRequestDispatcher("/").forward(request, response);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

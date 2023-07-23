@@ -326,7 +326,7 @@
 					var closeButton = document.getElementById("close");
 					showModal("Error loading page");
 					closeButton.addEventListener("click", function() {
-						window.location.href = "/CA1-assignment/home.jsp";
+						window.location.href = "/CA1-assignment/";
 					});
 				}
 	
