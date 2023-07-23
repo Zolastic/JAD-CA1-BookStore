@@ -27,8 +27,6 @@
 </head>
 <body>
 	<%
-	Home home = new Home();
-	home.setData(request);
 	List<Book> popularBooks = (List<Book>) request.getAttribute("popularBooks");
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	String urlToAllBooks;

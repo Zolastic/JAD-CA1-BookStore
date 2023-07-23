@@ -62,12 +62,12 @@ public class SalesManagementServlet extends HttpServlet {
 			request.setAttribute("topCustomers", topCustomers);
 			request.setAttribute("topSalesBooks", topSalesBooks);
 			request.setAttribute("past12MonthsSalesData", past12MonthsSalesData);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("salesManagement.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("salesDashboard.jsp");
 			dispatcher.forward(request, response);
 			connection.close();
 		} catch (SQLException e) {
 			System.err.println("Error: " + e);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("salesManagement.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("salesDashboard.jsp");
 			dispatcher.forward(request, response);
 		}
 	}

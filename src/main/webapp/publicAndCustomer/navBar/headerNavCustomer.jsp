@@ -18,7 +18,7 @@ String userID = (String) session.getAttribute("userID");
 				class="self-center text-2xl font-semibold whitespace-nowrap text-white">Inkwell</span>
 		</div>
 		<div class="flex items-center justify-center">
-			<a href="/CA1-assignment/home.jsp"
+			<a href="/CA1-assignment/"
 				class="text-white hover:text-blue-900 px-3 py-2 text-sm font-bold">HOME</a>
 			<a href="/CA1-assignment/AllBooksPage?userIDAvailable=true"
 				class="text-white hover:text-blue-900 px-3 py-2 text-sm font-bold">BOOKS</a>
