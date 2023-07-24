@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.TransactionHistoryDAO;
+import dao.UserDAO;
 import model.TransactionHistoryWithItems;
+import model.User;
 import utils.DBConnection;
 import utils.DispatchUtil;
 
@@ -23,6 +25,7 @@ import utils.DispatchUtil;
 public class ViewUserOrdersServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private TransactionHistoryDAO transactionHistoryDAO = new TransactionHistoryDAO(); 
+    private UserDAO userDAO = new UserDAO();
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -41,7 +44,9 @@ public class ViewUserOrdersServlet extends HttpServlet {
 
 	private void loadData(HttpServletRequest request, Connection connection, String userID) throws SQLException {
 		List<TransactionHistoryWithItems> transactionHistoryWithItems = transactionHistoryDAO.getTransactionHistoriesOfUser(connection, userID);
+		User user = userDAO.getUserInfoByID(connection, userID);
 		request.setAttribute("transactionHistoryWithItems", transactionHistoryWithItems);
+		request.setAttribute("user", user);
 	}
 	
 	

@@ -39,10 +39,13 @@
 		<div class="flex flex-col ml-10">
 			<h1 class="text-3xl font-bold tracking-wide"><%=user.getName()%>
 			</h1>
-			<p class="mt-5 text-lg font-semibold"><%=user.getEmail()%></p>		
+			<p class="mt-5 text-lg font-semibold"><%=user.getEmail()%></p>
 		</div>
 		<div class="flex-grow"></div>
 		<div class="flex">
+			<a
+				href="<%=request.getContextPath()%>/admin/ViewUserOrders?userID=<%=user.getUserID()%>"><i
+				class="viewIcons fa-solid fa-box fa-lg mx-3 hover:cursor-pointer"></i></a>
 			<a
 				href="<%=request.getContextPath()%>/admin/EditUserProfile?userID=<%=user.getUserID()%>"><i
 				class="viewIcons fa-solid fa-pencil fa-lg mx-3 hover:cursor-pointer"></i></a>

@@ -11,7 +11,7 @@ import model.User;
 
 public class UserDAO {
 
-	public User getUserInfo(Connection connection, String userID) throws SQLException {
+	public User getUserInfoByID(Connection connection, String userID) throws SQLException {
 		String sqlStr = "SELECT * FROM users WHERE userID = ?;";
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
 			ps.setString(1, userID);
