@@ -35,7 +35,7 @@ public class UserDetailsServlet extends HttpServlet {
 	}
 	
 	private void loadData(HttpServletRequest request, Connection connection, String userID) throws SQLException {
-		User user = userDAO.getUserInfo(connection, userID);
+		User user = userDAO.getUserInfoByID(connection, userID);
 		request.setAttribute("user", user);
 	}
 

@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Book;
 import model.TransactionHistory;
+import model.TransactionHistoryItemBook;
 import model.TransactionHistoryItems;
 
 public class TransactionHistoryItemsDAO {
@@ -37,6 +39,33 @@ public class TransactionHistoryItemsDAO {
 					transactionHistoryItems.setReviewed(resultSet.getInt("reviewed"));
 					transactionHistoriesItems.add(transactionHistoryItems);
 				}
+			}
+		}
+		
+		return transactionHistoriesItems;
+	}
+	
+	public List<TransactionHistoryItemBook> getTransactionHistoryItemsByTransactionHistoryID(Connection connection, String transactionHistoryID) throws SQLException {
+		String sqlStr = "SELECT * FROM transaction_history_items, book \r\n"
+				+ "WHERE transaction_historyID = ? AND transaction_history_items.bookID = book.book_id;";
+		ArrayList<TransactionHistoryItemBook> transactionHistoriesItems = new ArrayList<>();
+		
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, transactionHistoryID);
+			ResultSet resultSet = ps.executeQuery();
+
+			while (resultSet.next()) {
+				Book book = new Book();
+				book.setBookID(resultSet.getString("bookID"));
+				book.setTitle(resultSet.getString("title"));
+				
+				TransactionHistoryItemBook transactionHistoryItem = new TransactionHistoryItemBook();
+				transactionHistoryItem.setTransactionHistoryItemID(resultSet.getString("transaction_history_itemID"));
+				transactionHistoryItem.setQuantity(resultSet.getInt("Qty"));
+				transactionHistoryItem.setReviewed(resultSet.getInt("reviewed"));
+				transactionHistoryItem.setBook(book);
+				
+				transactionHistoriesItems.add(transactionHistoryItem);
 			}
 		}
 		
