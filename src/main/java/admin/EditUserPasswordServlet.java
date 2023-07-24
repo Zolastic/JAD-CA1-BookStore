@@ -37,7 +37,7 @@ public class EditUserPasswordServlet extends HttpServlet {
 	
 	private void loadData(HttpServletRequest request, HttpServletResponse response, Connection connection,
 			String userID) throws SQLException, ServletException, IOException {
-		User user = userDAO.getUserInfo(connection, userID);
+		User user = userDAO.getUserInfoByID(connection, userID);
 
 		if (user == null) {
 			response.sendRedirect(request.getContextPath() + "viewUsers.jsp");

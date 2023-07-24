@@ -15,6 +15,7 @@
 	<%@ page import="java.util.*, model.*"%>
 	<%@include file="./navbar.jsp"%>
 	<%
+	User user = (User) request.getAttribute("user");
 	List<TransactionHistoryWithItems> transactionHistoryWithItems = (List<TransactionHistoryWithItems>) request
 			.getAttribute("transactionHistoryWithItems");
 	String sCurrentPage = request.getParameter("page");
@@ -37,8 +38,7 @@
 
 	String userInput = request.getParameter("userInput");
 
-	String pageURL = String.format("%s/admin/ViewUsers?%spage=", request.getContextPath(),
-			userInput == null ? "" : "userInput=" + userInput + "&");
+	String pageURL = String.format("%s/admin/ViewUserOrders?%spage=", request.getContextPath(), "userID=" + user.getUserID() + "&");
 	%>
 	<header class="viewHeader mt-16">
 		<div class="h-64 flex flex-col justify-center items-center">
@@ -86,6 +86,9 @@
 		</div>
 
 		<div class="flex flex-col grow">
+			<div class="py-3 my-5 mx-10">
+				<h1 class="text-[#926b6a] text-xl font-semibold"><%= user.getName() %> Orders:</h1>
+			</div>
 			<%
 			if (transactionHistoryWithItems.size() > 0) {
 				for (int i = 0; i < ordersPerPage.size(); i++) {

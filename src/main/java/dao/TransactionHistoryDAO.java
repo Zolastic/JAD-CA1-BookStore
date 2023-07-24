@@ -53,6 +53,7 @@ public class TransactionHistoryDAO {
 				transactionHistory.setPaymentInpaymentIntentID(resultSet.getString("paymentIntentId"));
 				transactionHistory.setGstPercentage(resultSet.getDouble("gstPercent"));
 				transactionHistory.setFullAddress(resultSet.getString("fullAddr"));
+				transactionHistory.setCustomerID(resultSet.getString("custID"));
 			}
 		}
 		

@@ -68,7 +68,7 @@ public class EditProfileServlet extends HttpServlet {
 	
 	private User loadData(HttpServletRequest request, HttpServletResponse response, Connection connection,
 			String userID) throws SQLException, ServletException, IOException {
-		User user = userDAO.getUserInfo(connection, userID);
+		User user = userDAO.getUserInfoByID(connection, userID);
 		request.setAttribute("user", user);
 		return user;	
 	}

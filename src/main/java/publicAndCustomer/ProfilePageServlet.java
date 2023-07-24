@@ -44,7 +44,7 @@ public class ProfilePageServlet extends HttpServlet {
 
 		try (Connection connection = DBConnection.getConnection()) {
 			String userID = request.getParameter("userID");
-			User user = userDAO.getUserInfo(connection, userID);
+			User user = userDAO.getUserInfoByID(connection, userID);
 
 			if (user == null) {
 				DispatchUtil.dispatch(request, response, "/publicAndCustomer/registrationPage.jsp");

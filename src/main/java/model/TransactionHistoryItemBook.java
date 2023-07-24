@@ -7,8 +7,13 @@ public class TransactionHistoryItemBook {
     private int quantity;
     private int reviewed;
     private Book book;
+    
 
-    public TransactionHistoryItemBook(String transactionHistoryItemID, String bookID, int quantity, int reviewed) {
+    public TransactionHistoryItemBook() {
+		super();
+	}
+
+	public TransactionHistoryItemBook(String transactionHistoryItemID, String bookID, int quantity, int reviewed) {
         this.transactionHistoryItemID = transactionHistoryItemID;
         this.bookID = bookID;
         this.quantity = quantity;

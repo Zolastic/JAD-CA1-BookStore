@@ -47,7 +47,7 @@ public class OTPServlet extends HttpServlet {
 		
 		String otp = first + second + third + fourth + fifth + sixth;
 		try (Connection connection = DBConnection.getConnection()) {
-			User user = userDAO.getUserInfo(connection, otpUserID);
+			User user = userDAO.getUserInfoByID(connection, otpUserID);
 			if (user == null) {
 				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401");
 				return;
