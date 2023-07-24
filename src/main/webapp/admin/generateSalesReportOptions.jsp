@@ -6,10 +6,21 @@
 <meta charset="UTF-8">
 <title>Generate Sales Report</title>
 <%@include file="../tailwind-css.jsp"%>
+<%@ include file="modal.jsp"%>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
+	<%
+	String generateError = request.getParameter("generateError");
+	if (generateError != null) {
+		if (generateError.equals("invalidInput")) {
+			out.print("<script>showModal('Error Generating Report, Please provide a valid input!')</script>");
+		} else {
+			out.print("<script>showModal('Error Generating Report, Try Again Later')</script>");
+		}
+	}
+	%>
 	<%@include file="./navbar.jsp"%>
 	<div class="container bg-slate-600 h-screen py-20">
 		<div class="flex justify-end space-x-4 p-2 mr-5">
@@ -17,7 +28,7 @@
 				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 				<i class="fas fa-chart-line mr-2"></i> Sales Dashboard
 			</a> <a
-				href="<%=request.getContextPath()%>/admin/generateSalesReport.jsp"
+				href="<%=request.getContextPath()%>/admin/generateSalesReportOptions.jsp"
 				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 				<i class="fas fa-file-alt mr-2"></i> Generate Sales Report
 			</a> <a href="#"
@@ -47,15 +58,19 @@
 			<!-- Date picker content here -->
 			<div class="flex justify-center">
 				<div class="inline-block bg-white rounded-lg p-5">
-					<form action="GenerateReportServlet" method="post">
-						<label>Choose a date:</label> <input type="date"
-							name="selectedDate" id="datePicker"> <br> <input
+					<form
+						action="<%=request.getContextPath()%>/admin/GenerateReportServlet"
+						method="post">
+						<input type="hidden" name="by" value="day"> <label>Choose
+							a date:</label> <input type="date" name="selectedDate" id="datePicker"
+							required> <br> <input
 							class="bg-gray-300 hover:bg-gray-500 p-2 rounded-lg"
 							type="submit" value="Generate Report">
 						<button type="button"
 							class="bg-gray-300 hover:bg-gray-500 p-2 rounded-lg ml-2"
 							id="backToDateSelection1">Back</button>
 					</form>
+
 				</div>
 			</div>
 		</div>
@@ -67,14 +82,16 @@
 				<div class="inline-block bg-white rounded-lg p-5">
 					<!-- Month picker content here -->
 					<form action="GenerateReportServlet" method="post">
-						<label>Choose a month:</label> <input type="month"
-							name="selectedMonth" id="monthPicker"> <br> <input
+						<input type="hidden" name="by" value="month"> <label>Choose
+							a month:</label> <input type="month" name="selectedMonth"
+							id="monthPicker" required> <br> <input
 							class="bg-gray-300 hover:bg-gray-500 p-2 rounded-lg"
 							type="submit" value="Generate Report">
 						<button type="button"
 							class="bg-gray-300 hover:bg-gray-500 p-2 rounded-lg ml-2"
 							id="backToDateSelection2">Back</button>
 					</form>
+
 				</div>
 			</div>
 		</div>
@@ -85,25 +102,21 @@
 			<div class="flex justify-center">
 				<div class="inline-block bg-white rounded-lg p-5">
 					<form action="GenerateReportServlet" method="post">
-						<label>Enter start date:</label> <input type="date"
-							name="startDate" id="startDatePicker"> <br> <label>Enter
-							end date:</label> <input type="date" name="endDate" id="endDatePicker">
-						<br> <input
+						<input type="hidden" name="by" value="period"> <label>Enter
+							start date:</label> <input type="date" name="startDate"
+							id="startDatePicker" required> <br> <label>Enter
+							end date:</label> <input type="date" name="endDate" id="endDatePicker"
+							required> <br> <input
 							class="bg-gray-300 hover:bg-gray-500 p-2 rounded-lg"
 							type="submit" value="Generate Report">
 						<button type="button"
 							class="bg-gray-300 hover:bg-gray-500 p-2 rounded-lg ml-2"
 							id="backToDateSelection3">Back</button>
 					</form>
+
 				</div>
 			</div>
 		</div>
-		<!-- 
-		<div class="bg-white mx-auto m-5 h-screen overflow-y-auto"
-			style="width: 411px;">
-			
-		</div>
--->
 		<script>
 			// Get references to the containers
 			const initialForm = document.getElementById("initialForm");
@@ -124,20 +137,16 @@
 			    });
 			    backButton3.addEventListener("click", () => {
 			    	location.reload();
+			    	
 			    });
-			// Add event listener to the next button
 			nextButton.addEventListener("click", () => {
 				const reportType = document.getElementById("reportTypeSelector").value;
-
-				// Hide the initial form
 				initialForm.style.display = "none";
 
-				// Hide all containers by default
 				datePickerContainer.style.display = "none";
 				monthPickerContainer.style.display = "none";
 				periodPickerContainer.style.display = "none";
 
-				// Show the container based on the selected report type
 				if (reportType === "byDate") {
 					datePickerContainer.style.display = "block";
 				} else if (reportType === "byMonth") {

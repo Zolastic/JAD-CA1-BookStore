@@ -5,23 +5,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import model.Book;
 import model.OverallSalesReport;
 import model.TopCustomerSalesReport;
+import model.CustomerListByBooks;
 import model.User;
 import model.BookReport;
 
 public class SalesReportDAO {
 	public OverallSalesReport overallSalesByDay(Connection connection, String transactionDate) {
 		OverallSalesReport overallSalesByDay = null;
-		String sqlStr = "SELECT\r\n"
-				+ "    IFNULL(SUM(th.totalAmount), 0) AS totalEarningWithGST,\r\n"
+		String sqlStr = "SELECT\r\n" + "    IFNULL(SUM(th.totalAmount), 0) AS totalEarningWithGST,\r\n"
 				+ "    IFNULL(SUM((th.totalAmount / (th.gstPercent+100)) * 100), 0) AS totalEarningWithoutGST,\r\n"
 				+ "    IFNULL(SUM((th.totalAmount / (th.gstPercent+100)) * gstPercent), 0) AS gstPercent,\r\n"
 				+ "    IFNULL(COUNT(DISTINCT th.transaction_historyID), 0) AS totalTransactionOrders,\r\n"
-				+ "    IFNULL(SUM(ti.Qty), 0) AS totalBooksSold\r\n"
-				+ "FROM transaction_history AS th\r\n"
+				+ "    IFNULL(SUM(ti.Qty), 0) AS totalBooksSold\r\n" + "FROM transaction_history AS th\r\n"
 				+ "JOIN transaction_history_items AS ti ON th.transaction_historyID = ti.transaction_historyID\r\n"
 				+ "WHERE\r\n" + "    DATE(transactionDate) = ?;";
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
@@ -30,7 +31,7 @@ public class SalesReportDAO {
 			if (resultSet.next()) {
 				double totalEarningWithGST = resultSet.getDouble("totalEarningWithGST");
 				double totalEarningWithoutGST = resultSet.getDouble("totalEarningWithoutGST");
-				double gst = resultSet.getDouble("gst");
+				double gst = resultSet.getDouble("gstPercent");
 				int totalTransactionOrders = resultSet.getInt("totalTransactionOrders");
 				int totalBooksSold = resultSet.getInt("totalBooksSold");
 				resultSet.close();
@@ -45,84 +46,63 @@ public class SalesReportDAO {
 	}
 
 	public ArrayList<BookReport> bookReportsByDay(Connection connection, String transactionDate) {
-	    ArrayList<BookReport> bookReportsByDay = new ArrayList<>();
-	    String sqlStr = "SELECT\r\n" +
-	            "    b.book_id,\r\n" +
-	            "    b.ISBN,\r\n" +
-	            "    b.title,\r\n" +
-	            "    a.authorName,\r\n" +
-	            "    p.publisherName,\r\n" +
-	            "    b.publication_date,\r\n" +
-	            "    b.description,\r\n" +
-	            "    g.genre_name,\r\n" +
-	            "    b.img,\r\n" +
-	            "    b.inventory,\r\n" +
-	            "    b.price,\r\n" +
-	            "    b.sold,\r\n" +
-	            "    CAST(AVG(IFNULL(r.rating, 0)) AS DECIMAL(2, 1)) AS average_rating,\r\n" +
-	            "    SUM((b.price * thi.Qty) / 100 * (100 + th.gstPercent)) AS totalEarningWithGST,\r\n" +
-	            "    SUM(b.price * thi.Qty) AS totalEarningWithoutGST,\r\n" +
-	            "    th.gstPercent\r\n" +
-	            "FROM\r\n" +
-	            "    book b\r\n" +
-	            "JOIN\r\n" +
-	            "    genre g ON b.genre_id = g.genre_id\r\n" +
-	            "LEFT JOIN\r\n" +
-	            "    review r ON r.bookID = b.book_id\r\n" +
-	            "JOIN\r\n" +
-	            "    author a ON b.authorID = a.authorID\r\n" +
-	            "JOIN\r\n" +
-	            "    publisher p ON b.publisherID = p.publisherID\r\n" +
-	            "JOIN\r\n" +
-	            "    transaction_history_items thi ON b.book_id = thi.bookID\r\n" +
-	            "JOIN\r\n" +
-	            "    transaction_history th ON thi.transaction_historyID = th.transaction_historyID\r\n" +
-	            "WHERE\r\n" +
-	            "    DATE(th.transactionDate) = ?\r\n" +
-	            "GROUP BY\r\n" +
-	            "    b.book_id, b.ISBN, b.title, th.gstPercent;";
-	    try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	        ps.setString(1, transactionDate);
-	        ResultSet resultSet = ps.executeQuery();
-	        while (resultSet.next()) {
-	            String bookID = resultSet.getString("book_id");
-	            String iSBN = resultSet.getString("ISBN");
-	            String title = resultSet.getString("title");
-	            String author = resultSet.getString("authorName");
-	            String publisher = resultSet.getString("publisherName");
-	            String publicationDate = resultSet.getString("publication_date");
-	            String description = resultSet.getString("description");
-	            String genreName = resultSet.getString("genre_name");
-	            String img = resultSet.getString("img");
-	            int sold = resultSet.getInt("sold");
-	            int inventory = resultSet.getInt("inventory");
-	            double price = resultSet.getDouble("price");
-	            double rating = resultSet.getDouble("average_rating");
-	            Book bookDetails = new Book(bookID, iSBN, title, author, publisher, publicationDate, description, genreName, img, sold, inventory, price, rating);
-	            double totalEarningWithGST = resultSet.getDouble("totalEarningWithGST");
-	            double totalEarningWithoutGST = resultSet.getDouble("totalEarningWithoutGST");
-	            double gstPercent = resultSet.getDouble("gstPercent");
-	            BookReport bookReport = new BookReport(bookDetails, sold, totalEarningWithGST, totalEarningWithoutGST, gstPercent);
-	            bookReportsByDay.add(bookReport);
-	        }
-	    } catch (SQLException e) {
-	        System.err.println("Error: " + e.getMessage());
-	        bookReportsByDay.clear(); // Clear the list in case of an error to avoid returning any partial data.
-	    }
-	    return bookReportsByDay;
+		ArrayList<BookReport> bookReportsByDay = new ArrayList<>();
+		String sqlStr = "SELECT\r\n" + "    b.book_id,\r\n" + "    b.ISBN,\r\n" + "    b.title,\r\n"
+				+ "    a.authorName,\r\n" + "    p.publisherName,\r\n" + "    b.publication_date,\r\n"
+				+ "    b.description,\r\n" + "    g.genre_name,\r\n" + "    b.img,\r\n" + "    b.inventory,\r\n"
+				+ "    b.price,\r\n" + "    b.sold,\r\n"
+				+ "    CAST(AVG(IFNULL(r.rating, 0)) AS DECIMAL(2, 1)) AS average_rating,\r\n"
+				+ "    SUM((b.price * thi.Qty) / 100 * (100 + th.gstPercent)) AS totalEarningWithGST,\r\n"
+				+ "    SUM(b.price * thi.Qty) AS totalEarningWithoutGST,\r\n" + "    th.gstPercent\r\n" + "FROM\r\n"
+				+ "    book b\r\n" + "JOIN\r\n" + "    genre g ON b.genre_id = g.genre_id\r\n" + "LEFT JOIN\r\n"
+				+ "    review r ON r.bookID = b.book_id\r\n" + "JOIN\r\n"
+				+ "    author a ON b.authorID = a.authorID\r\n" + "JOIN\r\n"
+				+ "    publisher p ON b.publisherID = p.publisherID\r\n" + "JOIN\r\n"
+				+ "    transaction_history_items thi ON b.book_id = thi.bookID\r\n" + "JOIN\r\n"
+				+ "    transaction_history th ON thi.transaction_historyID = th.transaction_historyID\r\n" + "WHERE\r\n"
+				+ "    DATE(th.transactionDate) = ?\r\n" + "GROUP BY\r\n"
+				+ "    b.book_id, b.ISBN, b.title, th.gstPercent;";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, transactionDate);
+			ResultSet resultSet = ps.executeQuery();
+			while (resultSet.next()) {
+				String bookID = resultSet.getString("book_id");
+				String iSBN = resultSet.getString("ISBN");
+				String title = resultSet.getString("title");
+				String author = resultSet.getString("authorName");
+				String publisher = resultSet.getString("publisherName");
+				String publicationDate = resultSet.getString("publication_date");
+				String description = resultSet.getString("description");
+				String genreName = resultSet.getString("genre_name");
+				String img = resultSet.getString("img");
+				int sold = resultSet.getInt("sold");
+				int inventory = resultSet.getInt("inventory");
+				double price = resultSet.getDouble("price");
+				double rating = resultSet.getDouble("average_rating");
+				Book bookDetails = new Book(bookID, iSBN, title, author, publisher, publicationDate, description,
+						genreName, img, sold, inventory, price, rating);
+				double totalEarningWithGST = resultSet.getDouble("totalEarningWithGST");
+				double totalEarningWithoutGST = resultSet.getDouble("totalEarningWithoutGST");
+				double gstPercent = resultSet.getDouble("gstPercent");
+				BookReport bookReport = new BookReport(bookDetails, sold, totalEarningWithGST, totalEarningWithoutGST,
+						gstPercent);
+				bookReportsByDay.add(bookReport);
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
+			bookReportsByDay.clear(); // Clear the list in case of an error to avoid returning any partial data.
+		}
+		return bookReportsByDay;
 	}
-
 
 	public OverallSalesReport overallSalesByPeriod(Connection connection, String transactionDateFrom,
 			String transactionDateTo) {
 		OverallSalesReport overallSalesByPeriod = null;
-		String sqlStr = "SELECT\r\n"
-				+ "    IFNULL(SUM(th.totalAmount), 0) AS totalEarningWithGST,\r\n"
+		String sqlStr = "SELECT\r\n" + "    IFNULL(SUM(th.totalAmount), 0) AS totalEarningWithGST,\r\n"
 				+ "    IFNULL(SUM((th.totalAmount / (th.gstPercent+100)) * 100), 0) AS totalEarningWithoutGST,\r\n"
 				+ "    IFNULL(SUM((th.totalAmount / (th.gstPercent+100)) * gstPercent), 0) AS gstPercent,\r\n"
 				+ "    IFNULL(COUNT(DISTINCT th.transaction_historyID), 0) AS totalTransactionOrders,\r\n"
-				+ "    IFNULL(SUM(ti.Qty), 0) AS totalBooksSold\r\n"
-				+ "FROM transaction_history AS th\r\n"
+				+ "    IFNULL(SUM(ti.Qty), 0) AS totalBooksSold\r\n" + "FROM transaction_history AS th\r\n"
 				+ "JOIN transaction_history_items AS ti ON th.transaction_historyID = ti.transaction_historyID\r\n"
 				+ "WHERE\r\n" + "    DATE(th.transactionDate) BETWEEN ? AND ?";
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
@@ -132,7 +112,7 @@ public class SalesReportDAO {
 			if (resultSet.next()) {
 				double totalEarningWithGST = resultSet.getDouble("totalEarningWithGST");
 				double totalEarningWithoutGST = resultSet.getDouble("totalEarningWithoutGST");
-				double gst = resultSet.getDouble("gst");
+				double gst = resultSet.getDouble("gstPercent");
 				int totalTransactionOrders = resultSet.getInt("totalTransactionOrders");
 				int totalBooksSold = resultSet.getInt("totalBooksSold");
 				resultSet.close();
@@ -146,85 +126,65 @@ public class SalesReportDAO {
 		return overallSalesByPeriod;
 	}
 
-	public ArrayList<BookReport> bookReportsByPeriod(Connection connection, String transactionDateFrom, String transactionDateTo) {
-	    ArrayList<BookReport> bookReportsByPeriod = new ArrayList<>();
-	    String sqlStr = "SELECT\r\n" +
-	            "    b.book_id,\r\n" +
-	            "    b.ISBN,\r\n" +
-	            "    b.title,\r\n" +
-	            "    a.authorName,\r\n" +
-	            "    p.publisherName,\r\n" +
-	            "    b.publication_date,\r\n" +
-	            "    b.description,\r\n" +
-	            "    g.genre_name,\r\n" +
-	            "    b.img,\r\n" +
-	            "    b.inventory,\r\n" +
-	            "    b.price,\r\n" +
-	            "    b.sold,\r\n" +
-	            "    CAST(AVG(IFNULL(r.rating, 0)) AS DECIMAL(2, 1)) AS average_rating,\r\n" +
-	            "    SUM((b.price * thi.Qty) / 100 * (100 + th.gstPercent)) AS totalEarningWithGST,\r\n" +
-	            "    SUM(b.price * thi.Qty) AS totalEarningWithoutGST,\r\n" +
-	            "    th.gstPercent\r\n" +
-	            "FROM\r\n" +
-	            "    book b\r\n" +
-	            "JOIN\r\n" +
-	            "    genre g ON b.genre_id = g.genre_id\r\n" +
-	            "LEFT JOIN\r\n" +
-	            "    review r ON r.bookID = b.book_id\r\n" +
-	            "JOIN\r\n" +
-	            "    author a ON b.authorID = a.authorID\r\n" +
-	            "JOIN\r\n" +
-	            "    publisher p ON b.publisherID = p.publisherID\r\n" +
-	            "JOIN\r\n" +
-	            "    transaction_history_items thi ON b.book_id = thi.bookID\r\n" +
-	            "JOIN\r\n" +
-	            "    transaction_history th ON thi.transaction_historyID = th.transaction_historyID\r\n" +
-	            "WHERE\r\n" +
-	            "    DATE(th.transactionDate) BETWEEN ? AND ?\r\n" +
-	            "GROUP BY\r\n" +
-	            "    b.book_id, b.ISBN, b.title, th.gstPercent;";
-	    try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	        ps.setString(1, transactionDateFrom);
-	        ps.setString(2, transactionDateTo);
-	        ResultSet resultSet = ps.executeQuery();
-	        while (resultSet.next()) {
-	            String bookID = resultSet.getString("book_id");
-	            String iSBN = resultSet.getString("ISBN");
-	            String title = resultSet.getString("title");
-	            String author = resultSet.getString("authorName");
-	            String publisher = resultSet.getString("publisherName");
-	            String publicationDate = resultSet.getString("publication_date");
-	            String description = resultSet.getString("description");
-	            String genreName = resultSet.getString("genre_name");
-	            String img = resultSet.getString("img");
-	            int sold = resultSet.getInt("sold");
-	            int inventory = resultSet.getInt("inventory");
-	            double price = resultSet.getDouble("price");
-	            double rating = resultSet.getDouble("average_rating");
-	            Book bookDetails = new Book(bookID, iSBN, title, author, publisher, publicationDate, description, genreName, img, sold, inventory, price, rating);
-	            double totalEarningWithGST = resultSet.getDouble("totalEarningWithGST");
-	            double totalEarningWithoutGST = resultSet.getDouble("totalEarningWithoutGST");
-	            double gstPercent = resultSet.getDouble("gstPercent");
-	            BookReport bookReport = new BookReport(bookDetails, sold, totalEarningWithGST, totalEarningWithoutGST, gstPercent);
-	            bookReportsByPeriod.add(bookReport);
-	        }
-	    } catch (SQLException e) {
-	        System.err.println("Error: " + e.getMessage());
-	        bookReportsByPeriod.clear(); // Clear the list in case of an error to avoid returning any partial data.
-	    }
-	    return bookReportsByPeriod;
+	public ArrayList<BookReport> bookReportsByPeriod(Connection connection, String transactionDateFrom,
+			String transactionDateTo) {
+		ArrayList<BookReport> bookReportsByPeriod = new ArrayList<>();
+		String sqlStr = "SELECT\r\n" + "    b.book_id,\r\n" + "    b.ISBN,\r\n" + "    b.title,\r\n"
+				+ "    a.authorName,\r\n" + "    p.publisherName,\r\n" + "    b.publication_date,\r\n"
+				+ "    b.description,\r\n" + "    g.genre_name,\r\n" + "    b.img,\r\n" + "    b.inventory,\r\n"
+				+ "    b.price,\r\n" + "    b.sold,\r\n"
+				+ "    CAST(AVG(IFNULL(r.rating, 0)) AS DECIMAL(2, 1)) AS average_rating,\r\n"
+				+ "    SUM((b.price * thi.Qty) / 100 * (100 + th.gstPercent)) AS totalEarningWithGST,\r\n"
+				+ "    SUM(b.price * thi.Qty) AS totalEarningWithoutGST,\r\n" + "    th.gstPercent\r\n" + "FROM\r\n"
+				+ "    book b\r\n" + "JOIN\r\n" + "    genre g ON b.genre_id = g.genre_id\r\n" + "LEFT JOIN\r\n"
+				+ "    review r ON r.bookID = b.book_id\r\n" + "JOIN\r\n"
+				+ "    author a ON b.authorID = a.authorID\r\n" + "JOIN\r\n"
+				+ "    publisher p ON b.publisherID = p.publisherID\r\n" + "JOIN\r\n"
+				+ "    transaction_history_items thi ON b.book_id = thi.bookID\r\n" + "JOIN\r\n"
+				+ "    transaction_history th ON thi.transaction_historyID = th.transaction_historyID\r\n" + "WHERE\r\n"
+				+ "    DATE(th.transactionDate) BETWEEN ? AND ?\r\n" + "GROUP BY\r\n"
+				+ "    b.book_id, b.ISBN, b.title, th.gstPercent;";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, transactionDateFrom);
+			ps.setString(2, transactionDateTo);
+			ResultSet resultSet = ps.executeQuery();
+			while (resultSet.next()) {
+				String bookID = resultSet.getString("book_id");
+				String iSBN = resultSet.getString("ISBN");
+				String title = resultSet.getString("title");
+				String author = resultSet.getString("authorName");
+				String publisher = resultSet.getString("publisherName");
+				String publicationDate = resultSet.getString("publication_date");
+				String description = resultSet.getString("description");
+				String genreName = resultSet.getString("genre_name");
+				String img = resultSet.getString("img");
+				int sold = resultSet.getInt("sold");
+				int inventory = resultSet.getInt("inventory");
+				double price = resultSet.getDouble("price");
+				double rating = resultSet.getDouble("average_rating");
+				Book bookDetails = new Book(bookID, iSBN, title, author, publisher, publicationDate, description,
+						genreName, img, sold, inventory, price, rating);
+				double totalEarningWithGST = resultSet.getDouble("totalEarningWithGST");
+				double totalEarningWithoutGST = resultSet.getDouble("totalEarningWithoutGST");
+				double gstPercent = resultSet.getDouble("gstPercent");
+				BookReport bookReport = new BookReport(bookDetails, sold, totalEarningWithGST, totalEarningWithoutGST,
+						gstPercent);
+				bookReportsByPeriod.add(bookReport);
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
+			bookReportsByPeriod.clear(); // Clear the list in case of an error to avoid returning any partial data.
+		}
+		return bookReportsByPeriod;
 	}
-
 
 	public OverallSalesReport overallSalesByMonth(Connection connection, String transactionYearMonth) {
 		OverallSalesReport overallSalesByMonth = null;
-		String sqlStr = "SELECT\r\n"
-				+ "    IFNULL(SUM(th.totalAmount), 0) AS totalEarningWithGST,\r\n"
+		String sqlStr = "SELECT\r\n" + "    IFNULL(SUM(th.totalAmount), 0) AS totalEarningWithGST,\r\n"
 				+ "    IFNULL(SUM((th.totalAmount / (th.gstPercent+100)) * 100), 0) AS totalEarningWithoutGST,\r\n"
 				+ "    IFNULL(SUM((th.totalAmount / (th.gstPercent+100)) * gstPercent), 0) AS gstPercent,\r\n"
 				+ "    IFNULL(COUNT(DISTINCT th.transaction_historyID), 0) AS totalTransactionOrders,\r\n"
-				+ "    IFNULL(SUM(ti.Qty), 0) AS totalBooksSold\r\n"
-				+ "FROM transaction_history AS th\r\n"
+				+ "    IFNULL(SUM(ti.Qty), 0) AS totalBooksSold\r\n" + "FROM transaction_history AS th\r\n"
 				+ "JOIN transaction_history_items AS ti ON th.transaction_historyID = ti.transaction_historyID\r\n"
 				+ "WHERE DATE_FORMAT(transactionDate, '%Y%m') = ?;";
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
@@ -249,71 +209,53 @@ public class SalesReportDAO {
 
 	public ArrayList<BookReport> bookReportsByMonth(Connection connection, String transactionDate) {
 		ArrayList<BookReport> bookReportsByMonth = new ArrayList<>();
-	    String sqlStr = "SELECT\r\n" +
-	            "    b.book_id,\r\n" +
-	            "    b.ISBN,\r\n" +
-	            "    b.title,\r\n" +
-	            "    a.authorName,\r\n" +
-	            "    p.publisherName,\r\n" +
-	            "    b.publication_date,\r\n" +
-	            "    b.description,\r\n" +
-	            "    g.genre_name,\r\n" +
-	            "    b.img,\r\n" +
-	            "    b.inventory,\r\n" +
-	            "    b.price,\r\n" +
-	            "    b.sold,\r\n" +
-	            "    CAST(AVG(IFNULL(r.rating, 0)) AS DECIMAL(2, 1)) AS average_rating,\r\n" +
-	            "    SUM((b.price * thi.Qty) / 100 * (100 + th.gstPercent)) AS totalEarningWithGST,\r\n" +
-	            "    SUM(b.price * thi.Qty) AS totalEarningWithoutGST,\r\n" +
-	            "    th.gstPercent\r\n" +
-	            "FROM\r\n" +
-	            "    book b\r\n" +
-	            "JOIN\r\n" +
-	            "    genre g ON b.genre_id = g.genre_id\r\n" +
-	            "LEFT JOIN\r\n" +
-	            "    review r ON r.bookID = b.book_id\r\n" +
-	            "JOIN\r\n" +
-	            "    author a ON b.authorID = a.authorID\r\n" +
-	            "JOIN\r\n" +
-	            "    publisher p ON b.publisherID = p.publisherID\r\n" +
-	            "JOIN\r\n" +
-	            "    transaction_history_items thi ON b.book_id = thi.bookID\r\n" +
-	            "JOIN\r\n" +
-	            "    transaction_history th ON thi.transaction_historyID = th.transaction_historyID\r\n" +
-	            "WHERE DATE_FORMAT(transactionDate, '%Y%m') = ?" +
-	            "GROUP BY\r\n" +
-	            "    b.book_id, b.ISBN, b.title, th.gstPercent;";
-	    try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
-	        ps.setString(1, transactionDate);
-	        ResultSet resultSet = ps.executeQuery();
-	        while (resultSet.next()) {
-	            String bookID = resultSet.getString("book_id");
-	            String iSBN = resultSet.getString("ISBN");
-	            String title = resultSet.getString("title");
-	            String author = resultSet.getString("authorName");
-	            String publisher = resultSet.getString("publisherName");
-	            String publicationDate = resultSet.getString("publication_date");
-	            String description = resultSet.getString("description");
-	            String genreName = resultSet.getString("genre_name");
-	            String img = resultSet.getString("img");
-	            int sold = resultSet.getInt("sold");
-	            int inventory = resultSet.getInt("inventory");
-	            double price = resultSet.getDouble("price");
-	            double rating = resultSet.getDouble("average_rating");
-	            Book bookDetails = new Book(bookID, iSBN, title, author, publisher, publicationDate, description, genreName, img, sold, inventory, price, rating);
-	            double totalEarningWithGST = resultSet.getDouble("totalEarningWithGST");
-	            double totalEarningWithoutGST = resultSet.getDouble("totalEarningWithoutGST");
-	            double gstPercent = resultSet.getDouble("gstPercent");
-	            BookReport bookReport = new BookReport(bookDetails, sold, totalEarningWithGST, totalEarningWithoutGST, gstPercent);
-	            bookReportsByMonth.add(bookReport);
-	        }
-	    } catch (SQLException e) {
-	        System.err.println("Error: " + e.getMessage());
-	        bookReportsByMonth.clear(); // Clear the list in case of an error to avoid returning any partial data.
-	    }
-	    return bookReportsByMonth;
+		String sqlStr = "SELECT\r\n" + "    b.book_id,\r\n" + "    b.ISBN,\r\n" + "    b.title,\r\n"
+				+ "    a.authorName,\r\n" + "    p.publisherName,\r\n" + "    b.publication_date,\r\n"
+				+ "    b.description,\r\n" + "    g.genre_name,\r\n" + "    b.img,\r\n" + "    b.inventory,\r\n"
+				+ "    b.price,\r\n" + "    b.sold,\r\n"
+				+ "    CAST(AVG(IFNULL(r.rating, 0)) AS DECIMAL(2, 1)) AS average_rating,\r\n"
+				+ "    SUM((b.price * thi.Qty) / 100 * (100 + th.gstPercent)) AS totalEarningWithGST,\r\n"
+				+ "    SUM(b.price * thi.Qty) AS totalEarningWithoutGST,\r\n" + "    th.gstPercent\r\n" + "FROM\r\n"
+				+ "    book b\r\n" + "JOIN\r\n" + "    genre g ON b.genre_id = g.genre_id\r\n" + "LEFT JOIN\r\n"
+				+ "    review r ON r.bookID = b.book_id\r\n" + "JOIN\r\n"
+				+ "    author a ON b.authorID = a.authorID\r\n" + "JOIN\r\n"
+				+ "    publisher p ON b.publisherID = p.publisherID\r\n" + "JOIN\r\n"
+				+ "    transaction_history_items thi ON b.book_id = thi.bookID\r\n" + "JOIN\r\n"
+				+ "    transaction_history th ON thi.transaction_historyID = th.transaction_historyID\r\n"
+				+ "WHERE DATE_FORMAT(transactionDate, '%Y%m') = ?" + "GROUP BY\r\n"
+				+ "    b.book_id, b.ISBN, b.title, th.gstPercent;";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, transactionDate);
+			ResultSet resultSet = ps.executeQuery();
+			while (resultSet.next()) {
+				String bookID = resultSet.getString("book_id");
+				String iSBN = resultSet.getString("ISBN");
+				String title = resultSet.getString("title");
+				String author = resultSet.getString("authorName");
+				String publisher = resultSet.getString("publisherName");
+				String publicationDate = resultSet.getString("publication_date");
+				String description = resultSet.getString("description");
+				String genreName = resultSet.getString("genre_name");
+				String img = resultSet.getString("img");
+				int sold = resultSet.getInt("sold");
+				int inventory = resultSet.getInt("inventory");
+				double price = resultSet.getDouble("price");
+				double rating = resultSet.getDouble("average_rating");
+				Book bookDetails = new Book(bookID, iSBN, title, author, publisher, publicationDate, description,
+						genreName, img, sold, inventory, price, rating);
+				double totalEarningWithGST = resultSet.getDouble("totalEarningWithGST");
+				double totalEarningWithoutGST = resultSet.getDouble("totalEarningWithoutGST");
+				double gstPercent = resultSet.getDouble("gstPercent");
+				BookReport bookReport = new BookReport(bookDetails, sold, totalEarningWithGST, totalEarningWithoutGST,
+						gstPercent);
+				bookReportsByMonth.add(bookReport);
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
+			bookReportsByMonth.clear(); // Clear the list in case of an error to avoid returning any partial data.
+		}
+		return bookReportsByMonth;
 	}
-
 
 	public ArrayList<TopCustomerSalesReport> topTenCustomers(Connection connection) {
 		ArrayList<TopCustomerSalesReport> topTenCustomers = new ArrayList();
@@ -400,6 +342,68 @@ public class SalesReportDAO {
 			top5Books.clear(); // Clear the list in case of an error to avoid returning any partial data.
 		}
 		return top5Books;
+	}
+
+	public ArrayList<CustomerListByBooks> listOfCustomerByBookID(Connection connection, String bookID) {
+		ArrayList<CustomerListByBooks> listOfCustomerByBookID = new ArrayList<>();
+		String sqlStr = "SELECT \r\n" + "    u.userID,\r\n" + "    u.name,\r\n" + "    u.email,\r\n" + "    u.role,\r\n"
+				+ "    u.img,\r\n" + "    th.transactionDate,\r\n" + "    thi.Qty AS quantityPurchased\r\n"
+				+ "FROM \r\n" + "    users u\r\n" + "INNER JOIN \r\n"
+				+ "    transaction_history th ON u.userID = th.custID\r\n" + "INNER JOIN \r\n"
+				+ "    transaction_history_items thi ON th.transaction_historyID = thi.transaction_historyID\r\n"
+				+ "WHERE \r\n" + "    thi.bookID = ?\r\n" + "ORDER BY u.userID, th.transactionDate"; 
+
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, bookID);
+			ResultSet resultSet = ps.executeQuery();
+			String currentUserId = null;
+			String name = null;
+			String email = null;
+			String role = null;
+			String img = null;
+			List<String> transactionDates = new ArrayList<>();
+			List<Integer> quantityPurchased = new ArrayList<>();
+
+			while (resultSet.next()) {
+				String userID = resultSet.getString("userID");
+				name = resultSet.getString("name");
+				email = resultSet.getString("email");
+				role = resultSet.getString("role");
+				img = resultSet.getString("img");
+				String transactionDate = resultSet.getString("transactionDate");
+				int qtyPurchased = resultSet.getInt("quantityPurchased");
+
+				User user = new User(userID, name, email, role, img);
+
+				if (currentUserId == null || !currentUserId.equals(userID)) {
+					// New user detected, add the previous user's data to the list
+					if (currentUserId != null) {
+						listOfCustomerByBookID.add(new CustomerListByBooks(
+								new User(currentUserId, name, email, role, img), transactionDates, quantityPurchased));
+					}
+
+					// Reset lists for the new user
+					transactionDates = new ArrayList<>();
+					quantityPurchased = new ArrayList<>();
+					currentUserId = userID;
+				}
+
+				// Add the transaction date and quantity to the corresponding lists
+				transactionDates.add(transactionDate);
+				quantityPurchased.add(qtyPurchased);
+			}
+
+			// Add the last user's data to the list
+			if (currentUserId != null) {
+				listOfCustomerByBookID.add(new CustomerListByBooks(new User(currentUserId, name, email, role, img),
+						transactionDates, quantityPurchased));
+			}
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage());
+			listOfCustomerByBookID = null;
+		}
+
+		return listOfCustomerByBookID;
 	}
 
 }
