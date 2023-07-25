@@ -109,21 +109,19 @@
 				</div>
 			</div>
 		</div>
-
-		<%-- Define a method to format the transaction date --%>
 		<%!public String formatDate(String transactionDate) {
 		String formattedDate = "Invalid date format";
 
-		if (transactionDate.matches("^\\d{6}$")) { // YYYYMM format
+		if (transactionDate.matches("^\\d{6}$")) { 
 			String year = transactionDate.substring(0, 4);
 			String month = transactionDate.substring(4, 6);
 			formattedDate = getMonthName(Integer.parseInt(month)) + " " + year;
-		} else if (transactionDate.matches("^\\d{4}-\\d{2}-\\d{2}$")) { // YYYY-MM-DD format
+		} else if (transactionDate.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
 			String year = transactionDate.substring(0, 4);
 			String month = transactionDate.substring(5, 7);
 			String day = transactionDate.substring(8, 10);
 			formattedDate = day + " " + getMonthName(Integer.parseInt(month)) + " " + year;
-		} else if (transactionDate.matches("^\\d{4}-\\d{2}-\\d{2}-\\d{4}-\\d{2}-\\d{2}$")) { // YYYY-MM-DD-YYYY-MM-DD format
+		} else if (transactionDate.matches("^\\d{4}-\\d{2}-\\d{2}-\\d{4}-\\d{2}-\\d{2}$")) { 
 			String[] dates = transactionDate.split("-");
 			String fromDate = dates[0];
 			String toDate = dates[1];
