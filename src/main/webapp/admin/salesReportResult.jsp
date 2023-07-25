@@ -14,7 +14,6 @@
 <body>
 	<%
 	OverallSalesReport overallSales = (OverallSalesReport) request.getAttribute("overallSales");
-	;
 	List<BookReport> bookReport = (List<BookReport>) request.getAttribute("bookReport");
 	%>
 	<%@include file="./navbar.jsp"%>
@@ -35,14 +34,131 @@
 					href="<%=request.getContextPath()%>/admin/generateSalesReportOptions.jsp"
 					class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 					<i class="fas fa-file-alt mr-2"></i> Generate Sales Report
-				</a> <a href="#"
+				</a> <a href="<%=request.getContextPath()%>/admin/FilterCustomersByBookMain"
 					class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 					<i class="fas fa-filter mr-2"></i> Filter Customer List By Book
 				</a>
 			</div>
 		</div>
+		<div class="flex justify-end m-4 mr-10">
+			<button onclick="printReport()"
+				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
+				<i class="fas fa-print mr-2"></i> Print Report
+			</button>
+		</div>
 		<div class="bg-white mx-auto m-5 h-screen overflow-y-auto"
-			style="width: 411px;"></div>
-	</div>
+			style="transform: scale(0.7); transform-origin: top;">
+			<div id="printdiv">
+				<div class="flex justify-end">
+					<div class="flex-end p-4">
+						<%-- Display the overall sales report here --%>
+						<div style="font-size: 11px;">
+							<h2 class="font-semibold mb-2">Overall Sales Report</h2>
+							<p>
+								Total Earnings (with GST):
+								<%=overallSales.getTotalEarningWithGST()%></p>
+							<p>
+								Total Earnings (without GST):
+								<%=overallSales.getTotalEarningWithoutGST()%></p>
+							<p>
+								Total GST Received:
+								$<%=overallSales.getGst()%></p>
+							<p>
+								Total Transaction Orders:
+								<%=overallSales.getTotalTransactionOrders()%></p>
+							<p>
+								Total Books Sold:
+								<%=overallSales.getTotalBooksSold()%></p>
+							<p>
+								Transaction Date:
+								<%=formatDate(overallSales.getTransactionDate())%></p>
+						</div>
+					</div>
+				</div>
+				<hr class="my-2 border-gray-400">
+				<div class="flex justify-center mb-5">
+					<table class="table-auto text-xs table-fixed w-full">
+						<thead class="text-gray-700 bg-gray-50">
+							<tr>
+								<th class="px-4 w-1/6">ISBN</th>
+								<th class="px-4 w-1/6">Title</th>
+								<th class="px-4 w-1/6">Qty Sold</th>
+								<th class="px-4 w-1/6">Total Earnings (with GST)</th>
+								<th class="px-4 w-1/6">Total Earnings (without GST)</th>
+								<th class="px-4 w-1/6">Average GST Percent</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							for (BookReport report : bookReport) {
+							%>
+							<tr class="text-center">
+								<td class="border px-4 py-2 whitespace-nowrap"><%=report.getBookDetails().getISBN()%></td>
+								<td class="border px-4 py-2 whitespace-nowrap"><%=report.getBookDetails().getTitle()%></td>
+								<td class="border px-4 py-2 whitespace-nowrap"><%=report.getQtySold()%></td>
+								<td class="border px-4 py-2 whitespace-nowrap">$<%=report.getTotalEarningWithGST()%></td>
+								<td class="border px-4 py-2 whitespace-nowrap">$<%=report.getTotalEarningWithoutGST()%></td>
+								<td class="border px-4 py-2 whitespace-nowrap"><%=report.getGstPercent()%>%</td>
+							</tr>
+							<%
+							}
+							%>
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<%-- Define a method to format the transaction date --%>
+		<%!public String formatDate(String transactionDate) {
+		String formattedDate = "Invalid date format";
+
+		if (transactionDate.matches("^\\d{6}$")) { // YYYYMM format
+			String year = transactionDate.substring(0, 4);
+			String month = transactionDate.substring(4, 6);
+			formattedDate = getMonthName(Integer.parseInt(month)) + " " + year;
+		} else if (transactionDate.matches("^\\d{4}-\\d{2}-\\d{2}$")) { // YYYY-MM-DD format
+			String year = transactionDate.substring(0, 4);
+			String month = transactionDate.substring(5, 7);
+			String day = transactionDate.substring(8, 10);
+			formattedDate = day + " " + getMonthName(Integer.parseInt(month)) + " " + year;
+		} else if (transactionDate.matches("^\\d{4}-\\d{2}-\\d{2}-\\d{4}-\\d{2}-\\d{2}$")) { // YYYY-MM-DD-YYYY-MM-DD format
+			String[] dates = transactionDate.split("-");
+			String fromDate = dates[0];
+			String toDate = dates[1];
+
+			String fromYear = fromDate.substring(0, 4);
+			String fromMonth = fromDate.substring(5, 7);
+			String fromDay = fromDate.substring(8, 10);
+			String toYear = toDate.substring(0, 4);
+			String toMonth = toDate.substring(5, 7);
+			String toDay = toDate.substring(8, 10);
+
+			formattedDate = fromDay + " " + getMonthName(Integer.parseInt(fromMonth)) + " " + fromYear + " - " + toDay
+					+ " " + getMonthName(Integer.parseInt(toMonth)) + " " + toYear;
+		}
+
+		return formattedDate;
+	}
+
+	public String getMonthName(int month) {
+		String[] monthNames = {"January", "February", "March", "April", "May", "June", "July", "August", "September",
+				"October", "November", "December"};
+		if (month >= 1 && month <= 12) {
+			return monthNames[month - 1];
+		} else {
+			return "Invalid Month";
+		}
+	}%>
+		<script>
+			function printReport() {
+				const printContent = document.getElementById('printdiv').outerHTML;
+				const originalContent = document.body.innerHTML;
+				document.body.innerHTML = printContent;
+				window.print();
+				document.body.innerHTML = originalContent;
+			}
+		</script>
 </body>
 </html>
