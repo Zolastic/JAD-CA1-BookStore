@@ -39,11 +39,8 @@
 		}
 
 		if (deleteError != null) {
-			if (deleteError.equals("fkConstraint")) {
-				out.print("<script>showModal('Error Deleting Address, You Have Purchased With This Address')</script>");
-			}else{
-				out.print("<script>showModal('Error Deleting Address, Try Again Later')</script>");
-			}
+			out.print("<script>showModal('Error Deleting Address, Try Again Later')</script>");
+
 		}
 		if (validatedUserID != null && addresses != null && pageBack != null) {
 		%>
@@ -145,7 +142,7 @@
                 var closeButton = document.getElementById("close");
                 showModal("Error loading page");
                 closeButton.addEventListener("click", function() {
-                    window.location.href = "/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=<%=pageBack%>";
+                    window.location.href = "/CA1-assignment/";
                 });
             }
         </script>

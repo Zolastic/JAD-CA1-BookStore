@@ -42,7 +42,7 @@
 			<a href="<%=request.getContextPath()%>/admin/SalesDashboardServlet"
 				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 				<i class="fas fa-chart-line mr-2"></i> Sales Dashboard
-			</a> <a href="<%=request.getContextPath()%>/admin/generateSalesReport.jsp"
+			</a> <a href="<%=request.getContextPath()%>/admin/generateSalesReportOptions.jsp"
 				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 				<i class="fas fa-file-alt mr-2"></i> Generate Sales Report
 			</a> <a href="#"
