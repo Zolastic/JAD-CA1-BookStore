@@ -10,6 +10,7 @@
 	href="<%=request.getContextPath()%>/admin/css/viewManagementSystem.css">
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
+<script src="<%=request.getContextPath()%>/print.js"></script>
 </head>
 <body>
 	<%@ page import="java.util.*, model.*"%>
@@ -62,7 +63,7 @@
 			<button id="dropdownDefaultButton" data-dropdown-toggle="dropdown"
 				class="text-amber-800 bg-pink-100 hover:bg-pink-100 focus:ring-4 focus:outline-none focus:ring-pink-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
 				type="button">
-				Filter By  
+				Filter By
 				<svg class="w-2.5 h-2.5 ml-2.5" aria-hidden="true"
 					xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
     <path stroke="currentColor" stroke-linecap="round"
@@ -74,20 +75,26 @@
 				<ul class="py-2 text-sm text-gray-700"
 					aria-labelledby="dropdownDefaultButton">
 					<li><a href="<%=request.getContextPath()%>/admin/ViewBooks"
-						class="block px-4 py-2 hover:bg-pink-100">Nothing</a>
-					</li>
-					<li><a href="<%=request.getContextPath()%>/admin/ViewBestSellingBooks"
-						class="block px-4 py-2 hover:bg-pink-100">Best Selling Books</a>
-					</li>
-					<li><a href="<%=request.getContextPath()%>/admin/ViewLeastSellingBooks"
+						class="block px-4 py-2 hover:bg-pink-100">Nothing</a></li>
+					<li><a
+						href="<%=request.getContextPath()%>/admin/ViewBestSellingBooks"
+						class="block px-4 py-2 hover:bg-pink-100">Best Selling Books</a></li>
+					<li><a
+						href="<%=request.getContextPath()%>/admin/ViewLeastSellingBooks"
 						class="block px-4 py-2 hover:bg-pink-100">Least Selling Books</a>
 					</li>
-					<li><a href="<%=request.getContextPath()%>/admin/ViewBooksWithLowStock"
-						class="block px-4 py-2 hover:bg-pink-100">Books Low on Stock</a>
-					</li>
+					<li><a
+						href="<%=request.getContextPath()%>/admin/ViewBooksWithLowStock"
+						class="block px-4 py-2 hover:bg-pink-100">Books Low on Stock</a></li>
 				</ul>
 			</div>
 
+			<div class="mt-3">
+				<button onclick="printReport()"
+					class="text-amber-800 bg-pink-100 hover:bg-pink-200 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">
+					<i class="fas fa-print mr-2"></i> Print Report
+				</button>
+			</div>
 
 		</div>
 
@@ -114,7 +121,9 @@
 					<a class="hover:cursor-pointer hover:text-amber-900"
 						href="<%=request.getContextPath()%>/admin/BookDetails?bookID=<%=book.getBookID()%>"><h1
 							class="text-3xl font-bold"><%=book.getTitle()%></h1></a>
-					<p class="mt-5 text-lg text-[#926b6a]">Stock: <span class="text-[#57687c]"><%= book.getInventory() %></span></p>
+					<p class="mt-5 text-lg text-[#926b6a]">
+						Stock: <span class="text-[#57687c]"><%=book.getInventory()%></span>
+					</p>
 					<p class="mt-5 text-lg"><%=book.getDescription()%></p>
 					<p class="mt-5 text-sm">
 						Author:
@@ -132,8 +141,10 @@
 					<%
 					}
 					%>
-					<p class="mt-5 text-sm">Sold: <%= book.getSold() %></p>
-					
+					<p class="mt-5 text-sm">
+						Sold:
+						<%=book.getSold()%></p>
+
 
 				</div>
 				<div class="flex-grow"></div>
@@ -247,6 +258,62 @@
 								.add("hidden");
 					});
 		</script>
+
+		<div id="printdiv" class="hidden">
+			<div class="flex flex-col justify-center items-center">
+				<div class="flex justify-between bg-[#b4c7dd] h-20 space-x-2">
+					<div class="flex items-center">
+						<img src="<%=request.getContextPath()%>/admin/img/ink-bottle.png"
+							class="h-8 mr-3" alt="Flowbite Logo"> <span
+							class="self-center text-2xl font-semibold whitespace-nowrap tracking-wide text-black">Inkwell
+							Report</span>
+					</div>
+				</div>
+				<div class="flex items-center my-3">
+					<h1
+						class="self-center text-2xl font-semibold whitespace-nowrap tracking-wide text-black">
+						Books Low on Stock</h1>
+				</div>
+				<div class="relative overflow-x-auto">
+					<table class="w-full text-sm text-left text-gray-500">
+						<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+							<tr>
+								<th scope="col" class="px-6 py-3 bg-gray-50">Title</th>
+								<th scope="col" class="px-6 py-3">ISBN</th>
+								<th scope="col" class="px-6 py-3 bg-gray-50">Price</th>
+								<th scope="col" class="px-6 py-3">Qty Sold</th>
+								<th scope="col" class="px-6 py-3">Ratings</th>
+								<th scope="col" class="px-6 py-3">Stock</th>
+								<th scope="col" class="px-6 py-3">Author</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							if (!books.isEmpty()) {
+								for (Book book : books) {
+							%>
+							<tr class="border-b border-gray-200 dark:border-gray-700">
+								<th scope="row"
+									class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50">
+									<%=book.getTitle()%></th>
+								<td class="px-6 py-4"><%=book.getISBN()%></td>
+								<td class="px-6 py-4">$<%=book.getPrice()%></td>
+								<td class="px-6 py-4"><%=book.getSold()%></td>
+								<td class="px-6 py-4"><%=book.getRating()%></td>
+								<td class="px-6 py-4"><%=book.getInventory()%></td>
+								<td class="px-6 py-4"><%=book.getAuthor()%></td>
+							</tr>
+							<%
+							}
+							}
+							%>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
+
 	</div>
 
 </body>

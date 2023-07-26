@@ -286,6 +286,9 @@ public class BookDAO {
 				book.setAuthor(resultSet.getString("authorName"));
 				book.setRating(resultSet.getDouble("rating"));
 				book.setSold(resultSet.getInt("sold"));
+				book.setInventory(resultSet.getInt("inventory"));
+				book.setISBN(resultSet.getString("ISBN"));
+				book.setPrice(resultSet.getDouble("price"));
 				books.add(book);
 			}
 			resultSet.close();
@@ -320,6 +323,9 @@ public class BookDAO {
 				book.setAuthor(resultSet.getString("authorName"));
 				book.setRating(resultSet.getDouble("rating"));
 				book.setSold(resultSet.getInt("sold"));
+				book.setInventory(resultSet.getInt("inventory"));
+				book.setISBN(resultSet.getString("ISBN"));
+				book.setPrice(resultSet.getDouble("price"));
 				books.add(book);
 			}
 			resultSet.close();
@@ -359,6 +365,8 @@ public class BookDAO {
 				book.setRating(resultSet.getDouble("rating"));
 				book.setSold(resultSet.getInt("sold"));
 				book.setInventory(resultSet.getInt("inventory"));
+				book.setISBN(resultSet.getString("ISBN"));
+				book.setPrice(resultSet.getDouble("price"));
 				books.add(book);
 			}
 			resultSet.close();
