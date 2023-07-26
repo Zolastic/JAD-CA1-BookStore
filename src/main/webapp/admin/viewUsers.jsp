@@ -10,6 +10,7 @@
 	href="<%=request.getContextPath()%>/admin/css/viewManagementSystem.css">
 <script src="https://kit.fontawesome.com/8c8a7e5c88.js"
 	crossorigin="anonymous"></script>
+<script src="<%=request.getContextPath()%>/print.js"></script>
 </head>
 <body>
 	<%@ page import="java.util.*, model.*"%>
@@ -81,6 +82,12 @@
 				</ul>
 			</div>
 
+			<div class="mt-3">
+				<button onclick="printReport()"
+					class="text-amber-800 bg-pink-100 hover:bg-pink-200 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">
+					<i class="fas fa-print mr-2"></i> Print Report
+				</button>
+			</div>
 
 		</div>
 
@@ -225,7 +232,56 @@
 						});
 			</script>
 		</div>
-	</div>
+		
+		<div id="printdiv" class="hidden">
+			<div class="flex flex-col justify-center items-center">
+				<div class="flex justify-between bg-[#b4c7dd] h-20 space-x-2">
+					<div class="flex items-center">
+						<img src="<%=request.getContextPath()%>/admin/img/ink-bottle.png"
+							class="h-8 mr-3" alt="Flowbite Logo"> <span
+							class="self-center text-2xl font-semibold whitespace-nowrap tracking-wide text-black">Inkwell
+							Report</span>
+					</div>
+				</div>
+				<div class="flex items-center my-3">
+					<%
+					if (userInput != null && userInput != "") {
+					%><h1 class="self-center text-2xl font-semibold whitespace-nowrap tracking-wide text-black">Users Based On Search Results for "<%=userInput%>"</h1><%
+					} else {
+					%><h1 class="self-center text-2xl font-semibold whitespace-nowrap tracking-wide text-black">Users</h1><%
+					}
+					%>
+				</div>
+				<div class="relative overflow-x-auto">
+					<table class="w-full text-sm text-left text-gray-500">
+						<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+							<tr>
+								<th scope="col" class="px-6 py-3 bg-gray-50">Name</th>
+								<th scope="col" class="px-6 py-3">Email</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							if (!users.isEmpty()) {
+								for (User user : users) {
+							%>
+							<tr class="border-b border-gray-200 dark:border-gray-700">
+								<th scope="row"
+									class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50">
+									<%=user.getName()%></th>
+								<td class="px-6 py-4"><%=user.getEmail()%></td>
+							</tr>
+							<%
+							}
+							}
+							%>
+						</tbody>
+					</table>
+				</div>
 
+			</div>
+		</div>
+		
+	</div>
 </body>
 </html>

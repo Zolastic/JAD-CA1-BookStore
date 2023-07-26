@@ -4,3 +4,9 @@
 	padding: 0px;
 	margin: 0px;
 }
+
+@media print {
+  body *:not(.printable, .printable *) {
+    display: none;
+  }
+}
