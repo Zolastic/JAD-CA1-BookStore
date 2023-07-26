@@ -247,7 +247,7 @@ public class BookDAO {
 				+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n"
 				+ "GROUP BY book.book_id, book.img, book.title, book.price, \r\n"
 				+ "genre.genre_name, book.sold, book.inventory, author.authorName, \r\n"
-				+ "publisher.publisherName ORDER BY sold DESC LIMIT 20;\r\n" + "";
+				+ "publisher.publisherName ORDER BY sold DESC LIMIT 10;\r\n" + "";
 
 		try (Statement statement = connection.createStatement();
 				PreparedStatement ps = connection.prepareStatement(sqlStr);) {
