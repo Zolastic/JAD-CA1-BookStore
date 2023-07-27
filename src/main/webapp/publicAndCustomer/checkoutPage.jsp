@@ -2,7 +2,7 @@
   - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
-  - Description: JAD CA1
+  - Description: JAD CA2
   --%>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -30,11 +30,18 @@
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div class="px-10 pt-10">
 		<%
+		boolean error = false;
 		String validatedUserID = (String) request.getAttribute("validatedUserID");
-		List<Book> checkoutItems = (List<Book>) request.getAttribute("checkoutItems");
-		List<Address> addresses = (List<Address>) request.getAttribute("addresses");
+		List<Book> checkoutItems = null;
+		List<Address> addresses = null;
+		try {
+			checkoutItems = (List<Book>) request.getAttribute("checkoutItems");
+			addresses = (List<Address>) request.getAttribute("addresses");
+		} catch (ClassCastException e) {
+			error = true;
+		}
 		double subtotal = 0.0;
-		if (checkoutItems != null && validatedUserID != null && checkoutItems.size() != 0) {
+		if (checkoutItems != null && validatedUserID != null && checkoutItems.size() != 0 && !error) {
 			for (Book item : checkoutItems) {
 				subtotal += (item.getPrice() * item.getQuantity());
 			}
@@ -207,19 +214,16 @@
 	} else {
 	%>
 	<script>
-	if (
-			<%=validatedUserID%>
-				== null) {
-					window.location.href = "registrationPage.jsp";
-				} else {
-					var closeButton = document.getElementById("close");
-					showModal("Error loading page");
-					closeButton.addEventListener("click", function() {
-						window.location.href = "/CA1-assignment/CartPage?userIDAvailable=true";
-					});
-				}
+		if (<%=validatedUserID%>== null) {
+			window.location.href = "registrationPage.jsp";
+		} else {
+			var closeButton = document.getElementById("close");
+			showModal("Error loading page");
+			closeButton.addEventListener("click", function() {
+			window.location.href = "/CA1-assignment/CartPage?userIDAvailable=true";
+		});
+	}
 	</script>
-
 	<%
 	}
 	%>

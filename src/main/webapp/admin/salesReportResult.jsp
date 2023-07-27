@@ -12,9 +12,19 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
+	<%@ include file="modal.jsp"%>
 	<%
-	OverallSalesReport overallSales = (OverallSalesReport) request.getAttribute("overallSales");
-	List<BookReport> bookReport = (List<BookReport>) request.getAttribute("bookReport");
+	boolean error = false;
+	OverallSalesReport overallSales = null;
+	List<BookReport> bookReport = null;
+	try {
+		overallSales = (OverallSalesReport) request.getAttribute("overallSales");
+		bookReport = (List<BookReport>) request.getAttribute("bookReport");
+	} catch (ClassCastException e) {
+		error = true;
+	}
+
+	if (overallSales != null && bookReport != null&& !error) {
 	%>
 	<%@include file="./navbar.jsp"%>
 	<div class="container bg-slate-600 py-20">
@@ -34,7 +44,8 @@
 					href="<%=request.getContextPath()%>/admin/generateSalesReportOptions.jsp"
 					class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 					<i class="fas fa-file-alt mr-2"></i> Generate Sales Report
-				</a> <a href="<%=request.getContextPath()%>/admin/FilterCustomersByBookMain"
+				</a> <a
+					href="<%=request.getContextPath()%>/admin/FilterCustomersByBookMain"
 					class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 					<i class="fas fa-filter mr-2"></i> Filter Customer List By Book
 				</a>
@@ -55,14 +66,15 @@
 						<div style="font-size: 11px;">
 							<h2 class="font-semibold mb-2">Overall Sales Report</h2>
 							<p>
-								Total Earnings (with GST):
-								<%=overallSales.getTotalEarningWithGST()%></p>
+								Total Earnings (with GST): $<%=String.format("%.2f", overallSales.getTotalEarningWithGST())%>
+							</p>
 							<p>
-								Total Earnings (without GST):
-								<%=overallSales.getTotalEarningWithoutGST()%></p>
+								Total Earnings (without GST): $<%=String.format("%.2f", overallSales.getTotalEarningWithoutGST())%>
+							</p>
 							<p>
-								Total GST Received:
-								$<%=overallSales.getGst()%></p>
+								Total GST Received: $<%=String.format("%.2f", overallSales.getGst())%>
+							</p>
+
 							<p>
 								Total Transaction Orders:
 								<%=overallSales.getTotalTransactionOrders()%></p>
@@ -78,7 +90,7 @@
 				<hr class="my-2 border-gray-400">
 				<div class="flex justify-center mb-5">
 					<table class="table-auto text-xs table-fixed w-full">
-						<thead class="text-gray-700 bg-gray-50">
+						<thead class="text-gray-700 bg-gray-100">
 							<tr>
 								<th class="px-4 w-1/6">ISBN</th>
 								<th class="px-4 w-1/6">Title</th>
@@ -103,7 +115,7 @@
 							<%
 							}
 							%>
-							
+
 						</tbody>
 					</table>
 				</div>
@@ -112,7 +124,7 @@
 		<%!public String formatDate(String transactionDate) {
 		String formattedDate = "Invalid date format";
 
-		if (transactionDate.matches("^\\d{6}$")) { 
+		if (transactionDate.matches("^\\d{6}$")) {
 			String year = transactionDate.substring(0, 4);
 			String month = transactionDate.substring(4, 6);
 			formattedDate = getMonthName(Integer.parseInt(month)) + " " + year;
@@ -121,20 +133,12 @@
 			String month = transactionDate.substring(5, 7);
 			String day = transactionDate.substring(8, 10);
 			formattedDate = day + " " + getMonthName(Integer.parseInt(month)) + " " + year;
-		} else if (transactionDate.matches("^\\d{4}-\\d{2}-\\d{2}-\\d{4}-\\d{2}-\\d{2}$")) { 
-			String[] dates = transactionDate.split("-");
-			String fromDate = dates[0];
-			String toDate = dates[1];
-
-			String fromYear = fromDate.substring(0, 4);
-			String fromMonth = fromDate.substring(5, 7);
-			String fromDay = fromDate.substring(8, 10);
-			String toYear = toDate.substring(0, 4);
-			String toMonth = toDate.substring(5, 7);
-			String toDay = toDate.substring(8, 10);
-
-			formattedDate = fromDay + " " + getMonthName(Integer.parseInt(fromMonth)) + " " + fromYear + " - " + toDay
-					+ " " + getMonthName(Integer.parseInt(toMonth)) + " " + toYear;
+		} else if (transactionDate.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+			String[] dateParts = transactionDate.split("-");
+			String year = dateParts[0];
+			String month = dateParts[1];
+			String day = dateParts[2];
+			formattedDate = day + " " + getMonthName(Integer.parseInt(month)) + " " + year;
 		}
 
 		return formattedDate;
@@ -158,5 +162,19 @@
 				document.body.innerHTML = originalContent;
 			}
 		</script>
+		<%
+		} else {
+		%>
+		<script>
+			var closeButton = document.getElementById("close");
+			showModal("Error loading page");
+			closeButton.addEventListener("click", function() {
+				window.location.href = "<%=request.getContextPath()%>/admin/index.jsp";
+			});
+		</script>
+		<%
+		}
+		%>
+	
 </body>
 </html>

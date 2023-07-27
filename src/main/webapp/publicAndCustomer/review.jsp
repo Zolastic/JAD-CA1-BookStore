@@ -2,7 +2,7 @@
   - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
-  - Description: JAD CA1
+  - Description: JAD CA2
   --%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -21,11 +21,17 @@
 </head>
 <body>
 	<%
+	boolean error = false;
 	String custID = (String) request.getAttribute("validatedUserID");
 	String transactionHistoryItemID = (String) request.getAttribute("transactionHistoryItemID");
-	Book bookDetails = (Book) request.getAttribute("bookDetails");
+	Book bookDetails = null;
 	String scrollPosition = (String) request.getAttribute("scrollPosition");
-	if (bookDetails != null && custID != null && scrollPosition != null) {
+	try{
+		bookDetails = (Book) request.getAttribute("bookDetails");
+	}catch (ClassCastException e) {
+		error = true;
+	}
+	if (bookDetails != null && custID != null && scrollPosition != null && !error) {
 	%>
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div
@@ -128,7 +134,7 @@
 		== null) {
 			window.location.href = "registrationPage.jsp";
 		} else {
-			window.location.href = "/CA1-assignment/TransactionHistoryPage?userIDAvailable=true";
+			window.location.href = "<%=request.getContextPath()%>/TransactionHistoryPage?userIDAvailable=true";
 		}
 	</script>
 	<%

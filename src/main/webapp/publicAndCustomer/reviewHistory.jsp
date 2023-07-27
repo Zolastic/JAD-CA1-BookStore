@@ -2,7 +2,7 @@
   - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
-  - Description: JAD CA1
+  - Description: JAD CA2
   --%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -24,7 +24,8 @@
 	<%@ include file="customerModal.jsp"%>
 	<%@ include file="customerModalYesCancel.jsp"%>
 	<%
-	List<ReviewHistoryClass> reviewHistories = (List<ReviewHistoryClass>) request.getAttribute("reviewHistories");
+	boolean error = false;
+	List<ReviewHistoryClass> reviewHistories = null;
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	String scrollPosition = (String) request.getAttribute("scrollPosition");
 	String deleteStatus = request.getParameter("delete");
@@ -33,7 +34,12 @@
 			out.print("<script>showModal('Internal Server Error')</script>");
 		}
 	}
-	if (validatedUserID != null && reviewHistories != null) {
+	try{
+		reviewHistories = (List<ReviewHistoryClass>) request.getAttribute("reviewHistories");
+	}catch (ClassCastException e) {
+		error = true;
+	}
+	if (validatedUserID != null && reviewHistories != null && !error) {
 	%>
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div class="flex items-center justify-between">
@@ -100,7 +106,7 @@
 				</div>
 				<!-- Form action to delete review -->
 				<form id="deleteReview_<%=reviewHistory.getReview_id()%>"
-					action="/CA1-assignment/ReviewHistory" method="post">
+					action="<%=request.getContextPath()%>/ReviewHistory" method="post">
 					<div id="deleteBtn"
 						class="hover:text-red-600 text-red-800 focus:outline-none mx-3"
 						onclick="showModalYesCancel('Are you sure to delete review?','deleteReview_<%=reviewHistory.getReview_id()%>', 'scrollPositionForDelete_<%=reviewHistory.getReview_id()%>')">
@@ -121,7 +127,7 @@
 		</div>
 		<%
 		Book book = reviewHistory.getBook();
-		String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
+		String urlToBookDetails = request.getContextPath()+"/BookDetailsPage?bookID=" + book.getBookID();
 		%>
 		<div class="w-full mt-2">
 			<div class="p-4 rounded shadow mx-10">
@@ -173,7 +179,7 @@
 			== null) {
 				window.location.href = "registrationPage.jsp";
 			} else {
-				window.location.href = "/CA1-assignment/ProfilePage?userID="
+				window.location.href = "<%=request.getContextPath()%>/ProfilePage?userID="
 						+
 		<%=validatedUserID%>
 			;
@@ -184,7 +190,7 @@
 	%>
 	<script>
 			function goBack() {
-				window.location.href = "/CA1-assignment/ProfilePage?userID="+<%=validatedUserID%>;
+				window.location.href = "<%=request.getContextPath()%>/ProfilePage?userID="+<%=validatedUserID%>;
 			}
 		    window.addEventListener('load', () => {
 		        if (!isNaN(<%=scrollPosition%>)) {

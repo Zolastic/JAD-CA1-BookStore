@@ -2,7 +2,7 @@
   - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
-  - Description: JAD CA1
+  - Description: JAD CA2
   --%>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -25,16 +25,22 @@
 	<%@ include file="navBar/headerNavCustomer.jsp"%>
 	<div class="px-10 pt-10">
 		<%
+		boolean error = false;
 		String validatedUserID = (String) request.getAttribute("validatedUserID");
 		String pageBack = request.getParameter("from");
 		String deleteError = request.getParameter("deleteError");
-		List<Address> addresses = (List<Address>) request.getAttribute("addresses");
+		List<Address> addresses = null;
+		try{
+			addresses = (List<Address>) request.getAttribute("addresses");
+		}catch (ClassCastException e) {
+			error = true;
+		}
 		String urlBack = "";
 		if (pageBack != null) {
 			if (pageBack.equals("profile")) {
-				urlBack = "/CA1-assignment/ProfilePage?userID=" + validatedUserID;
+				urlBack = request.getContextPath()+"/ProfilePage?userID=" + validatedUserID;
 			} else {
-				urlBack = "/CA1-assignment/CheckoutPage?userIDAvailable=true";
+				urlBack = request.getContextPath()+"/CheckoutPage?userIDAvailable=true";
 			}
 		}
 
@@ -42,7 +48,7 @@
 			out.print("<script>showModal('Error Deleting Address, Try Again Later')</script>");
 
 		}
-		if (validatedUserID != null && addresses != null && pageBack != null) {
+		if (validatedUserID != null && addresses != null && pageBack != null && !error) {
 		%>
 
 		<div class="flex items-center justify-between">
@@ -89,7 +95,7 @@
 					</div>
 					<div class="flex items-center">
 						<form id="edit-form"
-							action="/CA1-assignment/EditAddressPage?userIDAvailable=true&from=<%=pageBack%>"
+							action="<%=request.getContextPath()%>/EditAddressPage?userIDAvailable=true&from=<%=pageBack%>"
 							method="post">
 							<button type="submit" class="text-gray-800 hover:text-black mx-3">
 								<i class="fas fa-edit transform hover:scale-110"></i>
@@ -98,7 +104,7 @@
 								value="<%=address.getAddr_id()%>">
 						</form>
 						<form id="delete-form_<%=address.getAddr_id()%>"
-							action="/CA1-assignment/ModifyAddressPage" method="post">
+							action="<%=request.getContextPath()%>/ModifyAddressPage" method="post">
 							<input type="hidden" name="action" value="deleteAddress">
 							<input type="hidden" name="addr_id"
 								value="<%=address.getAddr_id()%>"> <input type="hidden"
@@ -119,7 +125,7 @@
 		<script>
             var newAddrBttn = document.getElementById("insertNewAddr");
             newAddrBttn.addEventListener("click", function() {
-                var url = "/CA1-assignment/AddAddressPage?userIDAvailable=true&from=<%=pageBack%>";
+                var url = "<%=request.getContextPath()%>/AddAddressPage?userIDAvailable=true&from=<%=pageBack%>";
                 window.location.href = url;
             });
         </script>
@@ -135,14 +141,14 @@
             	var closeButton = document.getElementById("close");
 				showModal("Error loading page");
 				closeButton.addEventListener("click", function() {
-					window.location.href = "/CA1-assignment/";
+					window.location.href = "<%=request.getContextPath()%>/";
 				});
             }
             else {
                 var closeButton = document.getElementById("close");
                 showModal("Error loading page");
                 closeButton.addEventListener("click", function() {
-                    window.location.href = "/CA1-assignment/";
+                    window.location.href = "<%=request.getContextPath()%>/";
                 });
             }
         </script>

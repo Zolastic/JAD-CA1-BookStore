@@ -14,10 +14,16 @@
 </head>
 <body>
 <%
-List<TransactionHistoryWithItems> transactionHistories = (List<TransactionHistoryWithItems>) request.getAttribute("transactionHistories");
+	boolean error = false;
+	List<TransactionHistoryWithItems> transactionHistories = null;
     String validatedUserID = (String) request.getAttribute("validatedUserID");
     String scrollPosition = (String) request.getAttribute("scrollPosition");
-    if (validatedUserID != null && transactionHistories != null) {
+    try{
+    	 transactionHistories = (List<TransactionHistoryWithItems>) request.getAttribute("transactionHistories");
+    }catch (ClassCastException e) {
+		error = true;
+	}
+    if (validatedUserID != null && transactionHistories != null && !error) {
 %>
 <%@ include file="navBar/headerNavCustomer.jsp"%>
 <div class="flex items-center justify-between">
@@ -64,7 +70,7 @@ if (transactionHistories.size() == 0) {
         <%
         List<TransactionHistoryItemBook> transactionHistoryItems = transactionHistory.getTransactionHistoryItems();
                                 for (TransactionHistoryItemBook transactionItem : transactionHistoryItems) {
-                                    String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + transactionItem.getBook().getBookID();
+                                    String urlToBookDetails = request.getContextPath()+"/BookDetailsPage?bookID=" + transactionItem.getBook().getBookID();
         %>
         <li class="flex items-center justify-between p-4 px-3 border-b border-gray-300">
             <div class="flex items-center">
@@ -93,7 +99,7 @@ if (transactionHistories.size() == 0) {
                 <p class="text-gray-600">$<%=String.format("%.2f", transactionItem.getBook().getPrice())%></p>
             </div>
             <% if (transactionItem.getReviewed() == 0) { %>
-            <form action="/CA1-assignment/Review" method="post" id="review_<%=transactionItem.getBook().getBookID()%>">
+            <form action="<%=request.getContextPath()%>/Review" method="post" id="review_<%=transactionItem.getBook().getBookID()%>">
                 <input type="hidden" name="bookID" value="<%=transactionItem.getBook().getBookID()%>">
                 <input type="hidden" name="custID" value="<%=transactionHistory.getCustID()%>">
                 <input type="hidden" name="scrollPosition" id="scrollPosition_<%=transactionItem.getBook().getBookID()%>">
@@ -129,7 +135,7 @@ if (transactionHistories.size() == 0) {
     if (<%=validatedUserID%> == null) {
         window.location.href = "registrationPage.jsp";
     } else {
-        window.location.href = "/CA1-assignment/ProfilePage?userID=" + <%=validatedUserID%>;
+        window.location.href = "<%=request.getContextPath()%>/ProfilePage?userID=" + <%=validatedUserID%>;
     }
 </script>
 <%
@@ -143,7 +149,7 @@ if (transactionHistories.size() == 0) {
     });
 
     function goBack() {
-        window.location.href = "/CA1-assignment/ProfilePage?userID=" + <%=validatedUserID%>;
+        window.location.href = "<%=request.getContextPath()%>/ProfilePage?userID=" + <%=validatedUserID%>;
     }
 
     function review(formID, scrollURL) {
