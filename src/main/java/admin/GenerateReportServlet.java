@@ -41,7 +41,6 @@ public class GenerateReportServlet extends HttpServlet {
 		String selectedMonth = request.getParameter("selectedMonth");
 		String startDate = request.getParameter("startDate");
 		String endDate = request.getParameter("endDate");
-
 		if (by == null || by.isEmpty()) {
 			RequestDispatcher dispatcher = request
 					.getRequestDispatcher("generateSalesReportOptions.jsp?generateError=invalidInput");
@@ -82,15 +81,10 @@ public class GenerateReportServlet extends HttpServlet {
 					return;
 				}
 
-				// Append the day "01" to the selectedMonth to have a complete date
-				// representation "yyyy-MM-dd"
 				String selectedMonthWithDay = selectedMonth + "-01";
 
-				// Parse the selectedMonthWithDay into a LocalDate using the pattern
-				// "yyyy-MM-dd"
 				LocalDate month = LocalDate.parse(selectedMonthWithDay, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-				// Format the LocalDate into a String using the pattern "yyyyMM"
 				String formattedMonth = month.format(DateTimeFormatter.ofPattern("yyyyMM"));
 
 				try (Connection connection = DBConnection.getConnection()) {
@@ -109,7 +103,6 @@ public class GenerateReportServlet extends HttpServlet {
 					dispatcher.forward(request, response);
 					return;
 				}
-
 				LocalDate start = LocalDate.parse(startDate, dateFormat);
 				LocalDate end = LocalDate.parse(endDate, dateFormat);
 
@@ -117,8 +110,8 @@ public class GenerateReportServlet extends HttpServlet {
 				String formattedEndDate = end.format(dateFormat);
 
 				try (Connection connection = DBConnection.getConnection()) {
-					overallSales = salesReportDAO.overallSalesByPeriod(connection, formattedStartDate,
-							formattedEndDate);
+					overallSales = salesReportDAO.overallSalesByPeriod(connection, startDate,
+							endDate);
 					bookReport = salesReportDAO.bookReportsByPeriod(connection, formattedStartDate, formattedEndDate);
 				} catch (SQLException e) {
 					System.err.println("Error: " + e);
@@ -133,6 +126,7 @@ public class GenerateReportServlet extends HttpServlet {
 				dispatcher.forward(request, response);
 				return;
 			}
+
 			request.setAttribute("overallSales", overallSales);
 			request.setAttribute("bookReport", bookReport);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("salesReportResult.jsp");

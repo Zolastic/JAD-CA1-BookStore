@@ -368,7 +368,7 @@ public class BookDAO {
 
 	// Users & Public
 	// Function to get specific book details
-	public Book getBookDetailsForCustomer(Connection connection, String bookID) {
+	public Book getBookDetailsForBybookID(Connection connection, String bookID) {
 		Book bookDetails = null;
 		String simpleProc = "{call getBookDetails(?)}";
 		try (CallableStatement cs = connection.prepareCall(simpleProc)) {
@@ -389,6 +389,7 @@ public class BookDAO {
 				}
 			}
 		} catch (SQLException e) {
+			bookDetails = null;
 			System.err.println("Error: " + e.getMessage());
 		}
 		return bookDetails;

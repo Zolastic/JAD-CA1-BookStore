@@ -2,7 +2,7 @@
   - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
-  - Description: JAD CA1
+  - Description: JAD CA2
   --%>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -12,8 +12,6 @@
 <%@ page import="java.io.*,java.net.*,java.util.*,java.sql.*"%>
 <%@ page import="utils.DBConnection"%>
 <%@page import="publicAndCustomer.Home"%>
-
-
 
 <!DOCTYPE html>
 <html>
@@ -27,11 +25,16 @@
 </head>
 <body>
 	<%
-	List<Book> popularBooks = (List<Book>) request.getAttribute("popularBooks");
+	List<Book> popularBooks = null;
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	String urlToAllBooks;
 	boolean err = false;
-	if (popularBooks == null) {
+	try{
+		popularBooks = (List<Book>) request.getAttribute("popularBooks");
+	}catch (ClassCastException e) {
+		err = true;
+	}
+	if (popularBooks == null || err) {
 		err = true;
 	%>
 	<!-- Error Loading Page -->
@@ -44,12 +47,12 @@
 	<%
 	}
 	if (validatedUserID == null) {
-	urlToAllBooks = "/CA1-assignment/AllBooksPage";
+	urlToAllBooks = request.getContextPath()+"/AllBooksPage";
 	%>
 	<%@include file="publicAndCustomer/navBar/headerNavPublic.html"%>
 	<%
 	} else {
-	urlToAllBooks = "/CA1-assignment/AllBooksPage?userIDAvailable=true";
+	urlToAllBooks = request.getContextPath()+"/AllBooksPage?userIDAvailable=true";
 	%>
 	<%@include file="publicAndCustomer/navBar/headerNavCustomer.jsp"%>
 	<%
@@ -97,7 +100,7 @@
 			%><div class="flex justify-between w-full mt-4">
 				<%
 				}
-				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
+				String urlToBookDetails = request.getContextPath()+"/BookDetailsPage?bookID=" + book.getBookID();
 				%>
 				<div
 					class="m-4 p-6 bg-white border border-black rounded-lg w-80 shadow-lg transform hover:scale-110 cursor-pointer"

@@ -90,7 +90,7 @@ public class SalesReportDAO {
 			}
 		} catch (SQLException e) {
 			System.err.println("Error: " + e.getMessage());
-			bookReportsByDay.clear(); // Clear the list in case of an error to avoid returning any partial data.
+			bookReportsByDay=null; // Clear the list in case of an error to avoid returning any partial data.
 		}
 		return bookReportsByDay;
 	}
@@ -173,7 +173,7 @@ public class SalesReportDAO {
 			}
 		} catch (SQLException e) {
 			System.err.println("Error: " + e.getMessage());
-			bookReportsByPeriod.clear(); // Clear the list in case of an error to avoid returning any partial data.
+			bookReportsByPeriod=null; // Clear the list in case of an error to avoid returning any partial data.
 		}
 		return bookReportsByPeriod;
 	}
@@ -252,7 +252,7 @@ public class SalesReportDAO {
 			}
 		} catch (SQLException e) {
 			System.err.println("Error: " + e.getMessage());
-			bookReportsByMonth.clear(); // Clear the list in case of an error to avoid returning any partial data.
+			bookReportsByMonth=null; // Clear the list in case of an error to avoid returning any partial data.
 		}
 		return bookReportsByMonth;
 	}
@@ -339,7 +339,7 @@ public class SalesReportDAO {
 			}
 		} catch (SQLException e) {
 			System.err.println("Error: " + e.getMessage());
-			top5Books.clear(); // Clear the list in case of an error to avoid returning any partial data.
+			top5Books=null;
 		}
 		return top5Books;
 	}
@@ -372,8 +372,6 @@ public class SalesReportDAO {
 				img = resultSet.getString("img");
 				String transactionDate = resultSet.getString("transactionDate");
 				int qtyPurchased = resultSet.getInt("quantityPurchased");
-
-				User user = new User(userID, name, email, role, img);
 
 				if (currentUserId == null || !currentUserId.equals(userID)) {
 					// New user detected, add the previous user's data to the list

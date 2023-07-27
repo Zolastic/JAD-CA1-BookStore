@@ -16,24 +16,32 @@
 <%@ page import="com.google.gson.JsonObject"%>
 </head>
 <body>
+<%@ include file="modal.jsp"%>
 	<%
-	List<BookReport> topSalesBooks = (List<BookReport>) request.getAttribute("topSalesBooks");
-	List<TopCustomerSalesReport> topCustomers = (List<TopCustomerSalesReport>) request.getAttribute("topCustomers");
-	List<OverallSalesReport> past12MonthsSalesData = (List<OverallSalesReport>) request
-			.getAttribute("past12MonthsSalesData");
-	Collections.sort(past12MonthsSalesData, Comparator.comparing(OverallSalesReport::getTransactionDate));
-	List<Map<Object, Object>> pieChartData = new ArrayList<>();
-
-	// Loop through topSalesBooks to add data to the pieChartData list
-	for (BookReport bookReport : topSalesBooks) {
-		Map<Object, Object> dataPoint = new HashMap<>();
-		dataPoint.put("label", (bookReport.getBookDetails().getTitle()));
-		dataPoint.put("y", bookReport.getTotalEarningWithoutGST());
-		pieChartData.add(dataPoint);
+	boolean error = false;
+	List<BookReport> topSalesBooks=null;
+	List<TopCustomerSalesReport> topCustomers=null;
+	List<OverallSalesReport> past12MonthsSalesData =null;
+	try {
+		topSalesBooks = (List<BookReport>) request.getAttribute("topSalesBooks");
+		topCustomers = (List<TopCustomerSalesReport>) request.getAttribute("topCustomers");
+		past12MonthsSalesData = (List<OverallSalesReport>) request.getAttribute("past12MonthsSalesData");
+	} catch (ClassCastException e) {
+		error = true;
 	}
+	
+	if (topSalesBooks != null && topCustomers != null && past12MonthsSalesData != null&&!error) {
+		Collections.sort(past12MonthsSalesData, Comparator.comparing(OverallSalesReport::getTransactionDate));
+		List<Map<Object, Object>> pieChartData = new ArrayList<>();
 
-	// Convert the pieChartData list to a JSON string
-	String dataPointsForTopBooks = new Gson().toJson(pieChartData);
+		for (BookReport bookReport : topSalesBooks) {
+			Map<Object, Object> dataPoint = new HashMap<>();
+			dataPoint.put("label", (bookReport.getBookDetails().getTitle()));
+			dataPoint.put("y", bookReport.getTotalEarningWithoutGST());
+			pieChartData.add(dataPoint);
+		}
+
+		String dataPointsForTopBooks = new Gson().toJson(pieChartData);
 	%>
 	<%@include file="./navbar.jsp"%>
 
@@ -42,10 +50,12 @@
 			<a href="<%=request.getContextPath()%>/admin/SalesDashboardServlet"
 				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 				<i class="fas fa-chart-line mr-2"></i> Sales Dashboard
-			</a> <a href="<%=request.getContextPath()%>/admin/generateSalesReportOptions.jsp"
+			</a> <a
+				href="<%=request.getContextPath()%>/admin/generateSalesReportOptions.jsp"
 				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 				<i class="fas fa-file-alt mr-2"></i> Generate Sales Report
-			</a> <a href="<%=request.getContextPath()%>/admin/FilterCustomersByBookMain"
+			</a> <a
+				href="<%=request.getContextPath()%>/admin/FilterCustomersByBookMain"
 				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 				<i class="fas fa-filter mr-2"></i> Filter Customer List By Book
 			</a>
@@ -81,7 +91,7 @@
 					for (TopCustomerSalesReport customerReport : topCustomers) {
 					%>
 					<tr
-						class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+						class="bg-white border-b hover:bg-gray-50">
 						<td class="px-6 py-4"><%=rank%></td>
 						<td scope="row"
 							class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
@@ -187,5 +197,19 @@
         chartForTopBooks.render();
     }
 </script>
+		<%
+		} else {
+		%>
+		<script>
+			var closeButton = document.getElementById("close");
+			showModal("Error loading page");
+			closeButton.addEventListener("click", function() {
+				window.location.href = "<%=request.getContextPath()%>/admin/index.jsp";
+			});
+		</script>
+		<%
+		}
+		%>
+	
 </body>
 </html>

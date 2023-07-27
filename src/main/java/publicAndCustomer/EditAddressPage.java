@@ -84,10 +84,10 @@ public class EditAddressPage extends HttpServlet {
 		        String referer = request.getHeader("Referer");
 		        response.sendRedirect(referer + "&error=emptyInput" + "&addr_id=" + addr_id);
 		    } else {
-		        String[] countryData = countryInfo.split("|");
+		        String[] countryData = countryInfo.split(",");
 		        String countryId = countryData[0];
 		        String countryName = countryData[1];
-
+System.out.println(countryData);
 		        try (Connection connection = DBConnection.getConnection()) {
 		            Address addr = new Address(addr_id, unit_number, block_number, street_address, postal_code, countryId, countryName);
 		            int rowsAffected = addressDAO.editAddress(connection, addr);

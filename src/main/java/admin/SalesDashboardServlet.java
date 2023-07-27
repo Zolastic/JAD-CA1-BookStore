@@ -57,6 +57,9 @@ public class SalesDashboardServlet extends HttpServlet {
 				OverallSalesReport salesData = salesReportDAO.overallSalesByMonth(connection, transactionYearMonth);
 				if (salesData != null) {
 					past12MonthsSalesData.add(salesData);
+				}else {
+					past12MonthsSalesData=null;
+					break;
 				}
 			}
 			request.setAttribute("topCustomers", topCustomers);

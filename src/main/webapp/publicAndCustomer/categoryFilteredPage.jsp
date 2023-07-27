@@ -2,7 +2,7 @@
   - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
-  - Description: JAD CA1
+  - Description: JAD CA2
   --%>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -21,14 +21,19 @@
 </head>
 <body>
 	<%
-	List<Book> allGenreBook = (List<Book>) request.getAttribute("allGenreBook");
+	List<Book> allGenreBook = null;
 	String genreName = (String) request.getAttribute("genreName");
 	String action = request.getParameter("action");
 	String searchInput = request.getParameter("searchInput");
 	boolean err = false;
 	int totalPages = (int) request.getAttribute("totalPages");
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
-	if (allGenreBook == null || genreName == null) {
+	try{
+		allGenreBook=(List<Book>) request.getAttribute("allGenreBook");
+	}catch (ClassCastException e) {
+		err = true;
+	}
+	if (allGenreBook == null || genreName == null || err) {
 		err = true;
 	%>
 	<!-- Error Loading Page -->
@@ -61,7 +66,7 @@
 	<div class="mx-20 mb-60">
 		<div class="flex items-center justify-between">
 			<h1 class="text-4xl font-bold italic my-10"><%=genreName%></h1>
-			<form action="/CA1-assignment/CategoryFilteredPage" method="GET">
+			<form action="<%=request.getContextPath()%>/CategoryFilteredPage" method="GET">
 				<input type="hidden" name="action" value="searchBookByTitle">
 				<input type="hidden" name="genreID"
 					value="<%=request.getParameter("genreID")%>"> <input
@@ -94,7 +99,7 @@
 				int filledStars = (int) rating;
 				boolean hasHalfStar = (rating - filledStars) >= 0.5;
 				int emptyStars = 5 - filledStars - (hasHalfStar ? 1 : 0);
-				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
+				String urlToBookDetails = request.getContextPath()+"/BookDetailsPage?bookID=" + book.getBookID();
 			%>
 			<div
 				class="flex items-center justify-between border border-gray-300 rounded-lg my-4 p-5 shadow-lg w-full  transform hover:scale-110 cursor-pointer"
@@ -179,7 +184,7 @@
 			<div class="flex space-x-4">
 				<a
 					href="<%=currentPage > 1
-				? ("/CA1-assignment/CategoryFilteredPage?page=" + (currentPage - 1) + "&genreName=" + genreName
+				? (request.getContextPath()+"/CategoryFilteredPage?page=" + (currentPage - 1) + "&genreName=" + genreName
 						+ "&genreID=" + request.getParameter("genreID")
 						+ (validatedUserID != null ? "&userIDAvailable=true" : "")
 						+ (action != null && action.equals("searchBookByTitle")
@@ -191,7 +196,7 @@
 				</a>
 				<%
 				for (int i = 1; i <= totalPages; i++) {
-					String pageLink = "/CA1-assignment/CategoryFilteredPage?page=" + i + "&genreName=" + genreName + "&genreID="
+					String pageLink = request.getContextPath()+"/CategoryFilteredPage?page=" + i + "&genreName=" + genreName + "&genreID="
 					+ request.getParameter("genreID");
 					if (validatedUserID != null) {
 						pageLink += "&userIDAvailable=true";
@@ -210,7 +215,7 @@
 				%>
 				<a
 					href="<%=currentPage < totalPages
-				? ("/CA1-assignment/CategoryFilteredPage?page=" + (currentPage + 1) + "&genreName=" + genreName
+				? (request.getContextPath()+"/CategoryFilteredPage?page=" + (currentPage + 1) + "&genreName=" + genreName
 						+ "&genreID=" + request.getParameter("genreID")
 						+ (validatedUserID != null ? "&userIDAvailable=true" : "")
 						+ (action != null && action.equals("searchBookByTitle")

@@ -51,7 +51,7 @@ public class Review extends HttpServlet {
 					dispatcher.forward(request, response);
 					return;
 				}
-				bookDetails = bookDAO.getBookDetailsForCustomer(connection, bookID);
+				bookDetails = bookDAO.getBookDetailsForBybookID(connection, bookID);
 				connection.close();
 			} catch (SQLException e) {
 				System.err.println("Error: " + e);

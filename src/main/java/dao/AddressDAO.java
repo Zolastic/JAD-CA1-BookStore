@@ -46,7 +46,6 @@ public class AddressDAO {
 			ps.setString(1, addr_id);
 			ResultSet resultSet = ps.executeQuery();
 			Address address = null;
-			System.out.println("hello");
 			while (resultSet.next()) {
 				String unit_number = resultSet.getString("address.unit_number");
 				String block_number = resultSet.getString("address.block_number");
@@ -58,9 +57,6 @@ public class AddressDAO {
 				// Create an Address object based on the retrieved data
 				address = new Address(addr_id, unit_number, block_number, street_address, postal_code, countryId,
 						countryName);
-
-				// Print the address object
-				System.out.println(address);
 			}
 
 			System.out.print(address);

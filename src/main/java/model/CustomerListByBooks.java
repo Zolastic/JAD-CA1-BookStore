@@ -11,6 +11,7 @@ public class CustomerListByBooks {
 		super();
 		this.userDetails = userDetails;
 		this.transactionDates = transactionDates;
+		this.quantityPurchased=quantityPurchased;
 	}
 
 	public User getUserDetails() {

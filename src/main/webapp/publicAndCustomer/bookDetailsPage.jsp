@@ -2,7 +2,7 @@
   - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
-  - Description: JAD CA1
+  - Description: JAD CA2
   --%>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -55,19 +55,21 @@
     	    }
     	  });
     	}
-
-  
-
-
 </script>
 	<%
-	Book bookDetails = (Book) request.getAttribute("bookDetails");
+	Book bookDetails = null;
 	String bookID = null;
 	boolean err = false;
-	List<Map<String, Object>> reviews = (List<Map<String, Object>>) request.getAttribute("reviews");
+	List<Map<String, Object>> reviews = null;
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	String addToCartAction = request.getParameter("addToCart");
-
+	try{
+		bookDetails=(Book) request.getAttribute("bookDetails");
+		reviews=(List<Map<String, Object>>) request.getAttribute("reviews");
+	}catch (ClassCastException e) {
+		err = true;
+	}
+	
 	if (addToCartAction != null) {
 		if (addToCartAction.equals("success")) {
 	%>
@@ -84,7 +86,7 @@
 	}
 	}
 
-	if (bookDetails == null) {
+	if (bookDetails == null || err) {
 	err = true;
 	%>
 	<!-- Show Error -->
@@ -240,7 +242,7 @@
 
 				<div class="mr-4">
 					<!-- Form action for update quantity -->
-					<form action="/CA1-assignment/BookDetailsPage" method="post">
+					<form action="<%=request.getContextPath()%>/BookDetailsPage" method="post">
 						<input type="hidden" name="bookID" value="<%=bookID%>"> <input
 							type="hidden" name="quantity"
 							value="<%=bookDetails.getQuantity()%>"> <input

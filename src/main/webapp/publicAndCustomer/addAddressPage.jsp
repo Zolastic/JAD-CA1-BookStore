@@ -1,6 +1,6 @@
 <%--
   - Author(s): Soh Jian Min (P2238856)
-  - Description: JAD CA1
+  - Description: JAD CA2
 --%>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -17,7 +17,6 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
 	rel="stylesheet">
 <%@ include file="../../tailwind-css.jsp"%>
-<!-- Include Select2 CSS -->
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
 	rel="stylesheet" />
@@ -28,7 +27,9 @@
 
 	<%
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
-	List<Country> countries = (List<Country>) request.getAttribute("countries");
+	List<Country> countries = null;
+	boolean error = false;
+
 	String pageBack = request.getParameter("from");
 	String err = request.getParameter("error");
 	if (err != null) {
@@ -43,6 +44,11 @@
 		}
 	}
 	String success = request.getParameter("success");
+	try{
+		countries = (List<Country>) request.getAttribute("countries");
+	}catch (ClassCastException e) {
+		error = true;
+	}
 	if (success != null) {
 		if (success.equals("true")) {
 	%>
@@ -50,17 +56,17 @@
         var closeButton = document.getElementById("close");
         showModal("Address Inserted Successfully!");
         closeButton.addEventListener("click", function() {
-            window.location.href = "/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=<%=pageBack%>";
+            window.location.href = "<%=request.getContextPath()%>/ModifyAddressPage?userIDAvailable=true&from=<%=pageBack%>";
         });
     </script>
 	<%
 	}
 	}
-	if (validatedUserID != null && countries != null && pageBack != null) {
+	if (validatedUserID != null && countries != null && pageBack != null &&!error) {
 	%>
 	<div class="flex items-center justify-center mt-16">
 		<form
-			action="/CA1-assignment/AddAddressPage?userIDAvailable=true&from=<%=pageBack%>"
+			action="<%=request.getContextPath()%>/AddAddressPage?userIDAvailable=true&from=<%=pageBack%>"
 			method="post" id="editAddressForm"
 			class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
 			<h1 class="text-3xl font-bold my-2 mb-5">Add An Address</h1>
@@ -122,14 +128,14 @@
             	var closeButton = document.getElementById("close");
 				showModal("Error loading page");
 				closeButton.addEventListener("click", function() {
-					window.location.href = "/CA1-assignment/";
+					window.location.href = "<%=request.getContextPath()%>/";
 				});
             }
             else {
                 var closeButton = document.getElementById("close");
                 showModal("Error loading page");
                 closeButton.addEventListener("click", function() {
-                    window.location.href = "/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=<%=pageBack%>";
+                    window.location.href = "<%=request.getContextPath()%>/ModifyAddressPage?userIDAvailable=true&from=<%=pageBack%>";
 			});
 		}
 	</script>
@@ -139,11 +145,9 @@
 
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<!-- Include Select2 JS -->
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 	<script>
-		// Initialize Select2 on the country dropdown
 		$(document).ready(function() {
 			$('#country').select2({
 				templateSelection : function(data) {

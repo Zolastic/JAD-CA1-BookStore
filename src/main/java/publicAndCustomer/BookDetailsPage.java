@@ -48,7 +48,7 @@ public class BookDetailsPage extends HttpServlet {
 				// Validate the userID
 				userID = verifyUserDAO.validateUserID(connection, userID);
 				// Get the book details
-				bookDetails = bookDAO.getBookDetailsForCustomer(connection, bookID);
+				bookDetails = bookDAO.getBookDetailsForBybookID(connection, bookID);
 				// Get the reviews of the book
 				reviews = reviewDAO.getBookReviews(connection, bookID);
 				connection.close();
