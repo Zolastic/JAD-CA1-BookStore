@@ -71,7 +71,7 @@
 				src="<%=request.getContextPath()%>/admin/img/No_Image_Available.jpg"
 				class="viewImg rounded-lg mx-10 object-contain"> <%
 		 } else {
-		 %> <img alt="" src="data:image/png;base64, <%=genre.getImg()%>"
+		 %> <img alt="" src="<%=genre.getImg()%>"
 						class="viewImg rounded-lg mx-10 object-contain"> <%
 		 }
 		 %>

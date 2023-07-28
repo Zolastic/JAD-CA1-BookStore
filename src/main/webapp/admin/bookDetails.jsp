@@ -30,7 +30,7 @@
 		<%
 		} else {
 		%>
-		<img alt="" src="data:image/png;base64, <%=book.getImg()%>"
+		<img alt="" src="<%=book.getImg()%>"
 			class="viewImg rounded-lg mx-10 object-contain">
 		<%
 		}

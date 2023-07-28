@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import model.Address;
 import model.User;
+import utils.CloudinaryUtil;
 
 public class UserDAO {
 
@@ -23,10 +24,10 @@ public class UserDAO {
 				String email = resultSet.getString("email");
 				String password = resultSet.getString("password");
 				String role = resultSet.getString("role");
-				String img = resultSet.getString("img");
+				String imgSecureURL = resultSet.getString("img");
 				String secret = resultSet.getString("secret");
 				resultSet.close();
-				User user = new User(userID, name, email, password, role, img, secret);
+				User user = new User(userID, name, email, password, role, imgSecureURL, secret);
 				return user;
 			}
 			return null;
@@ -83,9 +84,9 @@ public class UserDAO {
 		}
 	}
 
-	public int updateUser(Connection connection, String name, String email, String image, String userID)
+	public int updateUser(Connection connection, String name, String email, String image, String imagePublicID, String userID)
 			throws SQLException {
-		String sql = "UPDATE users SET name = ?, email = ?, img = ? WHERE userID = ?;";
+		String sql = "UPDATE users SET name = ?, email = ?, img = ?, img_public_id = ? WHERE userID = ?;";
 		String sqlWithoutImage = "UPDATE users SET name = ?, email = ? WHERE userID = ?;";
 
 		boolean noImage = image == null;
@@ -100,7 +101,8 @@ public class UserDAO {
 			ps.setString(3, userID);
 		} else {
 			ps.setString(3, image);
-			ps.setString(4, userID);
+			ps.setString(4, imagePublicID);
+			ps.setString(5, userID);
 		}
 
 		int affectedRows = ps.executeUpdate();
@@ -164,6 +166,21 @@ public class UserDAO {
 			return affectedRows > 0 ? 200 : 500;
 		}
 	}
+	
+	public String getUserImagePublicID(Connection connection, String userID) throws SQLException {
+		String sqlStr = "Select img_public_id FROM users WHERE userID = ?";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, userID);
+
+			ResultSet resultSet = ps.executeQuery();
+			
+			if (resultSet.next()) {
+				return resultSet.getString("img_public_id");
+			}
+
+			return null;
+		}
+	}
 
 	public ArrayList<User> getUsers(Connection connection, String userInput) throws SQLException {
 		userInput = userInput == null ? "" : userInput;
@@ -181,9 +198,9 @@ public class UserDAO {
 				String email = resultSet.getString("email");
 				String password = resultSet.getString("password");
 				String role = resultSet.getString("role");
-				String img = resultSet.getString("img");
+				String imgSecureURL = resultSet.getString("img");
 				String secret = resultSet.getString("secret");
-				User user = new User(userID, name, email, password, role, img, secret);
+				User user = new User(userID, name, email, password, role, imgSecureURL, secret);
 				users.add(user);
 			}
 			resultSet.close();

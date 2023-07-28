@@ -15,6 +15,7 @@ public class Book {
 	private String Description;
 	private String GenreName;
 	private String Img;
+	private String imgPublicID;
 	private int Sold;
 	private int Inventory;
 	private double Price;
@@ -88,6 +89,30 @@ public class Book {
 		Selected = selected;
 	}
 	
+	
+	
+
+	public Book(String bookID, String iSBN, String title, String author, String publisher, String publication_date,
+			String description, String genreName, String img, String imgPublicID, int sold, int inventory, double price,
+			double rating, int quantity, int selected) {
+		super();
+		BookID = bookID;
+		ISBN = iSBN;
+		Title = title;
+		Author = author;
+		Publisher = publisher;
+		Publication_date = publication_date;
+		Description = description;
+		GenreName = genreName;
+		Img = img;
+		this.imgPublicID = imgPublicID;
+		Sold = sold;
+		Inventory = inventory;
+		Price = price;
+		Rating = rating;
+		Quantity = quantity;
+		Selected = selected;
+	}
 
 	public Book(String bookID, String title) {
 		BookID = bookID;
@@ -213,5 +238,15 @@ public class Book {
 	public void setQuantity(int quantity) {
 		Quantity = quantity;
 	}
+
+	public String getImgPublicID() {
+		return imgPublicID;
+	}
+
+	public void setImgPublicID(String imgPublicID) {
+		this.imgPublicID = imgPublicID;
+	}
+	
+	
 
 }

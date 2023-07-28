@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +20,7 @@ import model.Author;
 import model.Book;
 import model.Genre;
 import model.Publisher;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
@@ -69,7 +71,7 @@ public class EditBookServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String bookID = null;
-		
+
 		try (Connection connection = DBConnection.getConnection()) {
 			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 
@@ -84,9 +86,20 @@ public class EditBookServlet extends HttpServlet {
 			String description = requestWrapper.getParameter("description");
 			String genreId = requestWrapper.getParameter("genre");
 			int sold = Integer.parseInt(requestWrapper.getParameter("sold"));
-			String image = requestWrapper.getBase64Parameter("image");
+			byte[] imageInByte = requestWrapper.getBytesParameter("image");
+
+			SimpleEntry<String, String> imageResult = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			String imageURL = null;
+			String imagePublicID = null;
 			
-			int statusCode = bookDAO.updateBook(connection, bookID, title, price, author, publisher, quantity, pubDate, isbn, description, genreId, sold, image);
+			if (imageResult != null) {
+				imageURL = imageResult.getKey();
+				imagePublicID = imageResult.getValue();
+			}
+
+			
+			int statusCode = bookDAO.updateBook(connection, bookID, title, price, author, publisher, quantity, pubDate,
+					isbn, description, genreId, sold, imageURL, imagePublicID);
 			// Load data for page
 			loadData(request, connection, bookID);
 
