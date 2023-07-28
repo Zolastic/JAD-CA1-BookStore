@@ -50,7 +50,7 @@
 				if (bookDetails.getImg() != null) {
 				%>
 				<img class="h-full object-contain"
-					src="data:image/png;base64, <%=bookDetails.getImg()%>">
+					src="<%=bookDetails.getImg()%>">
 				<%
 				} else {
 				%>

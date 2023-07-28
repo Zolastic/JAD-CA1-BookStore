@@ -110,7 +110,7 @@
 						if (book.getImg() != null) {
 						%>
 						<img class="h-48 object-contain"
-							src="data:image/png;base64, <%=book.getImg()%>">
+							src="<%=book.getImg()%>">
 						<%
 						} else {
 						%>

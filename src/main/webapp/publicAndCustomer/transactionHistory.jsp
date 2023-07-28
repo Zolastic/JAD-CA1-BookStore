@@ -77,7 +77,7 @@ if (transactionHistories.size() == 0) {
                 <a href="<%=urlToBookDetails%>">
                     <div class="flex-shrink-0 w-16 h-16 mr-4">
                         <% if (transactionItem.getBook().getImg() != null) { %>
-                        <img class="h-full object-contain" src="data:image/png;base64, <%=transactionItem.getBook().getImg()%>">
+                        <img class="h-full object-contain" src="<%=transactionItem.getBook().getImg()%>">
                         <% } else { %>
                         <i class="fas fa-image fa-3x"></i>
                         <% } %>
