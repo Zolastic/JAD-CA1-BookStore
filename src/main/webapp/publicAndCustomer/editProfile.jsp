@@ -17,7 +17,7 @@
 	User user = (User) request.getAttribute("user");
 	String image = user.getImage() == null
 			? request.getContextPath() + "/publicAndCustomer/img/defaultUserPFP.png"
-			: "data:image/png;base64, " + user.getImage();
+			: user.getImage();
 	String statusCode = request.getParameter("statusCode");
 	%>
 

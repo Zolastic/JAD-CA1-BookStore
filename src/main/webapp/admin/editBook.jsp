@@ -18,7 +18,7 @@
 	List<Publisher> publishers = (List<Publisher>) request.getAttribute("publishers");
 	List<Genre> genres = (List<Genre>) request.getAttribute("genres");
 	String statusCode = request.getParameter("statusCode");
-	String image = book.getImg() == null ? request.getContextPath() + "/admin/img/No_Image_Available.jpg" : "data:image/png;base64, " + book.getImg();
+	String image = book.getImg() == null ? request.getContextPath() + "/admin/img/No_Image_Available.jpg" : book.getImg();
 	
 	%>
 	<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Edit Book (<%= book.getTitle() %>)</h1>

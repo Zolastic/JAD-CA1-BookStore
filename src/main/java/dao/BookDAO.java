@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 import model.Book;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 
 public class BookDAO {
@@ -52,6 +53,7 @@ public class BookDAO {
 				int inventory = resultSet.getInt("inventory");
 				double price = resultSet.getDouble("price");
 				double rating = resultSet.getDouble("rating");
+				
 				books.add(new Book(bookID, isbn, title, author, publisher, publication_date, description, genreName,
 						img, sold, inventory, price, rating));
 			}
@@ -114,6 +116,7 @@ public class BookDAO {
 				double price = resultSet.getDouble("price");
 				double rating = resultSet.getDouble("rating");
 				resultSet.close();
+							
 				Book book = new Book(bookID, isbn, title, author, publisher, publication_date, description, genreName,
 						img, sold, inventory, price, rating);
 				return book;
@@ -124,9 +127,9 @@ public class BookDAO {
 	}
 
 	public int addBook(String title, Double price, String author, String publisher, int quantity, String pubDate,
-			String isbn, String description, String genreId, String image) throws SQLException {
-		String sqlStr = "INSERT INTO BOOK (title, price, authorID, publisherID, inventory, publication_date, ISBN, description, genre_id, img, book_id)\r\n"
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			String isbn, String description, String genreId, String image, String imagePublicID) throws SQLException {
+		String sqlStr = "INSERT INTO BOOK (title, price, authorID, publisherID, inventory, publication_date, ISBN, description, genre_id, img, img_public_id, book_id)\r\n"
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sqlStr)) {
 
 			ps.setString(1, title);
@@ -139,7 +142,8 @@ public class BookDAO {
 			ps.setString(8, description);
 			ps.setString(9, genreId);
 			ps.setString(10, image);
-			ps.setString(11, (UUID.randomUUID()).toString());
+			ps.setString(11, imagePublicID);
+			ps.setString(12, (UUID.randomUUID()).toString());
 
 			int affectedRows = ps.executeUpdate();
 
@@ -217,12 +221,27 @@ public class BookDAO {
 			return affectedRows > 0 ? 200 : 500;
 		}
 	}
+	
+	public String getBookImagePublicID(Connection connection, String bookID) throws SQLException {
+		String sqlStr = "Select img_public_id FROM book WHERE book_id = ?";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, bookID);
+
+			ResultSet resultSet = ps.executeQuery();
+			
+			if (resultSet.next()) {
+				return resultSet.getString("img_public_id");
+			}
+
+			return null;
+		}
+	}
 
 	public int updateBook(Connection connection, String bookID, String title, Double price, String author,
 			String publisher, int quantity, String pubDate, String isbn, String description, String genreId, int sold,
-			String image) throws SQLException {
+			String image, String imagePublicID) throws SQLException {
 		String sqlStrWithImage = " UPDATE book SET title = ?, price = ?, authorID = ?, publisherID = ?, inventory = ?, \r\n"
-				+ " publication_date = ?, ISBN = ?, description = ?,\r\n" + " genre_id = ?, sold = ?, img = ?\r\n"
+				+ " publication_date = ?, ISBN = ?, description = ?,\r\n" + " genre_id = ?, sold = ?, img = ?,\r\n" + "img_public_id = ?"
 				+ " WHERE book_id = ?;";
 
 		String sqlStrWithoutImage = " UPDATE book SET title = ?, price = ?, authorID = ?, publisherID = ?, inventory = ?, \r\n"
@@ -250,7 +269,8 @@ public class BookDAO {
 			ps.setString(11, bookID);
 		} else {
 			ps.setString(11, image);
-			ps.setString(12, bookID);
+			ps.setString(12, imagePublicID);
+			ps.setString(13, bookID);
 		}
 
 		int affectedRows = ps.executeUpdate();
@@ -306,7 +326,7 @@ public class BookDAO {
 				+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n"
 				+ "GROUP BY book.book_id, book.img, book.title, book.price, \r\n"
 				+ "genre.genre_name, book.sold, book.inventory, author.authorName, \r\n"
-				+ "publisher.publisherName ORDER BY sold LIMIT 20;\r\n" + "";
+				+ "publisher.publisherName ORDER BY sold LIMIT 10;\r\n" + "";
 
 		try (Statement statement = connection.createStatement();
 				PreparedStatement ps = connection.prepareStatement(sqlStr);) {

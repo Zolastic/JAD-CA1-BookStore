@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import model.UserAddress;
+import utils.CloudinaryUtil;
 
 public class UserAddressDAO {
 	public ArrayList<UserAddress> getUserOrderByPostalCode(Connection connection) throws SQLException {

@@ -3,7 +3,9 @@ package admin;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,6 +20,7 @@ import dao.PublisherDAO;
 import model.Author;
 import model.Genre;
 import model.Publisher;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
@@ -61,7 +64,9 @@ public class AddBookServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		try (Connection conn = DBConnection.getConnection()) {
+			loadData(request, conn);
 			 HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 	        
 	        String title = requestWrapper.getParameter("title");
@@ -73,9 +78,20 @@ public class AddBookServlet extends HttpServlet {
 			String isbn = requestWrapper.getParameter("isbn");
 			String description = requestWrapper.getParameter("description");
 			String genreId = requestWrapper.getParameter("genre");
-			String image = requestWrapper.getBase64Parameter("image");
+			byte[] imageInByte = requestWrapper.getBytesParameter("image");
+			
+			System.out.println("imageInByte: " + imageInByte.toString());
+			
+			SimpleEntry<String, String> imageResult = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			String imageURL = null;
+			String imagePublicID = null;
+			
+			if (imageResult != null) {
+				imageURL = imageResult.getKey();
+				imagePublicID = imageResult.getValue();
+			}
 	        
-			int statusCode = bookDAO.addBook(title, price, author, publisher, quantity, pubDate, isbn, description, genreId, image);
+			int statusCode = bookDAO.addBook(title, price, author, publisher, quantity, pubDate, isbn, description, genreId, imageURL, imagePublicID);
 			
 			loadData(request, conn);
 			DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=" + statusCode);

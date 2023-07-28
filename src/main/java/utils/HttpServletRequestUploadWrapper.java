@@ -48,4 +48,17 @@ public class HttpServletRequestUploadWrapper {
 	    String base64String = new String(encodedBytes);
 	    return !"".equals(base64String) ? base64String : null ;
 	}
+	
+	public byte[] getBytesParameter(String name) throws IOException {
+		FileItem fileItem = items.stream().filter(item -> item.getFieldName().equals(name))
+				.findFirst()
+				.orElse(null);
+
+		if (fileItem == null) {
+			return null;
+		}
+
+		byte[] bytes = IOUtils.toByteArray(fileItem.getInputStream());
+	    return bytes;
+	}
 }

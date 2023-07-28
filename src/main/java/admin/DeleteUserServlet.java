@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.UserDAO;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 
@@ -35,7 +36,11 @@ public class DeleteUserServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		String userID = request.getParameter("userID");
 		try (Connection connection = DBConnection.getConnection()) {
+			String imagePublicID = userDAO.getUserImagePublicID(connection, userID);
 			int statusCode = userDAO.deleteAccount(connection, userID);
+			if (imagePublicID != null) {
+				statusCode = CloudinaryUtil.deleteImageFromCld(imagePublicID);
+			}
 			
 			DispatchUtil.dispatch(request, response, "ViewUsers?errCode=" + statusCode);
 		} catch (SQLException e) {
