@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.GenreDAO;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 
@@ -36,7 +37,9 @@ public class DeleteGenreServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String genreID = request.getParameter("genreID");
 		try (Connection connection = DBConnection.getConnection()) {
+			String imagePublicID = genreDAO.getGenreImagePublicID(connection, genreID);
 			int statusCode = genreDAO.deleteGenre(connection, genreID);
+			statusCode = CloudinaryUtil.deleteImageFromCld(imagePublicID);
 			
 			DispatchUtil.dispatch(request, response, "ViewGenres?errCode=" + statusCode);
 		} catch (SQLException e) {

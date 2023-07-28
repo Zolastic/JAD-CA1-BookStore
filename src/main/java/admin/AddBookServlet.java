@@ -18,6 +18,7 @@ import dao.PublisherDAO;
 import model.Author;
 import model.Genre;
 import model.Publisher;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
@@ -73,9 +74,19 @@ public class AddBookServlet extends HttpServlet {
 			String isbn = requestWrapper.getParameter("isbn");
 			String description = requestWrapper.getParameter("description");
 			String genreId = requestWrapper.getParameter("genre");
-			String image = requestWrapper.getBase64Parameter("image");
+			byte[] imageInByte = requestWrapper.getBytesParameter("image");
+			
+			System.out.println("imageInByte: " + imageInByte.toString());
+			
+			String imagePublicID = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			
+			if (imagePublicID == "error") {
+				loadData(request, conn);
+				DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=500");
+				return;
+			}
 	        
-			int statusCode = bookDAO.addBook(title, price, author, publisher, quantity, pubDate, isbn, description, genreId, image);
+			int statusCode = bookDAO.addBook(title, price, author, publisher, quantity, pubDate, isbn, description, genreId, imagePublicID);
 			
 			loadData(request, conn);
 			DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=" + statusCode);

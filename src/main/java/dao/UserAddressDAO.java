@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import model.UserAddress;
+import utils.CloudinaryUtil;
 
 public class UserAddressDAO {
 	public ArrayList<UserAddress> getUserOrderByPostalCode(Connection connection) throws SQLException {
@@ -25,7 +26,9 @@ public class UserAddressDAO {
 				user.setUserID(resultSet.getString("userID"));
 				user.setName(resultSet.getString("name"));
 				user.setEmail(resultSet.getString("email"));
-				user.setImage(resultSet.getString("img"));
+				String imgPublicCode = resultSet.getString("img");
+				String imgSecureURL = imgPublicCode != null ? CloudinaryUtil.getImage(imgPublicCode) : null;
+				user.setImage(imgSecureURL);
 				user.setAddressID(resultSet.getString("addr_id"));
 				user.setUnitNumber(resultSet.getString("unit_number"));
 				user.setBlockNumber(resultSet.getString("block_number"));

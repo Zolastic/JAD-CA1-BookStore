@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import dao.UserDAO;
 import model.User;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
@@ -85,9 +86,17 @@ public class EditProfileServlet extends HttpServlet {
 	        userID = requestWrapper.getParameter("userID");
 	        String name = requestWrapper.getParameter("name");
 	        String email = requestWrapper.getParameter("email");
-	        String image = requestWrapper.getBase64Parameter("image");
+	        byte[] imageInByte = requestWrapper.getBytesParameter("image");
+
+			String imagePublicID = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+
+			if (imagePublicID == "error") {
+				User user = loadData(request, response, connection, userID);
+				DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=500");
+				return;
+			}
 		
-			int statusCode = userDAO.updateUser(connection, name, email, image, userID);
+			int statusCode = userDAO.updateUser(connection, name, email, imagePublicID, userID);
 			
 			User user = loadData(request, response, connection, userID);
 			if (user == null) {

@@ -19,6 +19,7 @@ import model.Author;
 import model.Book;
 import model.Genre;
 import model.Publisher;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
@@ -69,7 +70,7 @@ public class EditBookServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String bookID = null;
-		
+
 		try (Connection connection = DBConnection.getConnection()) {
 			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 
@@ -84,9 +85,18 @@ public class EditBookServlet extends HttpServlet {
 			String description = requestWrapper.getParameter("description");
 			String genreId = requestWrapper.getParameter("genre");
 			int sold = Integer.parseInt(requestWrapper.getParameter("sold"));
-			String image = requestWrapper.getBase64Parameter("image");
-			
-			int statusCode = bookDAO.updateBook(connection, bookID, title, price, author, publisher, quantity, pubDate, isbn, description, genreId, sold, image);
+			byte[] imageInByte = requestWrapper.getBytesParameter("image");
+
+			String imagePublicID = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+
+			if (imagePublicID == "error") {
+				loadData(request, connection, bookID);
+				DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=500");
+				return;
+			}
+
+			int statusCode = bookDAO.updateBook(connection, bookID, title, price, author, publisher, quantity, pubDate,
+					isbn, description, genreId, sold, imagePublicID);
 			// Load data for page
 			loadData(request, connection, bookID);
 

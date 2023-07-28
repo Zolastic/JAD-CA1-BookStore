@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import model.Book;
 import model.Genre;
+import utils.CloudinaryUtil;
 
 public class GenreDAO {
 
@@ -31,9 +32,11 @@ public class GenreDAO {
 			while (resultSet.next()) {
 				String genreID = resultSet.getString("genreID");
 				String genreName = resultSet.getString("genreName");
-				String image = resultSet.getString("image");
+				String imagePublicCode = resultSet.getString("image");
+				
+				String imgSecureURL = imagePublicCode != null ? CloudinaryUtil.getImage(imagePublicCode) : null;
 
-				genres.add(new Genre(genreID, genreName, image));
+				genres.add(new Genre(genreID, genreName, imgSecureURL));
 			}
 			resultSet.close();
 			return genres;
@@ -49,8 +52,9 @@ public class GenreDAO {
 
 			while (resultSet.next()) {
 				String genreName = resultSet.getString("genre_name");
-				String genre_img = resultSet.getString("genre_img");
-				Genre genre = new Genre(genreID, genreName, genre_img);
+				String imgPublicCode = resultSet.getString("genre_img");
+				String imgSecureURL = imgPublicCode != null ? CloudinaryUtil.getImage(imgPublicCode) : null;
+				Genre genre = new Genre(genreID, genreName, imgSecureURL);
 				return genre;
 			}
 
@@ -120,6 +124,21 @@ public class GenreDAO {
 			int affectedRows = ps.executeUpdate();
 
 			return affectedRows > 0 ? 200 : 500;
+		}
+	}
+	
+	public String getGenreImagePublicID(Connection connection, String genreID) throws SQLException {
+		String sqlStr = "Select genre_img FROM genre WHERE genre_id = ?";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, genreID);
+
+			ResultSet resultSet = ps.executeQuery();
+			
+			if (resultSet.next()) {
+				return resultSet.getString("genre_img");
+			}
+
+			return null;
 		}
 	}
 

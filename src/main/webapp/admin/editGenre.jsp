@@ -14,7 +14,7 @@
 	<%@include file="./navbar.jsp"%>
 	<%
 	Genre genre = (Genre) request.getAttribute("genre");
-	String image = genre.getImg() == null ? request.getContextPath() + "/admin/img/No_Image_Available.jpg" : "data:image/png;base64, " + genre.getImg();
+	String image = genre.getImg() == null ? request.getContextPath() + "/admin/img/No_Image_Available.jpg" : genre.getImg();
 	%>
 	<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Edit Genre (<%= genre.getName() %>)</h1>
 	<form class="mt-28"

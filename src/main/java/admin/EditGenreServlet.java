@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import dao.GenreDAO;
 import model.Genre;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
@@ -25,9 +26,10 @@ public class EditGenreServlet extends HttpServlet {
 	private GenreDAO genreDAO = new GenreDAO();
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try (Connection connection = DBConnection.getConnection()) {
 			String genreID = request.getParameter("genreID");
@@ -45,7 +47,8 @@ public class EditGenreServlet extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -56,9 +59,17 @@ public class EditGenreServlet extends HttpServlet {
 
 			genreID = requestWrapper.getParameter("genreID");
 			String genreName = requestWrapper.getParameter("name");
-			String image = requestWrapper.getBase64Parameter("image");
-			
-			int statusCode = genreDAO.updateGenre(connection, genreID, genreName, image);
+			byte[] imageInByte = requestWrapper.getBytesParameter("image");
+
+			String imagePublicID = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+
+			if (imagePublicID == "error") {
+				loadData(request, connection, genreID);
+				DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=500");
+				return;
+			}
+
+			int statusCode = genreDAO.updateGenre(connection, genreID, genreName, imagePublicID);
 			// Load data for page
 			loadData(request, connection, genreID);
 

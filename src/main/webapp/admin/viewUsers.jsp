@@ -105,7 +105,7 @@
 					src="<%=request.getContextPath()%>/admin/img/defaultUserPFP.png"
 					class="w-48 h-48 mx-10 object-cover rounded-full"> <%
  } else {
- %> <img alt="" src="data:image/png;base64, <%=user.getImage()%>"
+ %> <img alt="" src="<%=user.getImage()%>"
 					class="w-48 h-48 mx-10 object-cover rounded-full"> <%
  }
  %>

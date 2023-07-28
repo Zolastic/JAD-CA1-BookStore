@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 import model.Book;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 
 public class BookDAO {
@@ -46,14 +47,17 @@ public class BookDAO {
 				String publisher = resultSet.getString("publisherName");
 				String publication_date = resultSet.getString("publicationDate");
 				String description = resultSet.getString("description");
-				String img = resultSet.getString("img");
+				String imgPublicCode = resultSet.getString("img");
 				String genreName = resultSet.getString("genreName");
 				int sold = resultSet.getInt("sold");
 				int inventory = resultSet.getInt("inventory");
 				double price = resultSet.getDouble("price");
 				double rating = resultSet.getDouble("rating");
+				
+				String imgSecureURL = imgPublicCode != null ? CloudinaryUtil.getImage(imgPublicCode) : null;
+				
 				books.add(new Book(bookID, isbn, title, author, publisher, publication_date, description, genreName,
-						img, sold, inventory, price, rating));
+						imgSecureURL, sold, inventory, price, rating));
 			}
 			resultSet.close();
 			return books;
@@ -107,15 +111,18 @@ public class BookDAO {
 				String publisher = resultSet.getString("publisherName");
 				String publication_date = resultSet.getString("publicationDate");
 				String description = resultSet.getString("description");
-				String img = resultSet.getString("img");
+				String imgPublicCode = resultSet.getString("img");
 				String genreName = resultSet.getString("genreName");
 				int sold = resultSet.getInt("sold");
 				int inventory = resultSet.getInt("inventory");
 				double price = resultSet.getDouble("price");
 				double rating = resultSet.getDouble("rating");
 				resultSet.close();
+				
+				String imgSecureURL = imgPublicCode != null ? CloudinaryUtil.getImage(imgPublicCode) : null;
+				
 				Book book = new Book(bookID, isbn, title, author, publisher, publication_date, description, genreName,
-						img, sold, inventory, price, rating);
+						imgSecureURL, sold, inventory, price, rating);
 				return book;
 			}
 
@@ -280,7 +287,9 @@ public class BookDAO {
 			while (resultSet.next()) {
 				Book book = new Book();
 				book.setBookID(resultSet.getString("bookId"));
-				book.setImg(resultSet.getString("img"));
+				String imgPublicCode = resultSet.getString("img");
+				String imgSecureURL = imgPublicCode != null ? CloudinaryUtil.getImage(imgPublicCode) : null;
+				book.setImg(imgSecureURL);
 				book.setTitle(resultSet.getString("title"));
 				book.setDescription(resultSet.getString("description"));
 				book.setAuthor(resultSet.getString("authorName"));
@@ -306,7 +315,7 @@ public class BookDAO {
 				+ "JOIN publisher ON book.publisherID = publisher.publisherID \r\n"
 				+ "GROUP BY book.book_id, book.img, book.title, book.price, \r\n"
 				+ "genre.genre_name, book.sold, book.inventory, author.authorName, \r\n"
-				+ "publisher.publisherName ORDER BY sold LIMIT 20;\r\n" + "";
+				+ "publisher.publisherName ORDER BY sold LIMIT 10;\r\n" + "";
 
 		try (Statement statement = connection.createStatement();
 				PreparedStatement ps = connection.prepareStatement(sqlStr);) {
@@ -317,7 +326,9 @@ public class BookDAO {
 			while (resultSet.next()) {
 				Book book = new Book();
 				book.setBookID(resultSet.getString("bookId"));
-				book.setImg(resultSet.getString("img"));
+				String imgPublicCode = resultSet.getString("img");
+				String imgSecureURL = imgPublicCode != null ? CloudinaryUtil.getImage(imgPublicCode) : null;
+				book.setImg(imgSecureURL);
 				book.setTitle(resultSet.getString("title"));
 				book.setDescription(resultSet.getString("description"));
 				book.setAuthor(resultSet.getString("authorName"));
@@ -358,7 +369,9 @@ public class BookDAO {
 			while (resultSet.next()) {
 				Book book = new Book();
 				book.setBookID(resultSet.getString("bookId"));
-				book.setImg(resultSet.getString("img"));
+				String imgPublicCode = resultSet.getString("img");
+				String imgSecureURL = imgPublicCode != null ? CloudinaryUtil.getImage(imgPublicCode) : null;
+				book.setImg(imgSecureURL);
 				book.setTitle(resultSet.getString("title"));
 				book.setDescription(resultSet.getString("description"));
 				book.setAuthor(resultSet.getString("authorName"));

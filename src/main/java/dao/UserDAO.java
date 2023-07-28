@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import model.Address;
 import model.User;
+import utils.CloudinaryUtil;
 
 public class UserDAO {
 
@@ -23,10 +24,11 @@ public class UserDAO {
 				String email = resultSet.getString("email");
 				String password = resultSet.getString("password");
 				String role = resultSet.getString("role");
-				String img = resultSet.getString("img");
+				String imgPublicCode = resultSet.getString("img");
+				String imgSecureURL = imgPublicCode != null ? CloudinaryUtil.getImage(imgPublicCode) : null;
 				String secret = resultSet.getString("secret");
 				resultSet.close();
-				User user = new User(userID, name, email, password, role, img, secret);
+				User user = new User(userID, name, email, password, role, imgSecureURL, secret);
 				return user;
 			}
 			return null;
@@ -181,9 +183,10 @@ public class UserDAO {
 				String email = resultSet.getString("email");
 				String password = resultSet.getString("password");
 				String role = resultSet.getString("role");
-				String img = resultSet.getString("img");
+				String imgPublicCode = resultSet.getString("img");
+				String imgSecureURL = imgPublicCode != null ? CloudinaryUtil.getImage(imgPublicCode) : null;
 				String secret = resultSet.getString("secret");
-				User user = new User(userID, name, email, password, role, img, secret);
+				User user = new User(userID, name, email, password, role, imgSecureURL, secret);
 				users.add(user);
 			}
 			resultSet.close();
