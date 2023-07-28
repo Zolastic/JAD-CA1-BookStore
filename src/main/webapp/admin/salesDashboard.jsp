@@ -100,7 +100,7 @@
 								if (customerReport.getUserDetails().getImage() != null) {
 								%>
 								<img
-									src="data:image/png;base64, <%=customerReport.getUserDetails().getImage()%>"
+									src="<%=customerReport.getUserDetails().getImage()%>"
 									class="rounded-full object-contain">
 								<%
 								} else {

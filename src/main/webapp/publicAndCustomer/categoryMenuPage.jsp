@@ -78,7 +78,7 @@
 									<%
 									if (imageSrc != null) {
 									%>
-									<img src="data:image/png;base64, <%=imageSrc%>"
+									<img src="<%=imageSrc%>"
 										alt="<%=categoryName%>"
 										class="h-20 w-20 object-cover rounded-lg" />
 									<%

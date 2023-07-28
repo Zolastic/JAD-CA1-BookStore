@@ -72,7 +72,6 @@ public class CheckoutDAO {
 			statement.close();
 
 			if (rowsAffected == 1) {
-				System.out.print("a");
 				return transactionHistoryUUID;
 			} else {
 				return null;

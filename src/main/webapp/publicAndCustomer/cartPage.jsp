@@ -192,7 +192,7 @@
 						if (item.getImg() != null) {
 						%>
 						<img class="h-32 w-32 object-contain"
-							src="data:image/png;base64, <%=item.getImg()%>">
+							src="<%=item.getImg()%>">
 						<%
 						} else {
 						%>

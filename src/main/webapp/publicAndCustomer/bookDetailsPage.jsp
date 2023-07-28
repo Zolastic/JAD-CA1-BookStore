@@ -135,7 +135,7 @@
 					if (bookDetails.getImg() != null) {
 					%>
 					<div class="flex items-center h-64 w-64">
-						<img class="object-contain" src="data:image/png;base64, <%=bookDetails.getImg()%>">
+						<img class="object-contain" src="<%=bookDetails.getImg()%>">
 					</div>
 					<%
 					} else {
@@ -332,7 +332,7 @@
 						<%
 						if (userImg != null) {
 						%>
-						<img src="data:image/png;base64, <%=userImg%>" class="rounded-full object-contain">
+						<img src="<%=userImg%>" class="rounded-full object-contain">
 						<%
 						} else {
 						%>

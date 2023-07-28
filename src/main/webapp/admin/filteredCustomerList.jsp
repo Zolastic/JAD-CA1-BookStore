@@ -109,8 +109,7 @@
 										if (customerWithBookPurchased.getUserDetails().getImage() != null) {
 										%>
 										<img
-											src="data:image/png;base64,
-                                        <%=customerWithBookPurchased.getUserDetails().getImage()%>"
+											src="<%=customerWithBookPurchased.getUserDetails().getImage()%>"
 											class="rounded-full object-contain">
 										<%
 										} else {
