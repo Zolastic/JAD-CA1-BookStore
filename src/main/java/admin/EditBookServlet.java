@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -87,16 +88,18 @@ public class EditBookServlet extends HttpServlet {
 			int sold = Integer.parseInt(requestWrapper.getParameter("sold"));
 			byte[] imageInByte = requestWrapper.getBytesParameter("image");
 
-			String imagePublicID = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
-
-			if (imagePublicID == "error") {
-				loadData(request, connection, bookID);
-				DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=500");
-				return;
+			SimpleEntry<String, String> imageResult = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			String imageURL = null;
+			String imagePublicID = null;
+			
+			if (imageResult != null) {
+				imageURL = imageResult.getKey();
+				imagePublicID = imageResult.getValue();
 			}
 
+			
 			int statusCode = bookDAO.updateBook(connection, bookID, title, price, author, publisher, quantity, pubDate,
-					isbn, description, genreId, sold, imagePublicID);
+					isbn, description, genreId, sold, imageURL, imagePublicID);
 			// Load data for page
 			loadData(request, connection, bookID);
 

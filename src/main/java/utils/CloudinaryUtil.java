@@ -1,5 +1,8 @@
 package utils;
 
+import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -15,17 +18,12 @@ public class CloudinaryUtil {
 			  "api_key", "213785792351827",
 			  "api_secret", "xNDc2eA9eBf6ey99w5cHxo2dvaA"));
 	
-	public static String uploadImage(byte[] imageData) {
+	public static SimpleEntry<String, String> uploadImage(byte[] imageData) throws IOException {
 		Map params = ObjectUtils.asMap("folder", "", "resource_type", "image");
-		try {
-			Map result = cloudinary.uploader().upload(imageData, params);
-			String publicID = (String) result.get("public_id");
-			System.out.println(publicID);
-			return publicID;
-		} catch (Exception exception) {
-			exception.printStackTrace();
-			return "error";
-		}
+		Map result = cloudinary.uploader().upload(imageData, params);
+		String imageURL = (String) result.get("secure_url");
+		String imagePublicID = (String) result.get("public_id");
+		return new SimpleEntry<String, String>(imageURL, imagePublicID);
 	}
 	
 	public static String getImage(String publicID) {

@@ -57,8 +57,9 @@ public class EditUserProfileServlet extends HttpServlet {
 	        String name = request.getParameter("name");
 	        String email = request.getParameter("email");
 	        String image = null;
+	        String imagePublicID = null;
 		
-			int statusCode = userDAO.updateUser(connection, name, email, image, userID);
+			int statusCode = userDAO.updateUser(connection, name, email, image, imagePublicID, userID);
 			
 			User user = loadData(request, response, connection, userID);
 			if (user == null) {

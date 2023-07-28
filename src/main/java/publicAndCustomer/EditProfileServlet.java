@@ -3,6 +3,7 @@ package publicAndCustomer;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -88,7 +89,14 @@ public class EditProfileServlet extends HttpServlet {
 	        String email = requestWrapper.getParameter("email");
 	        byte[] imageInByte = requestWrapper.getBytesParameter("image");
 
-			String imagePublicID = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+	        SimpleEntry<String, String> imageResult = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			String imageURL = null;
+			String imagePublicID = null;
+			
+			if (imageResult != null) {
+				imageURL = imageResult.getKey();
+				imagePublicID = imageResult.getValue();
+			}
 
 			if (imagePublicID == "error") {
 				User user = loadData(request, response, connection, userID);
@@ -96,7 +104,7 @@ public class EditProfileServlet extends HttpServlet {
 				return;
 			}
 		
-			int statusCode = userDAO.updateUser(connection, name, email, imagePublicID, userID);
+			int statusCode = userDAO.updateUser(connection, name, email, imageURL, imagePublicID, userID);
 			
 			User user = loadData(request, response, connection, userID);
 			if (user == null) {

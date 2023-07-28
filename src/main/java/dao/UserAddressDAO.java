@@ -26,9 +26,7 @@ public class UserAddressDAO {
 				user.setUserID(resultSet.getString("userID"));
 				user.setName(resultSet.getString("name"));
 				user.setEmail(resultSet.getString("email"));
-				String imgPublicCode = resultSet.getString("img");
-				String imgSecureURL = imgPublicCode != null ? CloudinaryUtil.getImage(imgPublicCode) : null;
-				user.setImage(imgSecureURL);
+				user.setImage(resultSet.getString("img"));
 				user.setAddressID(resultSet.getString("addr_id"));
 				user.setUnitNumber(resultSet.getString("unit_number"));
 				user.setBlockNumber(resultSet.getString("block_number"));

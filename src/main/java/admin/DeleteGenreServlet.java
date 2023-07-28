@@ -39,7 +39,9 @@ public class DeleteGenreServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			String imagePublicID = genreDAO.getGenreImagePublicID(connection, genreID);
 			int statusCode = genreDAO.deleteGenre(connection, genreID);
-			statusCode = CloudinaryUtil.deleteImageFromCld(imagePublicID);
+			if (imagePublicID != null) {
+				statusCode = CloudinaryUtil.deleteImageFromCld(imagePublicID);
+			}
 			
 			DispatchUtil.dispatch(request, response, "ViewGenres?errCode=" + statusCode);
 		} catch (SQLException e) {

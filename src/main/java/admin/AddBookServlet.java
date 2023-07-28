@@ -3,7 +3,9 @@ package admin;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -62,7 +64,9 @@ public class AddBookServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		try (Connection conn = DBConnection.getConnection()) {
+			loadData(request, conn);
 			 HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 	        
 	        String title = requestWrapper.getParameter("title");
@@ -78,15 +82,16 @@ public class AddBookServlet extends HttpServlet {
 			
 			System.out.println("imageInByte: " + imageInByte.toString());
 			
-			String imagePublicID = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			SimpleEntry<String, String> imageResult = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			String imageURL = null;
+			String imagePublicID = null;
 			
-			if (imagePublicID == "error") {
-				loadData(request, conn);
-				DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=500");
-				return;
+			if (imageResult != null) {
+				imageURL = imageResult.getKey();
+				imagePublicID = imageResult.getValue();
 			}
 	        
-			int statusCode = bookDAO.addBook(title, price, author, publisher, quantity, pubDate, isbn, description, genreId, imagePublicID);
+			int statusCode = bookDAO.addBook(title, price, author, publisher, quantity, pubDate, isbn, description, genreId, imageURL, imagePublicID);
 			
 			loadData(request, conn);
 			DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=" + statusCode);

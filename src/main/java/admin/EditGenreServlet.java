@@ -3,6 +3,7 @@ package admin;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -61,15 +62,16 @@ public class EditGenreServlet extends HttpServlet {
 			String genreName = requestWrapper.getParameter("name");
 			byte[] imageInByte = requestWrapper.getBytesParameter("image");
 
-			String imagePublicID = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
-
-			if (imagePublicID == "error") {
-				loadData(request, connection, genreID);
-				DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=500");
-				return;
+			SimpleEntry<String, String> imageResult = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			String imageURL = null;
+			String imagePublicID = null;
+			
+			if (imageResult != null) {
+				imageURL = imageResult.getKey();
+				imagePublicID = imageResult.getValue();
 			}
-
-			int statusCode = genreDAO.updateGenre(connection, genreID, genreName, imagePublicID);
+			
+			int statusCode = genreDAO.updateGenre(connection, genreID, genreName, imageURL, imagePublicID);
 			// Load data for page
 			loadData(request, connection, genreID);
 
