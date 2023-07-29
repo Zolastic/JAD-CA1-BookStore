@@ -11,6 +11,7 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
+	<%@ include file="modal.jsp"%>
 	<%
 	String generateError = request.getParameter("generateError");
 	if (generateError != null) {
@@ -31,7 +32,8 @@
 				href="<%=request.getContextPath()%>/admin/generateSalesReportOptions.jsp"
 				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 				<i class="fas fa-file-alt mr-2"></i> Generate Sales Report
-			</a> <a href="<%=request.getContextPath()%>/admin/FilterCustomersByBookMain"
+			</a> <a
+				href="<%=request.getContextPath()%>/admin/FilterCustomersByBookMain"
 				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
 				<i class="fas fa-filter mr-2"></i> Filter Customer List By Book
 			</a>
@@ -60,7 +62,7 @@
 				<div class="inline-block bg-white rounded-lg p-5">
 					<form
 						action="<%=request.getContextPath()%>/admin/GenerateReportServlet"
-						method="post">
+						method="post" id="dateForm">
 						<input type="hidden" name="by" value="day"> <label>Choose
 							a date:</label> <input type="date" name="selectedDate" id="datePicker"
 							required> <br> <input
@@ -81,7 +83,7 @@
 			<div class="flex justify-center">
 				<div class="inline-block bg-white rounded-lg p-5">
 					<!-- Month picker content here -->
-					<form action="GenerateReportServlet" method="post">
+					<form action="GenerateReportServlet" method="post" id="monthForm">
 						<input type="hidden" name="by" value="month"> <label>Choose
 							a month:</label> <input type="month" name="selectedMonth"
 							id="monthPicker" required> <br> <input
@@ -101,7 +103,7 @@
 			<!-- Period picker content here -->
 			<div class="flex justify-center">
 				<div class="inline-block bg-white rounded-lg p-5">
-					<form action="GenerateReportServlet" method="post">
+					<form action="GenerateReportServlet" method="post" id="periodForm">
 						<input type="hidden" name="by" value="period"> <label>Enter
 							start date:</label> <input type="date" name="startDate"
 							id="startDatePicker" required> <br> <label>Enter
@@ -118,13 +120,11 @@
 			</div>
 		</div>
 		<script>
-			// Get references to the containers
 			const initialForm = document.getElementById("initialForm");
 			const datePickerContainer = document.getElementById("datePickerContainer");
 			const monthPickerContainer = document.getElementById("monthPickerContainer");
 			const periodPickerContainer = document.getElementById("periodPickerContainer");
 
-			// Get reference to the next button
 			const nextButton = document.getElementById("nextButton");
 			 const backButton1 = document.getElementById("backToDateSelection1");
 			 const backButton2 = document.getElementById("backToDateSelection2");
@@ -155,7 +155,71 @@
 					periodPickerContainer.style.display = "block";
 				}
 			});
-		</script>
+  			const datePicker = document.getElementById("datePicker");
+  			const monthPicker = document.getElementById("monthPicker");
+  			const startDatePicker = document.getElementById("startDatePicker");
+ 		 	const endDatePicker = document.getElementById("endDatePicker");
+
+  			const dateForm = document.getElementById("dateForm");
+  			const monthForm = document.getElementById("monthForm");
+  			const periodForm = document.getElementById("periodForm");
+
+		  dateForm.addEventListener("submit", (event) => {
+		    if (!isValidDate(datePicker.value)) {
+		      	event.preventDefault();
+		      	showModal("Please select a valid date (Input should be today or before today).");
+		    }	
+		  });
+
+		  monthForm.addEventListener("submit", (event) => {
+		    if (!isValidMonth(monthPicker.value)) {
+		      event.preventDefault();
+		      showModal("Please select a valid month (Input should be this month or a before this month).");
+		    }
+		  });
+
+		  periodForm.addEventListener("submit", (event) => {
+		    if (!isValidPeriod(startDatePicker.value, endDatePicker.value)) {
+		      event.preventDefault();
+		      showModal("Please enter a valid period dates.)");
+		    }
+		  });
+
+		  function isValidDate(dateString) {
+			  const [year, month, day] = dateString.split('-');
+			  const selectedDate = new Date(year, month - 1, day);
+			  const today = new Date();
+			  today.setHours(0, 0, 0, 0);
+			  return selectedDate <= today;
+			}
+
+			function isValidMonth(monthString) {
+			  const [year, month] = monthString.split('-');
+			  const selectedMonth = new Date(year, month - 1);
+			  const today = new Date();
+			  today.setDate(1);
+			  today.setHours(0, 0, 0, 0);
+			  return selectedMonth <= today;
+			}
+
+			function isValidPeriod(startDate, endDate) {
+			    const [startYear, startMonth, startDay] = startDate.split('-');
+			    const [endYear, endMonth, endDay] = endDate.split('-');
+			    const firstDate = new Date(startYear, startMonth - 1, startDay);
+			    const secondDate = new Date(endYear, endMonth - 1, endDay);
+			    const today = new Date();
+			    today.setHours(0, 0, 0, 0);
+
+			    if (firstDate > today || secondDate > today) {
+			        return false;
+			    }else{
+			    	return firstDate < secondDate;
+			    }
+			    
+			}
+
+
+</script>
 	</div>
 </body>
 </html>
