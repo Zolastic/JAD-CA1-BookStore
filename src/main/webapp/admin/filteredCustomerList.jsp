@@ -6,12 +6,15 @@
 <meta charset="ISO-8859-1">
 <%@ include file="../tailwind-css.jsp"%>
 <%@ page import="java.util.*, model.CustomerListByBooks, model.Book"%>
+<script src="<%=request.getContextPath()%>/print.js"></script>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <title>Filtered Customer List</title>
 </head>
 <body>
+
 	<%@ include file="modal.jsp"%>
+	
 	<%
 	boolean error = false;
 	List<CustomerListByBooks> listOfCustomerByBookID = null;
@@ -155,15 +158,7 @@
 				</div>
 			</div>
 		</div>
-		<script>
-        function printReport() {
-            const printContent = document.getElementById('printdiv').outerHTML;
-            const originalContent = document.body.innerHTML;
-            document.body.innerHTML = printContent;
-            window.print();
-            document.body.innerHTML = originalContent;
-        }
-    </script>
+
 		<%
 		} else {
 		%>
@@ -177,6 +172,6 @@
 		<%
 		}
 		%>
-	
+
 </body>
 </html>

@@ -127,7 +127,8 @@ public class TransactionHistoryDAO {
 						resultSet.getString("transaction_history_items.transaction_history_itemID"),
 						resultSet.getString("transaction_history_items.bookID"),
 						resultSet.getInt("transaction_history_items.qty"),
-						resultSet.getInt("transaction_history_items.reviewed"));
+						resultSet.getInt("transaction_history_items.reviewed"),
+						resultSet.getDouble("transaction_history_items.price"));
 				Book book = new Book(resultSet.getString("book.book_id"), resultSet.getString("book.ISBN"),
 						resultSet.getString("book.title"), resultSet.getString("author.authorName"),
 						resultSet.getString("publisher.publisherName"), resultSet.getString("book.publication_date"),

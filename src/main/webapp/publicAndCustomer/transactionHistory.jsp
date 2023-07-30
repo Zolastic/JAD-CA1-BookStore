@@ -96,7 +96,7 @@ if (transactionHistories.size() == 0) {
                 <p>Quantity Purchased: <%=transactionItem.getQuantity()%></p>
             </div>
             <div class="w-30">
-                <p class="text-gray-600">$<%=String.format("%.2f", transactionItem.getBook().getPrice())%></p>
+                <p class="text-gray-600">Paid: $<%=String.format("%.2f", transactionItem.getPrice())%></p>
             </div>
             <% if (transactionItem.getReviewed() == 0) { %>
             <form action="<%=request.getContextPath()%>/Review" method="post" id="review_<%=transactionItem.getBook().getBookID()%>">

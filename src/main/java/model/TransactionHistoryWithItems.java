@@ -24,7 +24,7 @@ public class TransactionHistoryWithItems {
         this.gstPercent=gstPercent;
         this.fullAddr=fullAddr;
     }
-    
+
 
 	public String getFullAddr() {
 		return fullAddr;

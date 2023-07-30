@@ -99,7 +99,7 @@ public class CheckoutDAO {
 	public Boolean insertTransactionHistoryItems(Connection connection, List<Book> checkoutItems,
 			String transactionHistoryUUID) {
 		Boolean success = true;
-		String sql = "INSERT INTO transaction_history_items (transaction_historyID, transaction_history_itemID, bookID, Qty) VALUES (?, ?, ?, ?)";
+		String sql = "INSERT INTO transaction_history_items (transaction_historyID, transaction_history_itemID, bookID, Qty, price) VALUES (?, ?, ?, ?, ?)";
 
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			for (Book book : checkoutItems) {
@@ -108,6 +108,7 @@ public class CheckoutDAO {
 				statement.setString(2, transactionHistoryItemUUID);
 				statement.setString(3, book.getBookID());
 				statement.setInt(4, book.getQuantity());
+				statement.setDouble(5, book.getPrice());
 				int rowsAffected = statement.executeUpdate();
 				if (rowsAffected != 1) {
 					success = false;
