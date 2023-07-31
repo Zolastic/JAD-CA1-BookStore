@@ -90,7 +90,6 @@
 					class="ml-2 bg-rose-900 p-1 text-white rounded-lg">0.0</p>
 			</div>
 
-			<!-- Review Description Text Area -->
 			<div class="mb-4 mt-5">
 				<label for="review_text" class="block mb-2">Review
 					Description:</label>

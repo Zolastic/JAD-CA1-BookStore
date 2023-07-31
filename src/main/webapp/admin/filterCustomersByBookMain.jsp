@@ -45,11 +45,15 @@
 		<div
 			class="relative overflow-x-auto shadow-md sm:rounded-lg m-5 mx-20">
 			<div class="flex justify-start mb-4">
-				<input type="text" id="isbnSearch"
+				<input type="text" id="searchByISBN()"
 					class="p-2 rounded-l-lg border border-gray-600 w-72"
-					placeholder="Enter 13-digit ISBN">
-				<button class="p-2 bg-gray-400 text-white rounded-r-lg" onclick="searchByISBN()"><i class="fas fa-search"></i></button>
+					placeholder="Enter 13-digit ISBN" onkeyup="handleKeyPress(event)">
+				<button class="p-2 bg-gray-400 text-white rounded-r-lg"
+					onclick="searchByISBN()">
+					<i class="fas fa-search"></i>
+				</button>
 			</div>
+
 			<table
 				class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
 				<thead
@@ -58,7 +62,7 @@
 						<th scope="col" class="px-6 py-3">Book Title</th>
 						<th scope="col" class="px-6 py-3">ISBN Number</th>
 						<th scope="col" class="px-6 py-3">Author</th>
-						<th scope="col" class="px-6 py-3">Price</th>
+						<th scope="col" class="px-6 py-3">Current Price</th>
 						<th scope="col" class="px-6 py-3"><span class="sr-only">View
 								Customer List</span></th>
 					</tr>
@@ -76,7 +80,8 @@
 						<td class="px-6 py-4"><%=book.getISBN()%></td>
 						<td class="px-6 py-4"><%=book.getAuthor()%></td>
 						<td class="px-6 py-4">$<%=book.getPrice()%></td>
-						<td class="px-6 py-4 text-right"><a href="<%=request.getContextPath()%>/admin/FilteredCustomerListServlet?bookID=<%=book.getBookID()%>"
+						<td class="px-6 py-4 text-right"><a
+							href="<%=request.getContextPath()%>/admin/FilteredCustomerListServlet?bookID=<%=book.getBookID()%>"
 							class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
 								View Purchased Customer List </a></td>
 					</tr>
@@ -89,36 +94,40 @@
 	</div>
 
 	<script>
-        function searchByISBN() {
-            const isbnInput = document.getElementById("isbnSearch").value;
-            const isbnPattern = /^[0-9]{13}$/;
-            if (!isbnPattern.test(isbnInput)) {
-                showModal("Invalid Input! ISBN must be 13 numbers");
-            } else {
-                const tableRows = document.querySelectorAll("tbody tr");
-                let found = false;
+	function searchByISBN() {
+	    const isbnInput = document.getElementById("isbnSearch").value;
+	    const isbnPattern = /^[0-9]{13}$/;
+	    if (!isbnPattern.test(isbnInput)) {
+	        showModal("Invalid Input! ISBN must be 13 numbers");
+	    } else {
+	        const tableRows = document.querySelectorAll("tbody tr");
+	        let found = false;
 
-                tableRows.forEach(row => {
-                    const isbnCell = row.querySelector("td:nth-child(2)").textContent;
-                    if (isbnCell === isbnInput) {
-                        row.scrollIntoView({ behavior: "smooth" });
-                        row.classList.add("bg-yellow-200");
-                        found = true;
-                        setTimeout(() => {
-                            row.classList.remove("bg-yellow-200");
-                        }, 5000); 
-                    } else {
-                        row.classList.remove("bg-yellow-200");
-                    }
-                });
+	        tableRows.forEach(row => {
+	            const isbnCell = row.querySelector("td:nth-child(2)").textContent;
+	            if (isbnCell === isbnInput) {
+	                const rowTopOffset = row.getBoundingClientRect().top;
+	                const currentScrollY = window.scrollY;
+	                const offset = rowTopOffset + currentScrollY - 100;  
+	                window.scrollTo({ top: offset, behavior: "smooth" });
+	                row.classList.add("bg-yellow-200");
+	                found = true;
+	                setTimeout(() => {
+	                    row.classList.remove("bg-yellow-200");
+	                }, 5000);
+	            } else {
+	                row.classList.remove("bg-yellow-200");
+	            }
+	        });
 
-                if (!found) {
-                    showModal("Book Not Found");
-                }
-            }
-        }
+	        if (!found) {
+	            showModal("Book Not Found");
+	        }
+	    }
+	}
+
     </script>
-    <%
+	<%
 	} else {
 	%>
 	<script>

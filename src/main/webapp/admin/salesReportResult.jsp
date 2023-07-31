@@ -8,6 +8,7 @@
 <%@include file="../tailwind-css.jsp"%>
 <%@ page
 	import="java.util.*, model.BookReport, model.OverallSalesReport"%>
+<script src="<%=request.getContextPath()%>/print.js"></script>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -94,6 +95,7 @@
 							<tr>
 								<th class="px-4 w-1/6">ISBN</th>
 								<th class="px-4 w-1/6">Title</th>
+								<th class="px-4 w-1/6">Average Listing Price</th>
 								<th class="px-4 w-1/6">Qty Sold</th>
 								<th class="px-4 w-1/6">Total Earnings (with GST)</th>
 								<th class="px-4 w-1/6">Total Earnings (without GST)</th>
@@ -107,6 +109,7 @@
 							<tr class="text-center">
 								<td class="border px-4 py-2 whitespace-nowrap"><%=report.getBookDetails().getISBN()%></td>
 								<td class="border px-4 py-2 whitespace-nowrap"><%=report.getBookDetails().getTitle()%></td>
+								<td class="border px-4 py-2 whitespace-nowrap"><%=report.getBookDetails().getPrice()%></td>
 								<td class="border px-4 py-2 whitespace-nowrap"><%=report.getQtySold()%></td>
 								<td class="border px-4 py-2 whitespace-nowrap">$<%=report.getTotalEarningWithGST()%></td>
 								<td class="border px-4 py-2 whitespace-nowrap">$<%=report.getTotalEarningWithoutGST()%></td>
@@ -153,15 +156,6 @@
 			return "Invalid Month";
 		}
 	}%>
-		<script>
-			function printReport() {
-				const printContent = document.getElementById('printdiv').outerHTML;
-				const originalContent = document.body.innerHTML;
-				document.body.innerHTML = printContent;
-				window.print();
-				document.body.innerHTML = originalContent;
-			}
-		</script>
 		<%
 		} else {
 		%>
