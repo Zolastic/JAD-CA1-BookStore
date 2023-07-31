@@ -49,7 +49,7 @@
 	if (validatedUserID == null) {
 	urlToAllBooks = request.getContextPath()+"/AllBooksPage";
 	%>
-	<%@include file="publicAndCustomer/navBar/headerNavPublic.html"%>
+	<%@include file="publicAndCustomer/navBar/headerNavPublic.jsp"%>
 	<%
 	} else {
 	urlToAllBooks = request.getContextPath()+"/AllBooksPage?userIDAvailable=true";
