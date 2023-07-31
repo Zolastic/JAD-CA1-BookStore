@@ -43,7 +43,7 @@
 
 	if (validatedUserID == null) {
 	%>
-	<%@ include file="navBar/headerNavPublic.html"%>
+	<%@ include file="navBar/headerNavPublic.jsp"%>
 	<%
 	} else {
 	%>
