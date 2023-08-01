@@ -44,7 +44,7 @@ String otpImage = (String) request.getAttribute("otpImage");
 		}
 		}
 		%>
-		<div class="field-wrapper flex justify-center my-2">
+		<div class="field-wrapper flex justify-center my-2 hidden">
 			<a href="#" onclick="resendOTP();" class="loginLinks">Resend OTP</a>
 		</div>
 		<div class="field-wrapper flex justify-center my-2">
@@ -54,7 +54,7 @@ String otpImage = (String) request.getAttribute("otpImage");
 		</div>
 	</form>
 
-	<form action="<%=request.getContextPath()%>/ResendOTP" method="post">
+	<form action="<%=request.getContextPath()%>/ResendOTP" method="post" class="hidden">
 	</form>
 
 	<script>
