@@ -53,11 +53,10 @@ public class OTPServlet extends HttpServlet {
 				return;
 			}
 			
-			userOTPDAO.updateOTP(connection, otpUserID, user.getSecret());
 			String otpImage = OTPManagement.generateBase64Image(user.getSecret(), user.getEmail());
 	        request.setAttribute("otpImage", otpImage);
 			
-			if (!userOTPDAO.verifyOTP(connection, otpUserID, otp)) {
+			if (!OTPManagement.verifyCode(user.getSecret(), otp)) {
 				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401&type=OTP");
 				return;
 			}
