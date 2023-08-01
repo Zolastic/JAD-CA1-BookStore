@@ -15,17 +15,17 @@ String otpImage = (String) request.getAttribute("otpImage");
 		action="<%=request.getContextPath()%>/OTP" method="post">
 		<div class="flex justify-center items-center">
 			<input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 				type="number" id="first" name="first" maxlength="1" /> <input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 				type="number" id="second" name="second" maxlength="1" /> <input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 				type="number" id="third" name="third" maxlength="1" /> <input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 				type="number" id="fourth" name="fourth" maxlength="1" /> <input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 				type="number" id="fifth" name="fifth" maxlength="1" /> <input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
 				type="number" id="sixth" name="sixth" maxlength="1" />
 		</div>
 
