@@ -50,11 +50,6 @@ public class LoginServlet extends HttpServlet {
 	        String otpImage = OTPManagement.generateBase64Image(secret, user.getEmail());
 	        request.setAttribute("otpImage", otpImage);
 			
-			if (!userOTPDAO.updateOTP(connection, userID, secret)) {
-				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401");
-				return;
-			}
-			
 			DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?type=OTP");
 			
 		} catch (Exception e) {
