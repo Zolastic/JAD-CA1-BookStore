@@ -106,7 +106,7 @@
 				</div>
 				<!-- Form action to delete review -->
 				<form id="deleteReview_<%=reviewHistory.getReview_id()%>"
-					action="<%=request.getContextPath()%>/ReviewHistory" method="post">
+					action="<%=request.getContextPath()%>/DeleteReview" method="post">
 					<div id="deleteBtn"
 						class="hover:text-red-600 text-red-800 focus:outline-none mx-3"
 						onclick="showModalYesCancel('Are you sure to delete review?','deleteReview_<%=reviewHistory.getReview_id()%>', 'scrollPositionForDelete_<%=reviewHistory.getReview_id()%>')">
@@ -118,7 +118,6 @@
 						value="<%=reviewHistory.getReview_id()%>"> <input
 						type="hidden" name="transaction_history_itemID"
 						value="<%=reviewHistory.getTransaction_history_itemID()%>">
-					<input type="hidden" name="action" value="deleteReview">
 				</form>
 			</div>
 

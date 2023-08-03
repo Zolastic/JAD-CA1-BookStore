@@ -65,47 +65,47 @@ public class AddAddressPage extends HttpServlet {
 
 	// Insert New Address
 	protected void submitAddAddress(HttpServletRequest request, HttpServletResponse response)
-	        throws ServletException, IOException {
+			throws ServletException, IOException {
 
-	    String unit_number = request.getParameter("unit_number");
-	    String block_number = request.getParameter("block_number");
-	    String street_address = request.getParameter("street_address");
-	    String postal_code = request.getParameter("postal_code");
-	    String countryInfo = request.getParameter("country");
-	    String userId = request.getParameter("userId");
+		String unit_number = request.getParameter("unit_number");
+		String block_number = request.getParameter("block_number");
+		String street_address = request.getParameter("street_address");
+		String postal_code = request.getParameter("postal_code");
+		String countryInfo = request.getParameter("country");
+		String userId = request.getParameter("userId");
 
-	    if (userId == null || unit_number == null || block_number == null || street_address == null || postal_code == null
-	            || countryInfo == null || unit_number.isEmpty() || block_number.isEmpty() || street_address.isEmpty()
-	            || postal_code.isEmpty() || countryInfo.isEmpty()) {
-	        String referer = request.getHeader("Referer");
-	        response.sendRedirect(referer + "&error=emptyInput");
-	    } else {
-	        String[] countryData = countryInfo.split(",");
-	        String countryId = countryData[0];
-	        String countryName = countryData[1];
+		if (userId == null || unit_number == null || block_number == null || street_address == null
+				|| postal_code == null || countryInfo == null || unit_number.isEmpty() || block_number.isEmpty()
+				|| street_address.isEmpty() || postal_code.isEmpty() || countryInfo.isEmpty()) {
+			String referer = request.getHeader("Referer");
+			response.sendRedirect(referer + "&error=emptyInput");
+		} else {
+			String[] countryData = countryInfo.split(",");
+			String countryId = countryData[0];
+			String countryName = countryData[1];
 
-	        try (Connection connection = DBConnection.getConnection()) {
-	            String addr_id = uuidGenerator();
-	            Address addr = new Address(addr_id, unit_number, block_number, street_address, postal_code, countryId,
-	                    countryName);
-	            int rowsAffected = addressDAO.insertNewAddress(connection, addr, userId);
-	            if (rowsAffected > 0) {
-	                String referer = request.getHeader("Referer");
-	                response.sendRedirect(referer + "&success=true");
-	            } else {
-	                String referer = request.getHeader("Referer");
-	                response.sendRedirect(referer + "&error=errInsert");
-	            }
-	        } catch (SQLException e) {
-	            System.err.println("Error: " + e);
-	            String referer = request.getHeader("Referer");
-	            response.sendRedirect(referer + "&error=conndbError");
-	        } catch (Exception e) {
-	            System.err.println("Error: " + e);
-	            String referer = request.getHeader("Referer");
-	            response.sendRedirect(referer + "&error=unexpectedError");
-	        }
-	    }
+			try (Connection connection = DBConnection.getConnection()) {
+				String addr_id = uuidGenerator();
+				Address addr = new Address(addr_id, unit_number, block_number, street_address, postal_code, countryId,
+						countryName);
+				int rowsAffected = addressDAO.insertNewAddress(connection, addr, userId);
+				if (rowsAffected > 0) {
+					String referer = request.getHeader("Referer");
+					response.sendRedirect(referer + "&success=true");
+				} else {
+					String referer = request.getHeader("Referer");
+					response.sendRedirect(referer + "&error=errInsert");
+				}
+			} catch (SQLException e) {
+				System.err.println("Error: " + e);
+				String referer = request.getHeader("Referer");
+				response.sendRedirect(referer + "&error=conndbError");
+			} catch (Exception e) {
+				System.err.println("Error: " + e);
+				String referer = request.getHeader("Referer");
+				response.sendRedirect(referer + "&error=unexpectedError");
+			}
+		}
 	}
 
 	// Function to generate an uuid
@@ -120,13 +120,8 @@ public class AddAddressPage extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// check for actions
-		String action = request.getParameter("action");
-		if (action != null && action.equals("submitInsertAddr")) {
-			submitAddAddress(request, response);
-		} else {
-			doGet(request, response);
-		}
+		submitAddAddress(request, response);
+
 	}
 
 }

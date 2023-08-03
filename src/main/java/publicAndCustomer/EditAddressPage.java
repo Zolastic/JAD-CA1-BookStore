@@ -70,41 +70,43 @@ public class EditAddressPage extends HttpServlet {
 			System.err.println("Error: \" + e);\r\n");
 		}
 	}
+
 	// Handle submit edit
 	protected void submitEditAddress(HttpServletRequest request, HttpServletResponse response)
-		    throws ServletException, IOException {
-		    String addr_id = request.getParameter("addr_id");
-		    String unit_number = request.getParameter("unit_number");
-		    String block_number = request.getParameter("block_number");
-		    String street_address = request.getParameter("street_address");
-		    String postal_code = request.getParameter("postal_code");
-		    String countryInfo = request.getParameter("country");
+			throws ServletException, IOException {
+		String addr_id = request.getParameter("addr_id");
+		String unit_number = request.getParameter("unit_number");
+		String block_number = request.getParameter("block_number");
+		String street_address = request.getParameter("street_address");
+		String postal_code = request.getParameter("postal_code");
+		String countryInfo = request.getParameter("country");
 
-		    if (addr_id == null || unit_number == null || block_number == null || street_address == null || postal_code == null || countryInfo == null) {
-		        String referer = request.getHeader("Referer");
-		        response.sendRedirect(referer + "&error=emptyInput" + "&addr_id=" + addr_id);
-		    } else {
-		        String[] countryData = countryInfo.split(",");
-		        String countryId = countryData[0];
-		        String countryName = countryData[1];
-System.out.println(countryData);
-		        try (Connection connection = DBConnection.getConnection()) {
-		            Address addr = new Address(addr_id, unit_number, block_number, street_address, postal_code, countryId, countryName);
-		            int rowsAffected = addressDAO.editAddress(connection, addr);
-		            if (rowsAffected > 0) {
-		                String referer = request.getHeader("Referer");
-		                response.sendRedirect(referer + "&addr_id=" + addr_id + "&success=true");
-		            } else {
-		                String referer = request.getHeader("Referer");
-		                response.sendRedirect(referer + "&error=errEdit&addr_id=" + addr_id);
-		            }
-		        } catch (SQLException e) {
-		            System.err.println("Error: " + e);
-		            String referer = request.getHeader("Referer");
-		            response.sendRedirect(referer + "&error=conndbError" + "&addr_id=" + addr_id);
-		        }
-		    }
+		if (addr_id == null || unit_number == null || block_number == null || street_address == null
+				|| postal_code == null || countryInfo == null) {
+			String referer = request.getHeader("Referer");
+			response.sendRedirect(referer + "&error=emptyInput" + "&addr_id=" + addr_id);
+		} else {
+			String[] countryData = countryInfo.split(",");
+			String countryId = countryData[0];
+			String countryName = countryData[1];
+			try (Connection connection = DBConnection.getConnection()) {
+				Address addr = new Address(addr_id, unit_number, block_number, street_address, postal_code, countryId,
+						countryName);
+				int rowsAffected = addressDAO.editAddress(connection, addr);
+				if (rowsAffected > 0) {
+					String referer = request.getHeader("Referer");
+					response.sendRedirect(referer + "&addr_id=" + addr_id + "&success=true");
+				} else {
+					String referer = request.getHeader("Referer");
+					response.sendRedirect(referer + "&error=errEdit&addr_id=" + addr_id);
+				}
+			} catch (SQLException e) {
+				System.err.println("Error: " + e);
+				String referer = request.getHeader("Referer");
+				response.sendRedirect(referer + "&error=conndbError" + "&addr_id=" + addr_id);
+			}
 		}
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -112,12 +114,7 @@ System.out.println(countryData);
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// check for actions
-		String action = request.getParameter("action");
-		if (action != null && action.equals("submitEdit")) {
-			submitEditAddress(request, response);
-		} else {
-			doGet(request, response);
-		}
+		submitEditAddress(request, response);
+
 	}
 }

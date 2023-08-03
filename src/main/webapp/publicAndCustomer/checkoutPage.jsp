@@ -95,7 +95,7 @@
 		</div>
 		<!-- Form action for checkout -->
 		<div class="mt-2">
-			<form id="payment-form" action="/CA1-assignment/CheckoutPage"
+			<form id="payment-form" action="<%=request.getContextPath()%>/ProccessPayment"
 				method="post">
 				<!-- Input for user to select address -->
 				<div class="p-2 rounded shadow my-8">
@@ -204,9 +204,9 @@
 		var modAddrButton = document.getElementById("modAddr");
 		modAddrButton.addEventListener("click", function() {
 			if (<%=validatedUserID%> != null) {
-				window.location.href = "/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=checkout";
+				window.location.href = <%=request.getContextPath()%>+"/ModifyAddressPage?userIDAvailable=true&from=checkout";
 			} else {
-				window.location.href = "/CA1-assignment/ModifyAddressPage?from=checkout";
+				window.location.href = <%=request.getContextPath()%>+"/ModifyAddressPage?from=checkout";
 			}
 		});
 	</script>
@@ -220,7 +220,7 @@
 			var closeButton = document.getElementById("close");
 			showModal("Error loading page");
 			closeButton.addEventListener("click", function() {
-			window.location.href = "/CA1-assignment/CartPage?userIDAvailable=true";
+			window.location.href =<%=request.getContextPath()%>+ "/CartPage?userIDAvailable=true";
 		});
 	}
 	</script>

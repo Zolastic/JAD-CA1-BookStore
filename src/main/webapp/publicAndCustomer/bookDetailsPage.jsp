@@ -242,12 +242,11 @@
 
 				<div class="mr-4">
 					<!-- Form action for update quantity -->
-					<form action="<%=request.getContextPath()%>/BookDetailsPage" method="post">
+					<form action="<%=request.getContextPath()%>/AddToCart" method="post">
 						<input type="hidden" name="bookID" value="<%=bookID%>"> <input
 							type="hidden" name="quantity"
 							value="<%=bookDetails.getQuantity()%>"> <input
 							type="hidden" name="validatedUserID" value="<%=validatedUserID%>">
-						<input type="hidden" name="action" value="addToCart">
 						<%
 						if (bookDetails.getInventory() != 0) {
 						%>
