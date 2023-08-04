@@ -69,7 +69,7 @@
 		<div class="border border-gray-300 mb-5"></div>
 		<!-- Form for Review -->
 		<form action="Review" method="post">
-			<input type="hidden" name="action" value="submitReview"> <input
+		<input
 				type="hidden" name="bookID" value="<%=bookDetails.getBookID()%>">
 			<input type="hidden" name="custID" value="<%=custID%>"> <input
 				type="hidden" name="transactionHistoryItemID"

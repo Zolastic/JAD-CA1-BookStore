@@ -26,7 +26,7 @@ import utils.HttpServletRequestUploadWrapper;
 public class EditProfileServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserDAO userDAO = new UserDAO();
-       
+    
     /**
      * @see HttpServlet#HttpServlet()
      */

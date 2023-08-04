@@ -42,6 +42,7 @@ public class ModifyAddressPage extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		System.out.println("yo");
 		try (Connection connection = DBConnection.getConnection()) {
 			String userIDAvailable = request.getParameter("userIDAvailable");
 			String userID = null;
@@ -73,32 +74,6 @@ public class ModifyAddressPage extends HttpServlet {
 		}
 	}
 
-	// Handle delete cart items
-	protected void deleteAddressAction(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		String addr_id = request.getParameter("addr_id");
-		String pageBack = request.getParameter("from");
-		if (addr_id == null || pageBack == null) {
-			response.sendRedirect(
-					"/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=" + pageBack + "&deleteError=true");
-		} else {
-			try (Connection connection = DBConnection.getConnection()) {
-				boolean deleteSuccess = addressDAO.deleteAddr(addr_id);
-				if (deleteSuccess) {
-					response.sendRedirect("/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=" + pageBack);
-				} else {
-					response.sendRedirect("/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=" + pageBack
-							+ "&deleteError=true");
-				}
-			} catch (SQLException e) {
-				System.err.println("Error: " + e);
-
-				response.sendRedirect("/CA1-assignment/ModifyAddressPage?userIDAvailable=true&from=" + pageBack
-						+ "&deleteError=otherError");
-
-			}
-		}
-	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -106,12 +81,7 @@ public class ModifyAddressPage extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String action = request.getParameter("action");
-		if (action != null && action.equals("deleteAddress")) {
-			deleteAddressAction(request, response);
-		} else {
 			doGet(request, response);
-		}
 
 	}
 

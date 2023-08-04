@@ -99,7 +99,7 @@ if (transactionHistories.size() == 0) {
                 <p class="text-gray-600">Paid: $<%=String.format("%.2f", transactionItem.getPrice())%></p>
             </div>
             <% if (transactionItem.getReviewed() == 0) { %>
-            <form action="<%=request.getContextPath()%>/Review" method="post" id="review_<%=transactionItem.getBook().getBookID()%>">
+            <form action="<%=request.getContextPath()%>/Review" method="get" id="review_<%=transactionItem.getBook().getBookID()%>">
                 <input type="hidden" name="bookID" value="<%=transactionItem.getBook().getBookID()%>">
                 <input type="hidden" name="custID" value="<%=transactionHistory.getCustID()%>">
                 <input type="hidden" name="scrollPosition" id="scrollPosition_<%=transactionItem.getBook().getBookID()%>">

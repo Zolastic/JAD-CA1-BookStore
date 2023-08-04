@@ -67,7 +67,6 @@
 			method="post" id="editAddressForm"
 			class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
 			<h1 class="text-3xl font-bold my-2 mb-5">Edit Your Address</h1>
-			<input type="hidden" name="action" value="submitEdit">
 			<input type="hidden" name="addr_id" value="<%=addr.getAddr_id() %>">
 			<div class="mb-4 flex">
 				<label for="unit_number" class="font-bold w-32">Unit Number:</label>
