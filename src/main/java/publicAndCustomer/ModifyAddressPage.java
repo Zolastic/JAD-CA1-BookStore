@@ -42,6 +42,7 @@ public class ModifyAddressPage extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		System.out.println("yo");
 		try (Connection connection = DBConnection.getConnection()) {
 			String userIDAvailable = request.getParameter("userIDAvailable");
 			String userID = null;

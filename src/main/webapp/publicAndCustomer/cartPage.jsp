@@ -257,8 +257,7 @@
 						<input type="hidden" name="scrollPositionForDelete"
 							id="scrollPositionForDelete_<%=item.getBookID()%>" value="">
 						<input type="hidden" name="bookID" value="<%=item.getBookID()%>">
-						<input type="hidden" name="cartID" value="<%=cartID%>"> <input
-							type="hidden" name="action" value="deleteCartItem">
+						<input type="hidden" name="cartID" value="<%=cartID%>">
 					</form>
 
 				</div>

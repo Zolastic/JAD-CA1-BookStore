@@ -71,9 +71,14 @@ public class EditAddressPage extends HttpServlet {
 		}
 	}
 
-	// Handle submit edit
-	protected void submitEditAddress(HttpServletRequest request, HttpServletResponse response)
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		// Handle submit edit
+		String userID = (String) request.getSession().getAttribute("userID");
 		String addr_id = request.getParameter("addr_id");
 		String unit_number = request.getParameter("unit_number");
 		String block_number = request.getParameter("block_number");
@@ -90,6 +95,12 @@ public class EditAddressPage extends HttpServlet {
 			String countryId = countryData[0];
 			String countryName = countryData[1];
 			try (Connection connection = DBConnection.getConnection()) {
+				userID = verifyUserDAO.validateUserID(connection, userID);
+				if (userID == null) {
+					RequestDispatcher dispatcher = request.getRequestDispatcher("/publicAndCustomer/registrationPage.jsp");
+					dispatcher.forward(request, response);
+					return;
+				}
 				Address addr = new Address(addr_id, unit_number, block_number, street_address, postal_code, countryId,
 						countryName);
 				int rowsAffected = addressDAO.editAddress(connection, addr);
@@ -106,15 +117,6 @@ public class EditAddressPage extends HttpServlet {
 				response.sendRedirect(referer + "&error=conndbError" + "&addr_id=" + addr_id);
 			}
 		}
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		submitEditAddress(request, response);
 
 	}
 }

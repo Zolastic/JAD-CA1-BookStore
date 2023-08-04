@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.CartDAO;
+import dao.VerifyUserDAO;
 import utils.DBConnection;
 
 /**
@@ -20,7 +22,8 @@ import utils.DBConnection;
 public class UpdateQuantity extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private CartDAO cartDAO = new CartDAO();
-
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
@@ -47,6 +50,7 @@ public class UpdateQuantity extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		String userID = (String) request.getSession().getAttribute("userID");
 		String scrollPosition = request.getParameter("scrollPositionForQty");
 		String bookID = request.getParameter("bookID");
 		String cartID = request.getParameter("cartID");
@@ -57,6 +61,12 @@ public class UpdateQuantity extends HttpServlet {
 			response.sendRedirect(referer + "?scrollPosition=" + scrollPosition + "&error=true");
 		} else {
 			try (Connection connection = DBConnection.getConnection()) {
+				userID = verifyUserDAO.validateUserID(connection, userID);
+				if (userID == null) {
+					RequestDispatcher dispatcher = request.getRequestDispatcher("/publicAndCustomer/registrationPage.jsp");
+					dispatcher.forward(request, response);
+					return;
+				}
 				int updatedQuantityInt = Integer.parseInt(updatedQuantity);
 				int rowsAffected = cartDAO.updateCartItemQuantity(connection, cartID, bookID, updatedQuantityInt);
 				if (rowsAffected > 0) {

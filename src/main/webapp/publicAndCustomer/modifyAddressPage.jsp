@@ -108,7 +108,6 @@
 						<form id="delete-form_<%=address.getAddr_id()%>"
 							action="<%=request.getContextPath()%>/DeleteAddress"
 							method="post">
-							<input type="hidden" name="action" value="deleteAddress">
 							<input type="hidden" name="addr_id"
 								value="<%=address.getAddr_id()%>"> <input type="hidden"
 								name="from" value="<%=pageBack%>">

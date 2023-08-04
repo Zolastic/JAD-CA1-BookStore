@@ -62,11 +62,19 @@ public class AddAddressPage extends HttpServlet {
 			System.err.println("Error: \" + e);\r\n");
 		}
 	}
+	// Function to generate an uuid
+	private String uuidGenerator() {
+		UUID uuid = UUID.randomUUID();
+		return (uuid.toString());
+	}
 
-	// Insert New Address
-	protected void submitAddAddress(HttpServletRequest request, HttpServletResponse response)
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		// Insert New Address
 		String unit_number = request.getParameter("unit_number");
 		String block_number = request.getParameter("block_number");
 		String street_address = request.getParameter("street_address");
@@ -106,21 +114,6 @@ public class AddAddressPage extends HttpServlet {
 				response.sendRedirect(referer + "&error=unexpectedError");
 			}
 		}
-	}
-
-	// Function to generate an uuid
-	private String uuidGenerator() {
-		UUID uuid = UUID.randomUUID();
-		return (uuid.toString());
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		submitAddAddress(request, response);
 
 	}
 

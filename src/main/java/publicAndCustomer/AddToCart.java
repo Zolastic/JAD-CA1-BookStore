@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.CartDAO;
+import dao.VerifyUserDAO;
 import utils.DBConnection;
 
 /**
@@ -21,6 +22,8 @@ import utils.DBConnection;
 public class AddToCart extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private CartDAO cartDAO = new CartDAO();
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -46,6 +49,19 @@ public class AddToCart extends HttpServlet {
 				response.sendRedirect(referer);
 			} else {
 				try (Connection connection = DBConnection.getConnection()) {
+					String userID = (String) request.getSession().getAttribute("userID");
+					if(userID.equals(validatedUserID)) {
+						userID = verifyUserDAO.validateUserID(connection, userID);
+					}else {
+						RequestDispatcher dispatcher = request.getRequestDispatcher("/publicAndCustomer/registrationPage.jsp");
+						dispatcher.forward(request, response);
+						return;
+					}
+					if (userID == null) {
+						RequestDispatcher dispatcher = request.getRequestDispatcher("/publicAndCustomer/registrationPage.jsp");
+						dispatcher.forward(request, response);
+						return;
+					}
 					cartID = cartDAO.getCartID(connection, validatedUserID);
 					if(cartID==null) {
 						String referer = (request.getHeader("Referer") + "&addToCart=failed");

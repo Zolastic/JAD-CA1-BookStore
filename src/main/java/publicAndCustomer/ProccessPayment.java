@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -27,6 +28,8 @@ import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.RefundCreateParams;
 
 import dao.CheckoutDAO;
+import dao.TransactionHistoryDAO;
+import dao.VerifyUserDAO;
 import model.Book;
 import utils.DBConnection;
 
@@ -37,8 +40,10 @@ import utils.DBConnection;
 public class ProccessPayment extends HttpServlet {
 	private static final String STRIPE_SECRET_KEY = "sk_test_51NHoftHrRFi94qYrcY4Yxv3NiAwj1ea5D7zuxCZtQ0kT9beLlwCh8GbjFKSgPz3s9K8QJ0U5mjet6H8vRL4VZBLq001eDbwLUL";
 	private static final long serialVersionUID = 1L;
+	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private CheckoutDAO checkoutDAO = new CheckoutDAO();
-
+	private TransactionHistoryDAO transactionHistoryDAO = new TransactionHistoryDAO();
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -96,6 +101,7 @@ public class ProccessPayment extends HttpServlet {
 				}
 			}
 			if (userID != null && addr_id != null&& checkoutItemsArrayString.size() != 0) {
+				String transactionHistoryUUID =null;
 				try {
 					// get the Book Class version of checkout items
 					checkoutItems = checkoutDAO.getCheckoutItems(connection, userID, checkoutItemsArrayString);
@@ -108,12 +114,16 @@ public class ProccessPayment extends HttpServlet {
 					if (paymentIntent != null && paymentIntent.getStatus().equals("succeeded")) {
 						// If insertion of transaction history or transaction history items failed do a
 						// refund
-						String transactionHistoryUUID = checkoutDAO.insertTransactionHistory(connection, amountInDollars, userID,
+						transactionHistoryUUID = checkoutDAO.insertTransactionHistory(connection, amountInDollars, userID,
 								addr_id, paymentIntent.getId(), gstPercent, fullAddr);
 						if (transactionHistoryUUID != null) {
 							Boolean success = checkoutDAO.insertTransactionHistoryItems(connection, checkoutItems,
 									transactionHistoryUUID);
 							if (!success) {
+								int status=transactionHistoryDAO.deleteTransactionHistory(connection, transactionHistoryUUID);
+								if(status!=200) {
+									System.err.println("Error: " + "Unable to delete transaction history");
+								}
 								RefundCreateParams refundParams = new RefundCreateParams.Builder()
 										.setPaymentIntent(paymentIntent.getId()).build();
 								Refund refund = Refund.create(refundParams);
@@ -166,6 +176,12 @@ public class ProccessPayment extends HttpServlet {
 						}
 					}
 				} catch (StripeException e) {
+					if (transactionHistoryUUID != null) {
+						int status=transactionHistoryDAO.deleteTransactionHistory(connection, transactionHistoryUUID);
+						if(status!=200) {
+							System.err.println("Error: " + "Unable to delete transaction history");
+						}
+					}
 					System.err.println("Error: " + e.getMessage());
 					clearCheckoutItemsCookie(response);
 					response.sendRedirect("PaymentError?userIDAvailable=true");
@@ -194,6 +210,15 @@ public class ProccessPayment extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		String userID = (String) request.getSession().getAttribute("userID");
+		try (Connection connection = DBConnection.getConnection()) {
+			userID = verifyUserDAO.validateUserID(connection, userID);
+			connection.close();
+		} catch (SQLException e) {
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/publicAndCustomer/registrationPage.jsp");
+			dispatcher.forward(request, response);
+			return;
+		}
 		paymentIntent(request, response);
 	}
 
