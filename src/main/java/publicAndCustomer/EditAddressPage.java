@@ -68,6 +68,10 @@ public class EditAddressPage extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("ModifyAddressPage");
 			dispatcher.forward(request, response);
 			System.err.println("Error: \" + e);\r\n");
+		} catch (Exception e) {
+			RequestDispatcher dispatcher = request.getRequestDispatcher("ModifyAddressPage");
+			dispatcher.forward(request, response);
+			System.err.println("Error: \" + e);\r\n");
 		}
 	}
 

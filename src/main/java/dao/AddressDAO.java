@@ -68,7 +68,7 @@ public class AddressDAO {
 		}
 	}
 
-	public int editAddress(Connection connection, Address addr) throws SQLException {
+	public int editAddress(Connection connection, Address addr) {
 		int rowsAffected = 0;
 		String addr_id = addr.getAddr_id();
 		String unit_number = addr.getUnit_number();
