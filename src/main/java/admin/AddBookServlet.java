@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

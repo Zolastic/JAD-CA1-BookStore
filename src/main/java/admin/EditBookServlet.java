@@ -31,10 +31,10 @@ import utils.HttpServletRequestUploadWrapper;
 @WebServlet("/admin/EditBook")
 public class EditBookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	GenreDAO genreDAO = new GenreDAO();
-	AuthorDAO authorDAO = new AuthorDAO();
-	PublisherDAO publisherDAO = new PublisherDAO();
-	BookDAO bookDAO = new BookDAO();
+	private GenreDAO genreDAO = new GenreDAO();
+	private AuthorDAO authorDAO = new AuthorDAO();
+	private PublisherDAO publisherDAO = new PublisherDAO();
+	private BookDAO bookDAO = new BookDAO();
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -42,13 +42,14 @@ public class EditBookServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		try (Connection connection = DBConnection.getConnection()) {
 			String bookID = request.getParameter("bookID");
 			loadData(request, connection, bookID);
 			request.getRequestDispatcher("editBook.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "index.jsp");
 		}
 	}
 

@@ -33,7 +33,6 @@ public class DeleteUserServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		String userID = request.getParameter("userID");
 		try (Connection connection = DBConnection.getConnection()) {
 			String imagePublicID = userDAO.getUserImagePublicID(connection, userID);

@@ -24,7 +24,6 @@ import utils.OTPManagement;
 public class OTPServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserDAO userDAO = new UserDAO();
-	private UserOTPDAO userOTPDAO = new UserOTPDAO();
        
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)

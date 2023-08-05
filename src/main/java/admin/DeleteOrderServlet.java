@@ -37,7 +37,7 @@ public class DeleteOrderServlet extends HttpServlet {
 		String transactionHistoryID = request.getParameter("transactionHistoryID");
 		String userID = request.getParameter("userID");
 		try (Connection connection = DBConnection.getConnection()) {
-			int statusCode = transactionHistoryDAO.deleteTransactionHistory(connection, transactionHistoryID);
+			transactionHistoryDAO.deleteTransactionHistory(connection, transactionHistoryID);
 			DispatchUtil.dispatch(request, response, "ViewUserOrders?userID=" + userID);
 		} catch (SQLException e) {
 			e.printStackTrace();

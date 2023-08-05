@@ -36,7 +36,7 @@ public class ViewGenresServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "viewGenres.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "index.jsp");
 		}
 	}
 

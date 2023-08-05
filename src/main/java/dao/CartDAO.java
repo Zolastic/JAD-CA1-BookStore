@@ -174,7 +174,7 @@ public class CartDAO {
 	public int createCartForUser(Connection connection, String customerID) throws SQLException {
 		String insertCartSqlStr = "INSERT INTO cart (cartID, custID) VALUES (?, ?);";
 		try (PreparedStatement insertCartPS = connection.prepareStatement(insertCartSqlStr)) {
-			insertCartPS.setString(1, (UUID.randomUUID()).toString());
+			insertCartPS.setString(1, UUID.randomUUID().toString());
 			insertCartPS.setString(2, customerID);
 			int affectedCartRows = insertCartPS.executeUpdate();
 			return affectedCartRows;

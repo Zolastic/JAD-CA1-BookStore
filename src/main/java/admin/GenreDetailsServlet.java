@@ -16,6 +16,7 @@ import dao.GenreDAO;
 import model.Book;
 import model.Genre;
 import utils.DBConnection;
+import utils.DispatchUtil;
 
 /**
  * Servlet implementation class GenreDetialsServlet
@@ -37,7 +38,7 @@ public class GenreDetailsServlet extends HttpServlet {
 			request.getRequestDispatcher("genreDetails.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "index.jsp");
 		}
 	}
 

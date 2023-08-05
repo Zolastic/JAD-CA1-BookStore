@@ -5,17 +5,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import model.UserAddress;
-import utils.CloudinaryUtil;
 
 public class UserAddressDAO {
-	public ArrayList<UserAddress> getUserOrderByPostalCode(Connection connection) throws SQLException {
+	public List<UserAddress> getUserOrderByPostalCode(Connection connection) throws SQLException {
 		String getAddressesSql = "SELECT u.userID, u.name, u.email, u.img, \r\n"
 				+ "a.addr_id, a.unit_number, a.block_number, a.street_address, a.postal_code, a.countryId\r\n"
 				+ "FROM users u, address a \r\n"
 				+ "WHERE a.userId = u.userID ORDER BY a.postal_code;";
-		ArrayList<UserAddress> users = new ArrayList<>();
+		List<UserAddress> users = new ArrayList<>();
 
 		try (PreparedStatement ps = connection.prepareStatement(getAddressesSql)) {
 

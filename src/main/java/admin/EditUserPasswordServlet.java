@@ -30,8 +30,7 @@ public class EditUserPasswordServlet extends HttpServlet {
 			request.getRequestDispatcher("editUserPassword.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			request.getRequestDispatcher("editUserPassword.jsp?statusCode=500").forward(request, response);
-			
+			DispatchUtil.dispatch(request, response, "index.jsp");
 		}
 	}
 	

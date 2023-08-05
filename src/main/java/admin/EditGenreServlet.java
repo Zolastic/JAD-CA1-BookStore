@@ -32,13 +32,14 @@ public class EditGenreServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		try (Connection connection = DBConnection.getConnection()) {
 			String genreID = request.getParameter("genreID");
 			loadData(request, connection, genreID);
 			request.getRequestDispatcher("editGenre.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			request.getRequestDispatcher("viewGenres.jsp").forward(request, response);
 		}
 	}
 

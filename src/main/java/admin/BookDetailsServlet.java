@@ -35,6 +35,7 @@ public class BookDetailsServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "bookDetails.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			DispatchUtil.dispatch(request, response, "index.jsp");
 		}
 	}
 
