@@ -42,7 +42,6 @@ public class ModifyAddressPage extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.out.println("yo");
 		try (Connection connection = DBConnection.getConnection()) {
 			String userIDAvailable = request.getParameter("userIDAvailable");
 			String userID = null;
@@ -71,9 +70,12 @@ public class ModifyAddressPage extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/modifyAddressPage.jsp");
 			dispatcher.forward(request, response);
 			System.err.println("Error: \" + e);\r\n");
+		} catch (Exception e) {
+			RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/modifyAddressPage.jsp");
+			dispatcher.forward(request, response);
+			System.err.println("Error: \" + e);\r\n");
 		}
 	}
-
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -81,7 +83,7 @@ public class ModifyAddressPage extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-			doGet(request, response);
+		doGet(request, response);
 
 	}
 

@@ -10,7 +10,7 @@ import java.util.List;
 import model.Country;
 
 public class CountryDAO {
-	public List<Country> getAllCountry(Connection connection) throws SQLException {
+	public List<Country> getAllCountry(Connection connection) {
 		String sqlStr = "SELECT * FROM country";
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
 			ResultSet resultSet = ps.executeQuery();
