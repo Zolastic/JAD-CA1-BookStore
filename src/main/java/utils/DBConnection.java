@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import exception.DAOException;
+
 public class DBConnection {
     private static final String DB_URL;
     static {
@@ -26,7 +28,39 @@ public class DBConnection {
 		}
     }
 
-    public static Connection getConnection() throws SQLException {
-    	return DriverManager.getConnection(DB_URL);
+    public static Connection getConnection() {
+    	try {
+			return DriverManager.getConnection(DB_URL);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DAOException("Cannot get the connection", ex);
+		}
+    }
+    
+    public static void rollback(Connection connection) {
+		try {
+			connection.rollback();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DAOException("Cannot rollback", ex);
+		}
+    }
+    
+    public static void setAutoCommit(Connection connection, boolean autoCommit) {
+		try {
+			connection.setAutoCommit(autoCommit);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DAOException("Cannot setAutoCommit", ex);
+		}
+    }
+    
+    public static void close(Connection connection) {
+		try {
+			connection.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DAOException("Cannot close connection", ex);
+		}
     }
 }

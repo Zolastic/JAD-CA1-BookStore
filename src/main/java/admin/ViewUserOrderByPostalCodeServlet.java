@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -38,12 +39,12 @@ public class ViewUserOrderByPostalCodeServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "viewUsersOrderByPostalCode.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			DispatchUtil.dispatch(request, response, "viewUsersOrderByPostalCode.jsp?statusCode=500");
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 
 	private void loadData(HttpServletRequest request, Connection connection) throws SQLException {
-		ArrayList<UserAddress> users = userAddressDAO.getUserOrderByPostalCode(connection);
+		List<UserAddress> users = userAddressDAO.getUserOrderByPostalCode(connection);
 		System.out.println("users: " + users);
 		request.setAttribute("users", users);
 	}
@@ -54,7 +55,6 @@ public class ViewUserOrderByPostalCodeServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

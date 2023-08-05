@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import exception.DAOException;
 import model.Address;
 import utils.DBConnection;
 
@@ -35,8 +36,8 @@ public class AddressDAO {
 			resultSet.close();
 			return addresses;
 		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-			return null;
+			e.printStackTrace();
+			throw new DAOException("Error with getAddressByUserId", e);
 		}
 	}
 
@@ -62,23 +63,23 @@ public class AddressDAO {
 			System.out.print(address);
 			return address;
 		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
-			return null;
+			e.printStackTrace();
+			throw new DAOException("Error with getAddressByAddrId", e);
 		}
 	}
 
 	public int editAddress(Connection connection, Address addr) throws SQLException {
 		int rowsAffected = 0;
-		try {
-			String addr_id = addr.getAddr_id();
-			String unit_number = addr.getUnit_number();
-			String block_number = addr.getBlock_number();
-			String street_address = addr.getStreet_address();
-			String postal_code = addr.getPostal_code();
-			String countryId = addr.getCountryId();
-			String countryName = addr.getCountryName();
-			String updateQuery = "UPDATE address SET unit_number = ?,block_number=?,street_address=?,postal_code=?, countryId=? WHERE addr_id = ?";
-			PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+		String addr_id = addr.getAddr_id();
+		String unit_number = addr.getUnit_number();
+		String block_number = addr.getBlock_number();
+		String street_address = addr.getStreet_address();
+		String postal_code = addr.getPostal_code();
+		String countryId = addr.getCountryId();
+		String countryName = addr.getCountryName();
+		String updateQuery = "UPDATE address SET unit_number = ?,block_number=?,street_address=?,postal_code=?, countryId=? WHERE addr_id = ?";
+		
+		try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
 			updateStatement.setString(1, unit_number);
 			updateStatement.setString(2, block_number);
 			updateStatement.setString(3, street_address);
@@ -87,7 +88,7 @@ public class AddressDAO {
 			updateStatement.setString(6, addr_id);
 			rowsAffected = updateStatement.executeUpdate();
 		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
+			e.printStackTrace();
 			rowsAffected = 0;
 		}
 		return rowsAffected;
@@ -114,7 +115,7 @@ public class AddressDAO {
 			insertStatement.setString(7, userId);
 			rowsAffected = insertStatement.executeUpdate();
 		} catch (SQLException e) {
-			System.err.println("Error: " + e.getMessage());
+			e.printStackTrace();
 			rowsAffected = 0;
 		}
 		return rowsAffected;
@@ -128,7 +129,7 @@ public class AddressDAO {
 			int rowsAffected = deleteStatement.executeUpdate();
 			return rowsAffected > 0;
 		} catch (SQLException e) {
-			System.err.println("Error: " + e);
+			e.printStackTrace();
 			return false;
 		}
 	}

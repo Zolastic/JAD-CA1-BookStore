@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import model.Author;
+import exception.DAOException;
 import model.Publisher;
 
 public class PublisherDAO {
@@ -49,7 +49,7 @@ public class PublisherDAO {
 				return publisher;
 			}
 
-			throw new RuntimeException("Book not found!!! publisherID: " + publisherID);
+			throw new DAOException("Book not found!!! publisherID: " + publisherID);
 		}
 
 	}

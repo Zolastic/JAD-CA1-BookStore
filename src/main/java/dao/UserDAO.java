@@ -5,10 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import model.Address;
 import model.User;
-import utils.CloudinaryUtil;
 
 public class UserDAO {
 
@@ -142,18 +142,18 @@ public class UserDAO {
 			throws SQLException {
 		String updatePasswordSqlStr = "UPDATE users SET password = ? WHERE userID = ?;";
 
-		PreparedStatement updatePasswordPS = connection.prepareStatement(updatePasswordSqlStr);
+		try (PreparedStatement updatePasswordPS = connection.prepareStatement(updatePasswordSqlStr)) {
+			if (!newPassword.equals(confirmNewPassword)) {
+				return 400;
+			}
 
-		if (!newPassword.equals(confirmNewPassword)) {
-			return 400;
+			updatePasswordPS.setString(1, newPassword);
+			updatePasswordPS.setString(2, userID);
+
+			int affectedRows = updatePasswordPS.executeUpdate();
+
+			return affectedRows > 0 ? 200 : 500;
 		}
-
-		updatePasswordPS.setString(1, newPassword);
-		updatePasswordPS.setString(2, userID);
-
-		int affectedRows = updatePasswordPS.executeUpdate();
-
-		return affectedRows > 0 ? 200 : 500;
 	}
 
 	public int deleteAccount(Connection connection, String userID) throws SQLException {
@@ -182,10 +182,10 @@ public class UserDAO {
 		}
 	}
 
-	public ArrayList<User> getUsers(Connection connection, String userInput) throws SQLException {
+	public List<User> getUsers(Connection connection, String userInput) throws SQLException {
 		userInput = userInput == null ? "" : userInput;
 		String getUsersSql = "SELECT * FROM users WHERE name LIKE ? OR email LIKE ?;";
-		ArrayList<User> users = new ArrayList<>();
+		List<User> users = new ArrayList<>();
 
 		try (PreparedStatement ps = connection.prepareStatement(getUsersSql)) {
 			ps.setString(1, "%" + userInput + "%");
@@ -225,15 +225,15 @@ public class UserDAO {
 	}
 
 	
-	public ArrayList<User> getUserIDOrderByPostalCode(Connection connection, ArrayList<Address> addresses) throws SQLException{
-		String getUsersSql = "SELECT userID, name, email, img FROM users WHERE userId = ?;";
-		ArrayList<User> users = new ArrayList<>();
-		
+	public List<User> getUserIDOrderByPostalCode(Connection connection, ArrayList<Address> addresses) throws SQLException{
 		if (addresses.isEmpty()) {
 			return null;
 		}
 		
-		try(PreparedStatement ps = connection.prepareStatement(getUsersSql)) {
+		String getUsersSql = "SELECT userID, name, email, img FROM users WHERE userId = ?;";
+		List<User> users = new ArrayList<>();
+		
+		try (PreparedStatement ps = connection.prepareStatement(getUsersSql)) {
 			for (Address address : addresses) {
 				ps.setString(1, address.getUserID());
 				ResultSet resultSet = ps.executeQuery();

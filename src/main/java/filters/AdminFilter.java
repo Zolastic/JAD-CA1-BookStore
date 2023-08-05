@@ -25,19 +25,10 @@ import utils.DBConnection;
 public class AdminFilter extends HttpFilter implements Filter {
 	private UserDAO userDAO = new UserDAO();
        
-    /**
-     * @see HttpFilter#HttpFilter()
-     */
-    public AdminFilter() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
 	/**
 	 * @see Filter#destroy()
 	 */
 	public void destroy() {
-		// TODO Auto-generated method stub
 	}
 
 	/**
@@ -65,12 +56,6 @@ public class AdminFilter extends HttpFilter implements Filter {
 			response.sendRedirect(request.getContextPath() + "/publicAndCustomer/registrationPage.jsp");
 			return;
 		}
-		
-//		String role = (String) session.getAttribute("role");
-//		if (!"admin".equalsIgnoreCase(role)) {
-//			response.sendRedirect(request.getContextPath() + "/home.jsp");
-//			return;
-//		}
 		
 		try (Connection connection = DBConnection.getConnection();) {
 			int statusCodeForVerifyRole = userDAO.verifyUserIsAdmin(connection, userID);

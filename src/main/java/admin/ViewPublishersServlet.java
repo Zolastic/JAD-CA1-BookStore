@@ -35,7 +35,7 @@ public class ViewPublishersServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "viewPublishers.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 

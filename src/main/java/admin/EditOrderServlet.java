@@ -34,6 +34,7 @@ public class EditOrderServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "editOrder.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 
