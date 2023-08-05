@@ -49,7 +49,7 @@ public class EditBookServlet extends HttpServlet {
 			request.getRequestDispatcher("editBook.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			DispatchUtil.dispatch(request, response, "index.jsp");
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 

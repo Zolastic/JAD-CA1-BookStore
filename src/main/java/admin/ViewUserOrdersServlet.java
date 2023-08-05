@@ -38,7 +38,7 @@ public class ViewUserOrdersServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "viewUserOrders.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			DispatchUtil.dispatch(request, response, "index.jsp");
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 

@@ -38,7 +38,7 @@ public class GenreDetailsServlet extends HttpServlet {
 			request.getRequestDispatcher("genreDetails.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			DispatchUtil.dispatch(request, response, "index.jsp");
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 

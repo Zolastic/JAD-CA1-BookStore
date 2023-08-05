@@ -34,7 +34,7 @@ public class EditPublisherServlet extends HttpServlet {
 			request.getRequestDispatcher("editPublisher.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			DispatchUtil.dispatch(request, response, "index.jsp");
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 
