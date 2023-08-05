@@ -91,7 +91,7 @@
 							Block Number:
 							<%=address.getBlock_number()%></p>
 						<p class="text-sm">
-							Unit Number<%=address.getUnit_number()%></p>
+							Unit Number: <%=address.getUnit_number()%></p>
 					</div>
 					<div class="flex items-center">
 						<form id="edit-form"
