@@ -16,7 +16,7 @@ public class TransactionHistoryDAO {
 
 	public List<TransactionHistory> getUserTransactionHistories(Connection connection, String userID) throws SQLException {
 		String sqlStr = "SELECT * FROM transaction_history WHERE custID = ?;";
-		ArrayList<TransactionHistory> TransactionHistories = new ArrayList<>();
+		List<TransactionHistory> transactionHistories = new ArrayList<>();
 
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
 			ps.setString(1, userID);
@@ -29,15 +29,15 @@ public class TransactionHistoryDAO {
 				transactionHistory.setTotalAmount(resultSet.getDouble("totalAmount"));
 				transactionHistory.setAddressID(resultSet.getString("addr_id"));
 				transactionHistory.setPaymentInpaymentIntentID(resultSet.getString("paymentIntentId"));
-				TransactionHistories.add(transactionHistory);
+				transactionHistories.add(transactionHistory);
 			}
 			resultSet.close();
-			return TransactionHistories;
+			return transactionHistories;
 		}
 	}
 	
 	public TransactionHistory getTransactionHistoryByID(Connection connection, String transactionHistoryID) throws SQLException {
-		String sqlStr = "SELECT * FROM transaction_history WHERE transaction_historyID = ?;\r\n";
+		String sqlStr = "SELECT * FROM transaction_history WHERE transaction_historyID = ?;";
 		
 		TransactionHistory transactionHistory = new TransactionHistory();
 		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {

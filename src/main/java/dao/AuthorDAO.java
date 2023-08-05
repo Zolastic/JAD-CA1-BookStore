@@ -9,10 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.servlet.RequestDispatcher;
-
 import model.Author;
-import utils.DBConnection;
 
 public class AuthorDAO {
 	
@@ -52,8 +49,7 @@ public class AuthorDAO {
 				return author;
 			}
 
-			// TODO - Revise later
-			throw new RuntimeException("Author not found!!! authorID: " + authorID);
+			throw new SQLException("Author not found!!! authorID: " + authorID);
 		}
 
 	}
@@ -78,8 +74,7 @@ public class AuthorDAO {
 	
 	public List<Author> getAuthors(Connection connection) throws SQLException {
 		try (Statement statement = connection.createStatement();
-			 ResultSet resultSet = statement
-							.executeQuery("SELECT * FROM author;");) {
+			 ResultSet resultSet = statement.executeQuery("SELECT * FROM author;");) {
 				
 				List<Author> authors = new ArrayList<>();
 				while (resultSet.next()) {

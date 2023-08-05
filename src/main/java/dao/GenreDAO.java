@@ -11,7 +11,6 @@ import java.util.UUID;
 
 import model.Book;
 import model.Genre;
-import utils.CloudinaryUtil;
 
 public class GenreDAO {
 

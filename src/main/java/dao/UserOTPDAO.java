@@ -33,7 +33,7 @@ public class UserOTPDAO {
 		}
 	}
 		
-	public boolean updateOTP(Connection connection, String userID, String secret) {
+	public boolean updateOTP(Connection connection, String userID, String secret) throws Exception {
 		String updateOtpSqlStr = "UPDATE user_otp SET  otp = ?, otp_creation_timestamp = CURRENT_TIMESTAMP() WHERE user_id = ?;";
 		try (PreparedStatement updateOtpPS = connection.prepareStatement(updateOtpSqlStr)) {
 			
@@ -48,9 +48,6 @@ public class UserOTPDAO {
 			
 			return true;
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
 		}
 	}
 }

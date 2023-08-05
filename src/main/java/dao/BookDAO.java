@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 import model.Book;
-import utils.CloudinaryUtil;
 import utils.DBConnection;
 
 public class BookDAO {
@@ -122,7 +121,7 @@ public class BookDAO {
 				return book;
 			}
 
-			throw new RuntimeException("Book not found!!! bookID: " + bookID);
+			throw new SQLException("Book not found!!! bookID: " + bookID);
 		}
 	}
 

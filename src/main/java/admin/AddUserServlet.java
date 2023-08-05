@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import dao.CartDAO;
 import dao.UserDAO;
-import dao.UserOTPDAO;
 import utils.DBConnection;
 import utils.OTPManagement;
 
@@ -25,7 +24,6 @@ public class AddUserServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserDAO userDAO = new UserDAO();
 	private CartDAO cartDAO = new CartDAO();
-	private UserOTPDAO userOTPDAO = new UserOTPDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -55,8 +53,9 @@ public class AddUserServlet extends HttpServlet {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 
-		try (Connection connection = DBConnection.getConnection()) {
-
+		Connection connection = DBConnection.getConnection();
+		try {
+			connection.setAutoCommit(false);
 			if (userDAO.checkForExistingUserEmail(connection, email)) {
 				response.sendRedirect(request.getContextPath()
 						+ "/admin/addUser.jsp?statusCode=409");
@@ -67,35 +66,23 @@ public class AddUserServlet extends HttpServlet {
 			String secret = OTPManagement.generateSecret();
 
 			if (userDAO.addUser(connection, name, email, password, customerID, secret) == 0) {
-				response.sendRedirect(request.getContextPath()
-						+ "/admin/addUser.jsp?statusCode=500");
-				return;
+				throw new SQLException("Cannot add user");
 			}
-
-			
 
 			if (cartDAO.createCartForUser(connection, customerID) == 0) {
-				response.sendRedirect(request.getContextPath()
-						+ "/admin/addUser.jsp?statusCode=500");
-				return;
+				throw new SQLException("Cannot create cart for user");
 			}
-
 			
-
-			if (userOTPDAO.createOTPRowForUser(connection, customerID) == 0) {
-				response.sendRedirect(request.getContextPath()
-						+ "/admin/addUser.jsp?statusCode=500");
-				return;
-			}
-
+			connection.commit();
 			response.sendRedirect(request.getContextPath() + "/admin/addUser.jsp?statusCode=200");
 			return;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-			response.sendRedirect(request.getContextPath()
-					+ "/admin/addUser.jsp?statusCode=500");
-			return;
+			DBConnection.rollback(connection);
+			response.sendRedirect(request.getContextPath() + "/admin/addUser.jsp?statusCode=500");
+		} finally {
+			DBConnection.close(connection);
 		}
 	}
 } 

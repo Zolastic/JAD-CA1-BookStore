@@ -34,7 +34,7 @@ public class ViewUsersServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "viewUsers.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "index.jsp");
 		}
 	}
 
@@ -48,7 +48,6 @@ public class ViewUsersServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 

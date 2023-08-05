@@ -36,7 +36,7 @@ public class ViewLeastSellingBooksServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "viewLeastSellingBooks.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "index.jsp");
 		}
 	}
 

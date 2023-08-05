@@ -34,7 +34,7 @@ public class EditUserProfileServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "editUserProfile.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			DispatchUtil.dispatch(request, response, "viewUsers.jsp");
+			DispatchUtil.dispatch(request, response, "index.jsp");
 		}
 	}
 	
