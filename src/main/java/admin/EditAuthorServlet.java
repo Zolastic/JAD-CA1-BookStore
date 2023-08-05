@@ -35,7 +35,7 @@ public class EditAuthorServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "editAuthor.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			DispatchUtil.dispatch(request, response, "index.jsp");
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 

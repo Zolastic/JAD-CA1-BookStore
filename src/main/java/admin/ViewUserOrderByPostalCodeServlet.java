@@ -39,7 +39,7 @@ public class ViewUserOrderByPostalCodeServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "viewUsersOrderByPostalCode.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			DispatchUtil.dispatch(request, response, "index.jsp");
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 
