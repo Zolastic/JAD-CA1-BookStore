@@ -20,7 +20,7 @@ import dao.VerifyUserDAO;
  */
 
 /**
- * Author(s): Soh Jian Min (P2238856) Description: JAD CA1
+ * Author(s): Soh Jian Min (P2238856) Description: JAD CA2
  */
 
 @WebServlet("/Review")
@@ -58,7 +58,7 @@ public class Review extends HttpServlet {
 			}
 		} else {
 			if (userID != null) {
-				response.sendRedirect("CA1-assignment/TransactionHistoryPage?userIDAvailable=true");
+				response.sendRedirect(request.getContextPath()+"/TransactionHistoryPage?userIDAvailable=true");
 			} else {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
@@ -122,13 +122,7 @@ public class Review extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// Check for action
-		String action = request.getParameter("action");
-		if (action != null && action.equals("submitReview")) {
 			submitReview(request, response);
-		} else {
-			doGet(request, response);
-		}
 	}
 
 }

@@ -30,17 +30,17 @@
 		String pageBack = request.getParameter("from");
 		String deleteError = request.getParameter("deleteError");
 		List<Address> addresses = null;
-		try{
+		try {
 			addresses = (List<Address>) request.getAttribute("addresses");
-		}catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			error = true;
 		}
 		String urlBack = "";
 		if (pageBack != null) {
 			if (pageBack.equals("profile")) {
-				urlBack = request.getContextPath()+"/ProfilePage?userID=" + validatedUserID;
+				urlBack = request.getContextPath() + "/ProfilePage?userID=" + validatedUserID;
 			} else {
-				urlBack = request.getContextPath()+"/CheckoutPage?userIDAvailable=true";
+				urlBack = request.getContextPath() + "/CheckoutPage?userIDAvailable=true";
 			}
 		}
 
@@ -95,17 +95,19 @@
 					</div>
 					<div class="flex items-center">
 						<form id="edit-form"
-							action="<%=request.getContextPath()%>/EditAddressPage?userIDAvailable=true&from=<%=pageBack%>"
-							method="post">
+							action="<%=request.getContextPath()%>/EditAddressPage"
+							method="get">
+							<input type="hidden" name="userIDAvailable" value="true">
+							<input type="hidden" name="from" value="<%=pageBack%>"> <input
+								type="hidden" name="addr_id" value="<%=address.getAddr_id()%>">
 							<button type="submit" class="text-gray-800 hover:text-black mx-3">
 								<i class="fas fa-edit transform hover:scale-110"></i>
 							</button>
-							<input type="hidden" name="addr_id"
-								value="<%=address.getAddr_id()%>">
 						</form>
+
 						<form id="delete-form_<%=address.getAddr_id()%>"
-							action="<%=request.getContextPath()%>/ModifyAddressPage" method="post">
-							<input type="hidden" name="action" value="deleteAddress">
+							action="<%=request.getContextPath()%>/DeleteAddress"
+							method="post">
 							<input type="hidden" name="addr_id"
 								value="<%=address.getAddr_id()%>"> <input type="hidden"
 								name="from" value="<%=pageBack%>">
@@ -114,7 +116,6 @@
 							onclick="showModalYesCancel('Are you sure you want to delete this address?', 'delete-form_<%=address.getAddr_id()%>', null)">
 							<i class="fas fa-trash-alt transform hover:scale-110"></i>
 						</button>
-
 					</div>
 				</div>
 			</div>

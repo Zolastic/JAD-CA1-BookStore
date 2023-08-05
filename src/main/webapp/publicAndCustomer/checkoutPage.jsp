@@ -95,7 +95,7 @@
 		</div>
 		<!-- Form action for checkout -->
 		<div class="mt-2">
-			<form id="payment-form" action="/CA1-assignment/CheckoutPage"
+			<form id="payment-form" action="<%=request.getContextPath()%>/ProccessPayment"
 				method="post">
 				<!-- Input for user to select address -->
 				<div class="p-2 rounded shadow my-8">
@@ -228,4 +228,4 @@
 	}
 	%>
 </body>
-</html>
+</html></html>
