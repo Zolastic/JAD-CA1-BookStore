@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,6 +65,7 @@ public class ProccessPayment extends HttpServlet {
 		double amountInDollars = Double.parseDouble(totalAmount);
 		// Stripe needs to take totalAmount in cents
 		long amount = Math.round(amountInDollars * 100);
+		Cookie[] cookies = request.getCookies();
 		List<Book> checkoutItems = new ArrayList<>();
 		String checkoutItemsString = null;
 		List<Map<String, Object>> checkoutItemsArrayString = new ArrayList<>();
@@ -71,33 +73,33 @@ public class ProccessPayment extends HttpServlet {
 			String[] addrData = addr.split("~");
 	        String addr_id = addrData[0];
 	        String fullAddr = addrData[1];
-			// Get the checkout items in session
-	        checkoutItemsString = (String) request.getSession().getAttribute("checkoutItems");
-	        if (checkoutItemsString != null) {
-				checkoutItemsString = URLDecoder.decode(checkoutItemsString, "UTF-8");
-				JSONArray jsonArray = new JSONArray(checkoutItemsString);
-				for (int i = 0; i < jsonArray.length(); i++) {
-					JSONObject jsonObject = jsonArray.getJSONObject(i);
-					Map<String, Object> bookItem = new HashMap<>();
+			if (cookies != null) {
+				// Get the checkout items in cookies
+				for (Cookie cookie : cookies) {
+					if (cookie.getName().equals("checkoutItems")) {
+						checkoutItemsString = cookie.getValue();
+						String encodedCartItems = cookie.getValue();
+						checkoutItemsString = URLDecoder.decode(encodedCartItems, "UTF-8");
+						JSONArray jsonArray = new JSONArray(checkoutItemsString);
+						for (int i = 0; i < jsonArray.length(); i++) {
+							JSONObject jsonObject = jsonArray.getJSONObject(i);
+							Map<String, Object> bookItem = new HashMap<>();
 
-					String bookID = jsonObject.getString("bookID");
-					int quantity = jsonObject.getInt("quantity");
+							String bookID = jsonObject.getString("bookID");
+							int quantity = jsonObject.getInt("quantity");
 
-					bookItem.put("bookID", bookID);
-					bookItem.put("quantity", quantity);
+							bookItem.put("bookID", bookID);
+							bookItem.put("quantity", quantity);
 
-					checkoutItemsArrayString.add(bookItem);
+							checkoutItemsArrayString.add(bookItem);
+						}
+
+						if (checkoutItemsString != null) {
+							break;
+						}
+					}
 				}
-				System.out.println("checkoutItemsString " + checkoutItemsString);
-	        }
-					
-			
-			System.out.println("UserID " + userID);
-			System.out.println("Address " + addr);
-			System.out.println("addr_id " + addr_id);
-			System.out.println("Checkout item string " + checkoutItemsString);
-			System.out.println("Checkout item " + checkoutItemsArrayString.size());
-			
+			}
 			if (userID != null && addr_id != null&& checkoutItemsArrayString.size() != 0) {
 				String transactionHistoryUUID =null;
 				try {
@@ -126,17 +128,17 @@ public class ProccessPayment extends HttpServlet {
 										.setPaymentIntent(paymentIntent.getId()).build();
 								Refund refund = Refund.create(refundParams);
 								if (refund.getStatus().equals("succeeded")) {
-									clearCheckoutItemsFromSession(request, response);
+									clearCheckoutItemsCookie(response);
 									response.sendRedirect("PaymentError?userIDAvailable=true");
 								} else {
-									clearCheckoutItemsFromSession(request, response);
+									clearCheckoutItemsCookie(response);
 									response.sendRedirect("PaymentError?error=RefundFailed&userIDAvailable=true");
 								}
 							} else {
 								// Payment success
 								checkoutDAO.deleteFromCart(connection, checkoutItems, userID);
 								checkoutDAO.updateBooks(connection, checkoutItems);
-								clearCheckoutItemsFromSession(request, response);
+								clearCheckoutItemsCookie(response);
 								response.sendRedirect("PaymentSuccess?userIDAvailable=true");
 							}
 						} else {
@@ -146,10 +148,10 @@ public class ProccessPayment extends HttpServlet {
 							Refund refund = Refund.create(refundParams);
 
 							if (refund.getStatus().equals("succeeded")) {
-								clearCheckoutItemsFromSession(request, response);
+								clearCheckoutItemsCookie(response);
 								response.sendRedirect("PaymentError?userIDAvailable=true");
 							} else {
-								clearCheckoutItemsFromSession(request, response);
+								clearCheckoutItemsCookie(response);
 								response.sendRedirect("PaymentError?error=RefundFailed&userIDAvailable=true");
 							}
 						}
@@ -162,14 +164,14 @@ public class ProccessPayment extends HttpServlet {
 							Refund refund = Refund.create(refundParams);
 
 							if (refund.getStatus().equals("succeeded")) {
-								clearCheckoutItemsFromSession(request, response);
+								clearCheckoutItemsCookie(response);
 								response.sendRedirect("PaymentError?userIDAvailable=true");
 							} else {
-								clearCheckoutItemsFromSession(request, response);
+								clearCheckoutItemsCookie(response);
 								response.sendRedirect("PaymentError?error=RefundFailed&userIDAvailable=true");
 							}
 						} else {
-							clearCheckoutItemsFromSession(request, response);
+							clearCheckoutItemsCookie(response);
 							response.sendRedirect("PaymentError?userIDAvailable=true");
 						}
 					}
@@ -181,26 +183,26 @@ public class ProccessPayment extends HttpServlet {
 						}
 					}
 					System.err.println("Error: " + e.getMessage());
-					e.printStackTrace();
-					clearCheckoutItemsFromSession(request, response);
+					clearCheckoutItemsCookie(response);
 					response.sendRedirect("PaymentError?userIDAvailable=true");
 				}
 			} else {
-				clearCheckoutItemsFromSession(request, response);
+				clearCheckoutItemsCookie(response);
 				response.sendRedirect("PaymentError?userIDAvailable=true");
 			}
 
 		} catch (SQLException e1) {
 			System.err.println("Error: " + e1.getMessage());
-			e1.printStackTrace();
-			clearCheckoutItemsFromSession(request, response);
+			clearCheckoutItemsCookie(response);
 			response.sendRedirect("PaymentError?userIDAvailable=true");
 		}
 	}
 	
-	// function to clearCheckoutItemsFromSession
-	private void clearCheckoutItemsFromSession(HttpServletRequest request, HttpServletResponse response) {
-		request.getSession().removeAttribute("checkoutItems");
+	// function to clearCheckoutItemsCookie
+	private void clearCheckoutItemsCookie(HttpServletResponse response) {
+		Cookie checkoutItemsCookie = new Cookie("checkoutItems", "");
+		checkoutItemsCookie.setMaxAge(0);
+		response.addCookie(checkoutItemsCookie);
 	}
 
 	/**
