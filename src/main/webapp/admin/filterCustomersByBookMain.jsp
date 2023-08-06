@@ -45,7 +45,7 @@
 		<div
 			class="relative overflow-x-auto shadow-md sm:rounded-lg m-5 mx-20">
 			<div class="flex justify-start mb-4">
-				<input type="text" id="searchByISBN()"
+				<input type="text" id="isbnSearch"
 					class="p-2 rounded-l-lg border border-gray-600 w-72"
 					placeholder="Enter 13-digit ISBN" onkeyup="handleKeyPress(event)">
 				<button class="p-2 bg-gray-400 text-white rounded-r-lg"
@@ -94,6 +94,12 @@
 	</div>
 
 	<script>
+	function handleKeyPress(event) {
+	    if (event.keyCode === 13) {
+	        searchByISBN();
+	    }
+	}
+	
 	function searchByISBN() {
 	    const isbnInput = document.getElementById("isbnSearch").value;
 	    const isbnPattern = /^[0-9]{13}$/;
