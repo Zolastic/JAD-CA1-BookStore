@@ -31,7 +31,7 @@
 	if (listOfCustomerByBookID != null && bookDetails != null && !error) {
 	%>
 	<%@ include file="./navbar.jsp"%>
-	<div class="container bg-slate-600 py-20">
+	<div class="h-full m-full bg-slate-600 py-20">
 		<div class="flex justify-between">
 			<div class="flex items-center space-x-2 px-4 mb-4">
 				<a
