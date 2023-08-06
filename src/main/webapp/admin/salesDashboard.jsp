@@ -45,7 +45,7 @@
 	%>
 	<%@include file="./navbar.jsp"%>
 
-	<div class="container mx-auto bg-slate-600 py-20 ">
+	<div class="h-full m-full bg-slate-600 py-20 ">
 		<div class="flex justify-end space-x-4 p-2 mr-5">
 			<a href="<%=request.getContextPath()%>/admin/SalesDashboardServlet"
 				class="flex items-center text-black bg-white hover:bg-gray-300 px-4 py-2 rounded-lg">
