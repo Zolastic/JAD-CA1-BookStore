@@ -21,7 +21,7 @@ import dao.VerifyUserDAO;
  */
 
 /**
- * Author(s): Soh Jian Min (P2238856) Description: JAD CA1
+ * Author(s): Soh Jian Min (P2238856) Description: JAD CA2
  */
 
 @WebServlet("/CategoryFilteredPage")
@@ -29,14 +29,6 @@ public class CategoryFilteredPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private GenreDAO genreDAO = new GenreDAO();
-
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public CategoryFilteredPage() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse

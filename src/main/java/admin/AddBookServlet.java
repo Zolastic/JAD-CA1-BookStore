@@ -3,6 +3,7 @@ package admin;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -18,6 +19,7 @@ import dao.PublisherDAO;
 import model.Author;
 import model.Genre;
 import model.Publisher;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
@@ -61,21 +63,34 @@ public class AddBookServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		try (Connection conn = DBConnection.getConnection()) {
+			loadData(request, conn);
 			 HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 	        
 	        String title = requestWrapper.getParameter("title");
 			double price = Double.parseDouble(requestWrapper.getParameter("price"));
-			int author = Integer.parseInt(requestWrapper.getParameter("author"));
-			int publisher = Integer.parseInt(requestWrapper.getParameter("publisher"));
+			String author = requestWrapper.getParameter("author");
+			String publisher = requestWrapper.getParameter("publisher");
 			int quantity = Integer.parseInt(requestWrapper.getParameter("quantity"));
 			String pubDate = requestWrapper.getParameter("date");
 			String isbn = requestWrapper.getParameter("isbn");
 			String description = requestWrapper.getParameter("description");
-			int genreId = Integer.parseInt(requestWrapper.getParameter("genre"));
-			String image = requestWrapper.getBase64Parameter("image");
+			String genreId = requestWrapper.getParameter("genre");
+			byte[] imageInByte = requestWrapper.getBytesParameter("image");
+			
+			System.out.println("imageInByte: " + imageInByte.toString());
+			
+			SimpleEntry<String, String> imageResult = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			String imageURL = null;
+			String imagePublicID = null;
+			
+			if (imageResult != null) {
+				imageURL = imageResult.getKey();
+				imagePublicID = imageResult.getValue();
+			}
 	        
-			int statusCode = bookDAO.addBook(title, price, author, publisher, quantity, pubDate, isbn, description, genreId, image);
+			int statusCode = bookDAO.addBook(title, price, author, publisher, quantity, pubDate, isbn, description, genreId, imageURL, imagePublicID);
 			
 			loadData(request, conn);
 			DispatchUtil.dispatch(request, response, "addBook.jsp?statusCode=" + statusCode);

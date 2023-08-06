@@ -3,6 +3,7 @@ package admin;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import dao.GenreDAO;
 import model.Genre;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
@@ -25,17 +27,19 @@ public class EditGenreServlet extends HttpServlet {
 	private GenreDAO genreDAO = new GenreDAO();
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		try (Connection connection = DBConnection.getConnection()) {
 			String genreID = request.getParameter("genreID");
 			loadData(request, connection, genreID);
 			request.getRequestDispatcher("editGenre.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			request.getRequestDispatcher("viewGenres.jsp").forward(request, response);
 		}
 	}
 
@@ -45,7 +49,8 @@ public class EditGenreServlet extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -56,9 +61,18 @@ public class EditGenreServlet extends HttpServlet {
 
 			genreID = requestWrapper.getParameter("genreID");
 			String genreName = requestWrapper.getParameter("name");
-			String image = requestWrapper.getBase64Parameter("image");
+			byte[] imageInByte = requestWrapper.getBytesParameter("image");
+
+			SimpleEntry<String, String> imageResult = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			String imageURL = null;
+			String imagePublicID = null;
 			
-			int statusCode = genreDAO.updateGenre(connection, genreID, genreName, image);
+			if (imageResult != null) {
+				imageURL = imageResult.getKey();
+				imagePublicID = imageResult.getValue();
+			}
+			
+			int statusCode = genreDAO.updateGenre(connection, genreID, genreName, imageURL, imagePublicID);
 			// Load data for page
 			loadData(request, connection, genreID);
 

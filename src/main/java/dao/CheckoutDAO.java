@@ -51,18 +51,21 @@ public class CheckoutDAO {
 	}
 
 	// insert checkout items into DB transaction history after payment success
-	public String insertTransactionHistory(Connection connection, double subtotal, String custID, String address){
+	public String insertTransactionHistory(Connection connection, double totalAmount, String custID, String addr_id, String paymentIntentId, double gstPercent, String fullAddr){
 		String transactionHistoryUUID = uuidGenerator();
 
-		String sql = "INSERT INTO transaction_history (transaction_historyID, transactionDate, subtotal, custID, address) VALUES (?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO transaction_history (transaction_historyID, transactionDate, totalAmount, custID, addr_id, paymentIntentId, gstPercent, fullAddr) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 		String transactionDate = getCurrentDateTime();
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
 			statement.setString(1, transactionHistoryUUID);
 			statement.setString(2, transactionDate);
-			statement.setDouble(3, subtotal);
+			statement.setDouble(3, totalAmount);
 			statement.setString(4, custID);
-			statement.setString(5, address);
+			statement.setString(5, addr_id);
+			statement.setString(6, paymentIntentId);
+			statement.setDouble(7, gstPercent);
+			statement.setString(8, fullAddr);
 
 			int rowsAffected = statement.executeUpdate();
 
@@ -96,7 +99,7 @@ public class CheckoutDAO {
 	public Boolean insertTransactionHistoryItems(Connection connection, List<Book> checkoutItems,
 			String transactionHistoryUUID) {
 		Boolean success = true;
-		String sql = "INSERT INTO transaction_history_items (transaction_historyID, transaction_history_itemID, bookID, Qty) VALUES (?, ?, ?, ?)";
+		String sql = "INSERT INTO transaction_history_items (transaction_historyID, transaction_history_itemID, bookID, Qty, price) VALUES (?, ?, ?, ?, ?)";
 
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			for (Book book : checkoutItems) {
@@ -105,6 +108,7 @@ public class CheckoutDAO {
 				statement.setString(2, transactionHistoryItemUUID);
 				statement.setString(3, book.getBookID());
 				statement.setInt(4, book.getQuantity());
+				statement.setDouble(5, book.getPrice());
 				int rowsAffected = statement.executeUpdate();
 				if (rowsAffected != 1) {
 					success = false;

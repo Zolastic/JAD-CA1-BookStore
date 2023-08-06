@@ -18,18 +18,11 @@ import dao.VerifyUserDAO;
 /**
  * Servlet implementation class Home
  */
-@WebServlet("/Home")
+@WebServlet("")
 public class Home extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private BookDAO bookDAO = new BookDAO();
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public Home() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -43,7 +36,6 @@ public class Home extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
-	// function to be run everytime home.jsp is run
 	public void setData(HttpServletRequest request) {
 		List<Book> popularBooks = new ArrayList<>();
 		String validatedUserID = null;

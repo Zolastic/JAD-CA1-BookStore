@@ -2,7 +2,7 @@
   - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
-  - Description: JAD CA1
+  - Description: JAD CA2
   --%>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -21,13 +21,18 @@
 </head>
 <body>
 	<%
-	List<Book> allBooks = (List<Book>) request.getAttribute("allBooks");
 	String action = request.getParameter("action");
 	String searchInput = request.getParameter("searchInput");
 	boolean err = false;
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
 	int totalPages=(int) request.getAttribute("totalPages");
-	if (allBooks == null) {
+	List<Book> allBooks=null;
+	try{
+		allBooks = (List<Book>) request.getAttribute("allBooks");
+	}catch (ClassCastException e) {
+		err = true;
+	}
+	if (allBooks == null||err) {
 		err = true;
 	%>
 	<!-- Error Loading Page -->
@@ -42,7 +47,7 @@
 
 	if (validatedUserID == null) {
 	%>
-	<%@ include file="navBar/headerNavPublic.html"%>
+	<%@ include file="navBar/headerNavPublic.jsp"%>
 	<%
 	} else {
 	%>
@@ -60,7 +65,7 @@
 	<!-- Search Input Form -->
 	<div class="mx-20 mb-60">
 		<div class="flex items-center justify-center m-5">
-			<form action="/CA1-assignment/AllBooksPage" method="GET">
+			<form action="<%=request.getContextPath()%>/AllBooksPage" method="GET">
 				<input type="hidden" name="action" value="searchBookByTitle">
 				<input type="text" name="searchInput"
 					placeholder="Search by Book Title"
@@ -91,7 +96,7 @@
 				boolean hasHalfStar = (rating - filledStars) >= 0.5;
 				int emptyStars = 5 - filledStars - (hasHalfStar ? 1 : 0);
 
-				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + book.getBookID();
+				String urlToBookDetails = request.getContextPath()+"/BookDetailsPage?bookID=" + book.getBookID();
 			%>
 
 			<div
@@ -103,7 +108,7 @@
 					<%
 					if (book.getImg() != null) {
 					%>
-					<img class="h-full object-contain" src="data:image/png;base64, <%=book.getImg()%>">
+					<img class="h-full object-contain" src="<%=book.getImg()%>">
 					<%
 					} else {
 					%>
@@ -178,7 +183,7 @@
 			<div class="flex space-x-4">
 				<a
 					href="<%=currentPage > 1
-				? ("/CA1-assignment/AllBooksPage?page=" + (currentPage - 1)
+				? (request.getContextPath()+"/AllBooksPage?page=" + (currentPage - 1)
 						+ (validatedUserID != null ? "&userIDAvailable=true" : "")
 						+ (action != null && action.equals("searchBookByTitle")
 								? ("&action=searchBookByTitle&searchInput=" + searchInput)
@@ -189,7 +194,7 @@
 				</a>
 				<%
 				for (int i = 1; i <= totalPages; i++) {
-					String pageLink = "/CA1-assignment/AllBooksPage?page=" + i;
+					String pageLink = request.getContextPath()+"/AllBooksPage?page=" + i;
 					if (validatedUserID != null) {
 						pageLink += "&userIDAvailable=true";
 					}
@@ -207,7 +212,7 @@
 				%>
 				<a
 					href="<%=currentPage < totalPages
-				? ("/CA1-assignment/AllBooksPage?page=" + (currentPage + 1)
+				? (request.getContextPath()+"/AllBooksPage?page=" + (currentPage + 1)
 						+ (validatedUserID != null ? "&userIDAvailable=true" : "")
 						+ (action != null && action.equals("searchBookByTitle")
 								? ("&action=searchBookByTitle&searchInput=" + searchInput)

@@ -20,7 +20,7 @@ import dao.VerifyUserDAO;
  */
 
 /**
- * Author(s): Soh Jian Min (P2238856) Description: JAD CA1
+ * Author(s): Soh Jian Min (P2238856) Description: JAD CA2
  */
 
 @WebServlet("/ReviewHistory")
@@ -28,13 +28,6 @@ public class ReviewHistory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private ReviewDAO reviewDAO = new ReviewDAO();
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ReviewHistory() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -71,53 +64,13 @@ public class ReviewHistory extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
-	
-
-	protected void deleteReviewAction(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		String review_id = request.getParameter("review_id");
-		String scrollPosition = request.getParameter("scrollPositionForDelete");
-		String transaction_history_itemID = request.getParameter("transaction_history_itemID");
-		if (review_id == null || scrollPosition == null || transaction_history_itemID == null) {
-			String referer = request.getHeader("Referer");
-			response.sendRedirect(
-					 referer+"&scrollPosition=" + scrollPosition + "&delete=false");
-		} else {
-			try (Connection connection = DBConnection.getConnection()) {
-				int rowsAffectedDelete = reviewDAO.deleteReview(connection, review_id);
-				if (rowsAffectedDelete != 1) {
-					throw new Exception("Delete Error!");
-				} else {
-					int countUpdate = reviewDAO.updateReviewState(connection, transaction_history_itemID, 0);
-					if (countUpdate == 1) {
-						String referer = request.getHeader("Referer");
-						response.sendRedirect(
-								referer+"&scrollPosition=" + scrollPosition);
-					} else {
-						throw new Exception("Update Error!");
-					}
-				}
-			} catch (Exception e) {
-				System.err.println("Error: " + e);
-				String referer = request.getHeader("Referer");
-				response.sendRedirect(
-						referer+"&scrollPosition=" + scrollPosition + "&delete=false");
-			}
-		}
-	}
-
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String action = request.getParameter("action");
-		if (action != null && action.equals("deleteReview")) {
-			deleteReviewAction(request, response);
-		} else {
-			doGet(request, response);
-		}
+		doGet(request, response);
 	}
 
 }

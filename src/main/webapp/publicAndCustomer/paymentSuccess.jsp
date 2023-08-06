@@ -2,7 +2,7 @@
   - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
-  - Description: JAD CA1
+  - Description: JAD CA2
   --%>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -35,11 +35,11 @@
 			<div class="flex items-center justify-center flex-col mt-4">
 				<button
 					class="bg-slate-500 text-white px-4 py-2 m-2 rounded hover:bg-slate-700 transform hover:scale-110"
-					onclick="window.location.href = '/CA1-assignment/CartPage?userIDAvailable=true';">
+					onclick="window.location.href = '<%=request.getContextPath()%>/CartPage?userIDAvailable=true';">
 					Go to Cart</button>
 				<button
 					class="bg-gray-100 text-black px-4 py-2 mx-2 border border-gray-300 rounded hover:bg-gray-200 transform hover:scale-110"
-					onclick="window.location.href = '/CA1-assignment/TransactionHistoryPage?userIDAvailable=true';">
+					onclick="window.location.href = '<%=request.getContextPath()%>/TransactionHistoryPage?userIDAvailable=true';">
 					Go to Transaction History</button>
 			</div>
 
@@ -52,9 +52,7 @@
 		showModal("Error loading page");
 		var closeButton = document.getElementById("close");
 		closeButton.addEventListener("click", function() {
-			if (
-	<%=validatedUserID%>
-		== null) {
+			if (<%=validatedUserID%>== null) {
 				window.location.href = "registrationPage.jsp";
 			}
 		});

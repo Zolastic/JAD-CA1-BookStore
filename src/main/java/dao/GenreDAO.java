@@ -31,9 +31,9 @@ public class GenreDAO {
 			while (resultSet.next()) {
 				String genreID = resultSet.getString("genreID");
 				String genreName = resultSet.getString("genreName");
-				String image = resultSet.getString("image");
-
-				genres.add(new Genre(genreID, genreName, image));
+				String imgSecureURL = resultSet.getString("image");
+			
+				genres.add(new Genre(genreID, genreName, imgSecureURL));
 			}
 			resultSet.close();
 			return genres;
@@ -49,8 +49,8 @@ public class GenreDAO {
 
 			while (resultSet.next()) {
 				String genreName = resultSet.getString("genre_name");
-				String genre_img = resultSet.getString("genre_img");
-				Genre genre = new Genre(genreID, genreName, genre_img);
+				String imgSecureURL = resultSet.getString("genre_img");
+				Genre genre = new Genre(genreID, genreName, imgSecureURL);
 				return genre;
 			}
 
@@ -94,17 +94,18 @@ public class GenreDAO {
 		}
 	}
 
-	public int addGenre(Connection connection, String genreName, String image) throws SQLException {
+	public int addGenre(Connection connection, String genreName, String image, String imagePublicID) throws SQLException {
 		Genre genre = getGenreByName(connection, genreName);
 		if (genre != null) {
 			return 409;
 		}
-		String addGenreSqlStr = "INSERT INTO genre (genre_id, genre_name, genre_img) VALUES (?, ?, ?);";
+		String addGenreSqlStr = "INSERT INTO genre (genre_id, genre_name, genre_img, img_public_id) VALUES (?, ?, ?, ?);";
 		try (PreparedStatement addGenrePS = connection.prepareStatement(addGenreSqlStr);) {
 
 			addGenrePS.setString(1, UUID.randomUUID().toString());
 			addGenrePS.setString(2, genreName);
 			addGenrePS.setString(3, image);
+			addGenrePS.setString(4, imagePublicID);
 
 			int affectedRows = addGenrePS.executeUpdate();
 
@@ -122,9 +123,24 @@ public class GenreDAO {
 			return affectedRows > 0 ? 200 : 500;
 		}
 	}
+	
+	public String getGenreImagePublicID(Connection connection, String genreID) throws SQLException {
+		String sqlStr = "Select img_public_id FROM genre WHERE genre_id = ?";
+		try (PreparedStatement ps = connection.prepareStatement(sqlStr)) {
+			ps.setString(1, genreID);
 
-	public int updateGenre(Connection connection, String genreID, String genreName, String image) throws SQLException {
-		String sqlStrWithImage = "UPDATE genre SET genre_name = ?, genre_img = ? WHERE genre_id = ?;";
+			ResultSet resultSet = ps.executeQuery();
+			
+			if (resultSet.next()) {
+				return resultSet.getString("img_public_id");
+			}
+
+			return null;
+		}
+	}
+
+	public int updateGenre(Connection connection, String genreID, String genreName, String image, String imagePublicID) throws SQLException {
+		String sqlStrWithImage = "UPDATE genre SET genre_name = ?, genre_img = ?, img_public_id = ? WHERE genre_id = ?;";
 		String sqlStrWithoutImage = "UPDATE genre SET genre_name = ? WHERE genre_id = ?;";
 
 		boolean noImage = image == null;
@@ -138,7 +154,8 @@ public class GenreDAO {
 			ps.setString(2, genreID);
 		} else {
 			ps.setString(2, image);
-			ps.setString(3, genreID);
+			ps.setString(3, imagePublicID);
+			ps.setString(4, genreID);
 		}
 
 		int affectedRows = ps.executeUpdate();

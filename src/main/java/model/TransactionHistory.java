@@ -1,27 +1,17 @@
 package model;
-import java.util.*;
-
-/**
- * Author(s): Soh Jian Min (P2238856)
- * Description: JAD CA1
- */
 
 public class TransactionHistory {
-    private String transactionHistoryID;
-    private String transactionDate;
-    private double subtotal;
-    private String custID;
-    private String address;
-    private List<TransactionHistoryItem> transactionHistoryItems;
-
-    public TransactionHistory(String transactionHistoryID, String transactionDate, double subtotal, String custID, String address, List<TransactionHistoryItem> transactionHistoryItems) {
-        this.transactionHistoryID = transactionHistoryID;
-        this.transactionDate = transactionDate;
-        this.subtotal = subtotal;
-        this.custID = custID;
-        this.address = address;
-        this.transactionHistoryItems = transactionHistoryItems;
-    }
+	private String transactionHistoryID;
+	private String transactionDate;
+	private double totalAmount;
+	private String customerID;
+	private String addressID;
+	private String paymentInpaymentIntentID;
+	private double gstPercentage;
+	private String fullAddress;
+	
+	public TransactionHistory() {
+	}
 
 	public String getTransactionHistoryID() {
 		return transactionHistoryID;
@@ -39,37 +29,54 @@ public class TransactionHistory {
 		this.transactionDate = transactionDate;
 	}
 
-	public double getSubtotal() {
-		return subtotal;
+	public double getTotalAmount() {
+		return totalAmount;
 	}
 
-	public void setSubtotal(double subtotal) {
-		this.subtotal = subtotal;
+	public void setTotalAmount(double totalAmount) {
+		this.totalAmount = totalAmount;
 	}
 
-	public String getCustID() {
-		return custID;
+	public String getCustomerID() {
+		return customerID;
 	}
 
-	public void setCustID(String custID) {
-		this.custID = custID;
+	public void setCustomerID(String customerID) {
+		this.customerID = customerID;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getAddressID() {
+		return addressID;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setAddressID(String addressID) {
+		this.addressID = addressID;
 	}
 
-	public List<TransactionHistoryItem> getTransactionHistoryItems() {
-		return transactionHistoryItems;
+	public String getPaymentInpaymentIntentID() {
+		return paymentInpaymentIntentID;
 	}
 
-	public void setTransactionHistoryItems(List<TransactionHistoryItem> transactionHistoryItems) {
-		this.transactionHistoryItems = transactionHistoryItems;
+	public void setPaymentInpaymentIntentID(String paymentInpaymentIntentID) {
+		this.paymentInpaymentIntentID = paymentInpaymentIntentID;
 	}
 
-   
+	public double getGstPercentage() {
+		return gstPercentage;
+	}
+
+	public void setGstPercentage(double gstPercentage) {
+		this.gstPercentage = gstPercentage;
+	}
+
+	public String getFullAddress() {
+		return fullAddress;
+	}
+
+	public void setFullAddress(String fullAddress) {
+		this.fullAddress = fullAddress;
+	}
+	
+	
+	
 }

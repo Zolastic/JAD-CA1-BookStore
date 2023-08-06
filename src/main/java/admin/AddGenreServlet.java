@@ -3,6 +3,7 @@ package admin;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileUploadException;
 
 import dao.GenreDAO;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
@@ -44,15 +46,24 @@ public class AddGenreServlet extends HttpServlet {
 			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 
 			String genreName = requestWrapper.getParameter("name");
-			String image = requestWrapper.getBase64Parameter("image");
+			byte[] imageInByte = requestWrapper.getBytesParameter("image");
 
-			int statusCode = genreDAO.addGenre(connection, genreName, image);
+			SimpleEntry<String, String> imageResult = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			String imageURL = null;
+			String imagePublicID = null;
+			
+			if (imageResult != null) {
+				imageURL = imageResult.getKey();
+				imagePublicID = imageResult.getValue();
+			}
+
+			int statusCode = genreDAO.addGenre(connection, genreName, imageURL, imagePublicID);
 
 			DispatchUtil.dispatch(request, response, "addGenre.jsp?statusCode=" + statusCode);
-			
-		} catch (SQLException | FileUploadException e) {
+
+		} catch (SQLException | FileUploadException | IOException e) {
 			e.printStackTrace();
-			DispatchUtil.dispatch(request, response, "addGenre.jsp?statusCode=500" );
+			DispatchUtil.dispatch(request, response, "addGenre.jsp?statusCode=500");
 		}
 	}
 

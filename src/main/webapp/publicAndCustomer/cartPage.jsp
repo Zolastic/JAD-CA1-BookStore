@@ -2,7 +2,7 @@
   - Author(s): Soh Jian Min (P2238856)
   - Copyright Notice:-
   - @(#)
-  - Description: JAD CA1
+  - Description: JAD CA2
   --%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -26,19 +26,25 @@
 	<%@ include file="customerModal.jsp"%>
 	<%
 	String validatedUserID = (String) request.getAttribute("validatedUserID");
-	List<Book> cartItems = (List<Book>) request.getAttribute("cartItems");
+	List<Book> cartItems = null;
 	Double subtotal = 0.0;
 	String scrollPosition = (String) request.getAttribute("scrollPosition");
 	boolean allSelected = true;
-
+	boolean error = false;
 	String cartID = (String) request.getAttribute("cartID");
 	String err = request.getParameter("error");
+	try {
+		cartItems = (List<Book>) request.getAttribute("cartItems");
+	} catch (ClassCastException e) {
+		error = true;
+	}
+
 	if (err != null) {
 		if (err.equals("true")) {
 			out.print("<script>showModal('Internal Server Error')</script>");
 		}
 	}
-	if (cartID != null && validatedUserID != null) {
+	if (cartID != null && validatedUserID != null &&!error) {
 	%>
 	<script>
 	function selectCartItem(formID, scrollURL) {
@@ -157,13 +163,13 @@
 				if (item.getSelected() != 1) {
 					allSelected = false;
 				}
-				String urlToBookDetails = "/CA1-assignment/BookDetailsPage?bookID=" + item.getBookID();
+				String urlToBookDetails = request.getContextPath()+"/BookDetailsPage?bookID=" + item.getBookID();
 			%>
 			<div
 				class="flex items-center border border-gray-300 rounded-lg my-2 p-5 shadow-lg">
 
 				<form id="selectCartItemForm_<%=item.getBookID()%>"
-					action="/CA1-assignment/CartPage" method="post">
+					action="<%=request.getContextPath()%>/SelectCartItem" method="post">
 
 					<div
 						onclick="selectCartItem('selectCartItemForm_<%=item.getBookID()%>', 'scrollPositionForSelect_<%=item.getBookID()%>')">
@@ -173,7 +179,6 @@
 					</div>
 					<input type="hidden" class="bookIDInput" name="bookID"
 						value="<%=item.getBookID()%>" /> <input type="hidden"
-						name="action" value="selectCartItem" /> <input type="hidden"
 						name="cartID" value="<%=cartID%>" /> <input type="hidden"
 						name="newSelection" value="<%=(item.getSelected() == 1) ? 0 : 1%>">
 					<input type="hidden" name="scrollPositionForSelect"
@@ -186,7 +191,7 @@
 						if (item.getImg() != null) {
 						%>
 						<img class="h-32 w-32 object-contain"
-							src="data:image/png;base64, <%=item.getImg()%>">
+							src="<%=item.getImg()%>">
 						<%
 						} else {
 						%>
@@ -209,7 +214,7 @@
 					</p>
 					<!-- Form action to update cart items quantity -->
 					<form id="quantityForm_<%=item.getBookID()%>"
-						action="/CA1-assignment/CartPage" method="post">
+						action="<%=request.getContextPath()%>/UpdateQuantity" method="post">
 						<button id="minusBtn"
 							class="text-gray-500 hover:text-black focus:outline-none"
 							onclick="updateQuantity(-1, <%=item.getBookID()%>, <%=item.getQuantity()%>)">
@@ -230,7 +235,6 @@
 							name="updatedQuantity" value=""> <input type="hidden"
 							id="bookID" name="bookID" value="<%=item.getBookID()%>">
 						<input type="hidden" name="cartID" value="<%=cartID%>"> <input
-							type="hidden" name="action" value="updateQuantity"> <input
 							type="hidden" id="inventory_<%=item.getBookID()%>"
 							value="<%=item.getInventory()%>">
 					</form>
@@ -244,7 +248,7 @@
 					%>
 					<!-- Form action to delete cart item -->
 					<form id="deleteCartItemForm_<%=item.getBookID()%>"
-						action="/CA1-assignment/CartPage" method="post">
+						action="<%=request.getContextPath()%>/DeleteCartItem" method="post">
 						<button id="deleteBtn"
 							class="hover:text-red-600 text-red-800 focus:outline-none mx-3"
 							onclick="deleteCartItem('deleteCartItemForm_<%=item.getBookID()%>', 'scrollPositionForDelete_<%=item.getBookID()%>')">
@@ -253,8 +257,7 @@
 						<input type="hidden" name="scrollPositionForDelete"
 							id="scrollPositionForDelete_<%=item.getBookID()%>" value="">
 						<input type="hidden" name="bookID" value="<%=item.getBookID()%>">
-						<input type="hidden" name="cartID" value="<%=cartID%>"> <input
-							type="hidden" name="action" value="deleteCartItem">
+						<input type="hidden" name="cartID" value="<%=cartID%>">
 					</form>
 
 				</div>
@@ -262,37 +265,45 @@
 			<!-- Calculate subtotal -->
 			<%
 			subtotal += (item.getSelected() == 1 && item.getInventory() > 0) ? (item.getPrice() * item.getQuantity()) : 0;
+
 			}
+			subtotal = Math.round(subtotal * 100.0) / 100.0; // Round to 2 decimal places
+			double gst = Math.round((subtotal / 100) * 8 * 100.0) / 100.0;
+			double totalAmt = Math.round((subtotal + gst) * 100.0) / 100.0;
 			%>
 			<!-- Fixed bottom div for select all and subtotal with their form action -->
 			<div
 				class="fixed bottom-0 left-0 w-full h-50 p-4 px-10 bg-white border border-t border-gray-200 shadow-lg">
 				<div class="flex justify-between items-center">
-					<form id="selectAllCartItemForm" action="/CA1-assignment/CartPage"
+					<form id="selectAllCartItemForm" action="<%=request.getContextPath()%>/SelectAllCartItems"
 						method="post">
 						<input type="checkbox" id="select-all"
 							onchange="selectAllCartItem()" class="mr-2 w-4 h-4"
 							<%=allSelected ? "checked" : ""%>> <label
 							for="select-all">Select All</label> <input type="hidden"
 							name="scrollPositionForSelectAll" id="scrollPositionForSelectAll"
-							value=""> <input type="hidden" name="action"
-							value="selectAllCartItems"> <input type="hidden"
+							value="">  <input type="hidden"
 							name="cartID" value="<%=cartID%>"> <input type="hidden"
 							name="newSelection" id="newSelection" value="">
 					</form>
 					<div>
-						<p class="text-lg font-bold my-2">
+						<p class="text-md font-semibold my-2">
 							Subtotal: $<%=String.format("%.2f", subtotal)%>
 						</p>
+						<p class="text-md font-semibold my-2">
+							GST(8%): $<%=String.format("%.2f", gst)%>
+						</p>
+						<p class="text-lg font-bold my-2">
+							Total Amount: $<%=String.format("%.2f", totalAmt)%>
+						</p>
 						<div class="flex justify-end my-2">
-							<form id="checkoutForm" action="/CA1-assignment/CartPage"
+							<form id="checkoutForm" action="<%=request.getContextPath()%>/CheckoutFromCart"
 								method="post">
 								<button
 									class="px-4 p-2 bg-slate-600 hover:bg-slate-800 hover:scale-110 text-white rounded"
 									onclick="submitCheckoutForm()">Checkout</button>
 								<input type="hidden" id="selectedCartItems"
-									name="selectedCartItems" value=""> <input type="hidden"
-									name="action" value="checkout">
+									name="selectedCartItems" value="">
 							</form>
 						</div>
 					</div>
@@ -316,7 +327,7 @@
 					var closeButton = document.getElementById("close");
 					showModal("Error loading page");
 					closeButton.addEventListener("click", function() {
-						window.location.href = "/CA1-assignment/home.jsp";
+						window.location.href = "<%=request.getContextPath()%>/";
 					});
 				}
 	

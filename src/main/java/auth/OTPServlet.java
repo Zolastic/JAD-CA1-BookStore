@@ -24,7 +24,6 @@ import utils.OTPManagement;
 public class OTPServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserDAO userDAO = new UserDAO();
-	private UserOTPDAO userOTPDAO = new UserOTPDAO();
        
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -47,17 +46,16 @@ public class OTPServlet extends HttpServlet {
 		
 		String otp = first + second + third + fourth + fifth + sixth;
 		try (Connection connection = DBConnection.getConnection()) {
-			User user = userDAO.getUserInfo(connection, otpUserID);
+			User user = userDAO.getUserInfoByID(connection, otpUserID);
 			if (user == null) {
 				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401");
 				return;
 			}
 			
-			userOTPDAO.updateOTP(connection, otpUserID, user.getSecret());
 			String otpImage = OTPManagement.generateBase64Image(user.getSecret(), user.getEmail());
 	        request.setAttribute("otpImage", otpImage);
 			
-			if (!userOTPDAO.verifyOTP(connection, otpUserID, otp)) {
+			if (!OTPManagement.verifyCode(user.getSecret(), otp)) {
 				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401&type=OTP");
 				return;
 			}
@@ -66,7 +64,7 @@ public class OTPServlet extends HttpServlet {
 			session.removeAttribute("otpUserID");
 	        session.setAttribute("userID", otpUserID);
 	        session.setAttribute("role", role);
-	        request.getRequestDispatcher("home.jsp").forward(request, response);
+	        request.getRequestDispatcher("/").forward(request, response);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

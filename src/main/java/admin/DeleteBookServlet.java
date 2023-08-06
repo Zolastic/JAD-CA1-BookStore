@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.BookDAO;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 
@@ -29,9 +30,14 @@ public class DeleteBookServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		String bookID = request.getParameter("bookID");
 		try (Connection connection = DBConnection.getConnection()) {
+			String imagePublicID = bookDAO.getBookImagePublicID(connection, bookID);
 			int statusCode = bookDAO.deleteBook(connection, bookID);
+			if (imagePublicID != null) {
+				statusCode = CloudinaryUtil.deleteImageFromCld(imagePublicID);
+			}
 			
 			DispatchUtil.dispatch(request, response, "ViewBooks?errCode=" + statusCode);
 		} catch (SQLException e) {

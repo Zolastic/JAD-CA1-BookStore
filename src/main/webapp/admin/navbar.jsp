@@ -11,10 +11,13 @@
   <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
     <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 bg-gray-800 md:bg-gray-900 border-gray-700">
       <li>
-        <a href="<%=request.getContextPath()%>/home.jsp" class="block py-2 pl-3 pr-4 text-gray-100 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-100 md:p-0 ">Home</a>
+        <a href="<%=request.getContextPath()%>/" class="block py-2 pl-3 pr-4 text-gray-100 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-100 md:p-0 ">Home (Customer)</a>
       </li>
       <li>
         <a href="<%=request.getContextPath()%>/admin/ViewBooks" class="block py-2 pl-3 pr-4 text-gray-100 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-100 md:p-0 ">Books</a>
+      </li>
+      <li>
+        <a href="<%=request.getContextPath()%>/admin/ViewUsers" class="block py-2 pl-3 pr-4 text-gray-100 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-100 md:p-0 ">Users</a>
       </li>
       <li>
         <a href="<%=request.getContextPath()%>/admin/ViewAuthors" class="block py-2 pl-3 pr-4 text-gray-100 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-100 md:p-0 ">Authors</a>
@@ -24,6 +27,9 @@
       </li>
       <li>
         <a href="<%=request.getContextPath()%>/admin/ViewGenres" class="block py-2 pl-3 pr-4 text-gray-100 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-100 md:p-0 ">Genres</a>
+      </li>
+      <li>
+        <a href="<%=request.getContextPath()%>/admin/SalesDashboardServlet" class="block py-2 pl-3 pr-4 text-gray-100 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-100 md:p-0 ">Sales</a>
       </li>
     </ul>
   </div>

@@ -9,6 +9,21 @@ public class User {
 	private String image;
 	private String secret;
 	
+	public User() {
+		super();
+	}
+	
+	public User(String userID, String name, String email, String role, String image) {
+		super();
+		this.userID = userID;
+		this.name = name;
+		this.email = email;
+		this.password = "";
+		this.role = role;
+		this.image = image;
+		this.secret = "";
+	}
+	
 	public User(String userID, String name, String email, String password, String role, String image, String secret) {
 		super();
 		this.userID = userID;

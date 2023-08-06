@@ -5,7 +5,9 @@ import static dev.samstevens.totp.util.Utils.getDataUriForImage;
 import java.util.Random;
 
 import dev.samstevens.totp.code.CodeGenerator;
+import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
+import dev.samstevens.totp.code.DefaultCodeVerifier;
 import dev.samstevens.totp.code.HashingAlgorithm;
 import dev.samstevens.totp.qr.QrData;
 import dev.samstevens.totp.qr.QrGenerator;
@@ -34,6 +36,14 @@ public class OTPManagement {
 		String secret = secretGenerator.generate();
 		
 		return secret;
+	}
+	
+	public static boolean verifyCode(String secret, String code) throws Exception {
+		TimeProvider timeProvider = new SystemTimeProvider();
+		CodeGenerator codeGenerator = new DefaultCodeGenerator(HashingAlgorithm.SHA1, 6);
+		CodeVerifier verifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
+
+		return verifier.isValidCode(secret, code);
 	}
 	
 	public static String generateOTPCode(String secret) throws Exception {

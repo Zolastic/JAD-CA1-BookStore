@@ -2,8 +2,6 @@ package auth;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -15,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import dao.CartDAO;
 import dao.UserDAO;
-import dao.UserOTPDAO;
 import utils.DBConnection;
 import utils.OTPManagement;
 
@@ -27,7 +24,6 @@ public class SignUpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserDAO userDAO = new UserDAO();
 	private CartDAO cartDAO = new CartDAO();
-	private UserOTPDAO userOTPDAO = new UserOTPDAO();
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -50,8 +46,9 @@ public class SignUpServlet extends HttpServlet {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 
-		try (Connection connection = DBConnection.getConnection()) {
-
+		Connection connection = DBConnection.getConnection();
+		try {
+			connection.setAutoCommit(false);
 			if (userDAO.checkForExistingUserEmail(connection, email)) {
 				response.sendRedirect(request.getContextPath()
 						+ "/publicAndCustomer/registrationPage.jsp?type=SignUp&statusCode=409");
@@ -62,35 +59,26 @@ public class SignUpServlet extends HttpServlet {
 			String secret = OTPManagement.generateSecret();
 
 			if (userDAO.addUser(connection, name, email, password, customerID, secret) == 0) {
-				response.sendRedirect(request.getContextPath()
-						+ "/publicAndCustomer/registrationPage.jsp?type=SignUp&statusCode=500");
-				return;
+				throw new SQLException("Cannot add user");
 			}
-
 			
-
 			if (cartDAO.createCartForUser(connection, customerID) == 0) {
-				response.sendRedirect(request.getContextPath()
-						+ "/publicAndCustomer/registrationPage.jsp?type=SignUp&statusCode=500");
-				return;
+				throw new SQLException("Cannot create cart");
 			}
 
-			
-
-			if (userOTPDAO.createOTPRowForUser(connection, customerID) == 0) {
-				response.sendRedirect(request.getContextPath()
-						+ "/publicAndCustomer/registrationPage.jsp?type=SignUp&statusCode=500");
-				return;
-			}
-
+			connection.commit();
 			response.sendRedirect(request.getContextPath() + "/publicAndCustomer/registrationPage.jsp");
 			return;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+			DBConnection.rollback(connection);
 			response.sendRedirect(request.getContextPath()
 					+ "/publicAndCustomer/registrationPage.jsp?type=SignUp&statusCode=500");
 			return;
+		} finally {
+			DBConnection.setAutoCommit(connection, true);
+			DBConnection.close(connection);
 		}
 	}
 

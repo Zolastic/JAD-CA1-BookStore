@@ -17,20 +17,13 @@ import dao.VerifyUserDAO;
  */
 
 /**
- * Author(s): Soh Jian Min (P2238856) Description: JAD CA1
+ * Author(s): Soh Jian Min (P2238856) Description: JAD CA2
  */
 
 @WebServlet("/PaymentSuccess")
 public class PaymentSuccess extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public PaymentSuccess() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse

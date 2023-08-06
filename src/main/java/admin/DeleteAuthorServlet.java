@@ -34,7 +34,6 @@ public class DeleteAuthorServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		String authorID = request.getParameter("authorID");
 		try (Connection connection = DBConnection.getConnection()) {
 			int statusCode = authorDAO.deleteAuthor(connection, authorID);

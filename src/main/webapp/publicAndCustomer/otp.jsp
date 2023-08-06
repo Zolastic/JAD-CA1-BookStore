@@ -15,18 +15,18 @@ String otpImage = (String) request.getAttribute("otpImage");
 		action="<%=request.getContextPath()%>/OTP" method="post">
 		<div class="flex justify-center items-center">
 			<input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
-				type="text" id="first" name="first" maxlength="1" /> <input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
-				type="text" id="second" name="second" maxlength="1" /> <input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
-				type="text" id="third" name="third" maxlength="1" /> <input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
-				type="text" id="fourth" name="fourth" maxlength="1" /> <input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
-				type="text" id="fifth" name="fifth" maxlength="1" /> <input
-				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100"
-				type="text" id="sixth" name="sixth" maxlength="1" />
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+				type="number" id="first" name="first" maxlength="1" /> <input
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+				type="number" id="second" name="second" maxlength="1" /> <input
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+				type="number" id="third" name="third" maxlength="1" /> <input
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+				type="number" id="fourth" name="fourth" maxlength="1" /> <input
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+				type="number" id="fifth" name="fifth" maxlength="1" /> <input
+				class="m-2 border h-10 w-10 text-center form-control rounded-lg focus:outline-none focus:ring-0 focus:border-2 focus:border-pink-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+				type="number" id="sixth" name="sixth" maxlength="1" />
 		</div>
 
 		<div class="flex flex-col justify-center items-center my-3">
@@ -44,7 +44,7 @@ String otpImage = (String) request.getAttribute("otpImage");
 		}
 		}
 		%>
-		<div class="field-wrapper flex justify-center my-2">
+		<div class="field-wrapper flex justify-center my-2 hidden">
 			<a href="#" onclick="resendOTP();" class="loginLinks">Resend OTP</a>
 		</div>
 		<div class="field-wrapper flex justify-center my-2">
@@ -54,7 +54,7 @@ String otpImage = (String) request.getAttribute("otpImage");
 		</div>
 	</form>
 
-	<form action="<%=request.getContextPath()%>/ResendOTP" method="post">
+	<form action="<%=request.getContextPath()%>/ResendOTP" method="post" class="hidden">
 	</form>
 
 	<script>

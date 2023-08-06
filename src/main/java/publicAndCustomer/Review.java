@@ -20,7 +20,7 @@ import dao.VerifyUserDAO;
  */
 
 /**
- * Author(s): Soh Jian Min (P2238856) Description: JAD CA1
+ * Author(s): Soh Jian Min (P2238856) Description: JAD CA2
  */
 
 @WebServlet("/Review")
@@ -29,13 +29,6 @@ public class Review extends HttpServlet {
 	private VerifyUserDAO verifyUserDAO = new VerifyUserDAO();
 	private BookDAO bookDAO = new BookDAO();
 	private ReviewDAO reviewDAO = new ReviewDAO();
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public Review() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -58,14 +51,14 @@ public class Review extends HttpServlet {
 					dispatcher.forward(request, response);
 					return;
 				}
-				bookDetails = bookDAO.getBookDetailsForCustomer(connection, bookID);
+				bookDetails = bookDAO.getBookDetailsForBybookID(connection, bookID);
 				connection.close();
 			} catch (SQLException e) {
 				System.err.println("Error: " + e);
 			}
 		} else {
 			if (userID != null) {
-				response.sendRedirect("CA1-assignment/TransactionHistoryPage?userIDAvailable=true");
+				response.sendRedirect(request.getContextPath()+"/TransactionHistoryPage?userIDAvailable=true");
 			} else {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp");
 				dispatcher.forward(request, response);
@@ -129,13 +122,7 @@ public class Review extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// Check for action
-		String action = request.getParameter("action");
-		if (action != null && action.equals("submitReview")) {
 			submitReview(request, response);
-		} else {
-			doGet(request, response);
-		}
 	}
 
 }

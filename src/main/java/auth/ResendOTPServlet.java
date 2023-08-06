@@ -14,6 +14,7 @@ import dao.UserDAO;
 import dao.UserOTPDAO;
 import model.User;
 import utils.DBConnection;
+import utils.DispatchUtil;
 import utils.OTPManagement;
 
 /**
@@ -39,7 +40,7 @@ public class ResendOTPServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			
-			User user = userDAO.getUserInfo(connection, otpUserID);
+			User user = userDAO.getUserInfoByID(connection, otpUserID);
 			if (user == null) {
 				request.getRequestDispatcher("publicAndCustomer/registrationPage.jsp?statusCode=401").forward(request, response);
 				return;

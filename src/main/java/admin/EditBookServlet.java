@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +20,7 @@ import model.Author;
 import model.Book;
 import model.Genre;
 import model.Publisher;
+import utils.CloudinaryUtil;
 import utils.DBConnection;
 import utils.DispatchUtil;
 import utils.HttpServletRequestUploadWrapper;
@@ -29,10 +31,10 @@ import utils.HttpServletRequestUploadWrapper;
 @WebServlet("/admin/EditBook")
 public class EditBookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	GenreDAO genreDAO = new GenreDAO();
-	AuthorDAO authorDAO = new AuthorDAO();
-	PublisherDAO publisherDAO = new PublisherDAO();
-	BookDAO bookDAO = new BookDAO();
+	private GenreDAO genreDAO = new GenreDAO();
+	private AuthorDAO authorDAO = new AuthorDAO();
+	private PublisherDAO publisherDAO = new PublisherDAO();
+	private BookDAO bookDAO = new BookDAO();
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -40,23 +42,22 @@ public class EditBookServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		try (Connection connection = DBConnection.getConnection()) {
 			String bookID = request.getParameter("bookID");
 			loadData(request, connection, bookID);
 			request.getRequestDispatcher("editBook.jsp").forward(request, response);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 
 	private void loadData(HttpServletRequest request, Connection connection, String bookID) throws SQLException {
-		System.out.println("enter func");
 		List<Genre> genres = genreDAO.getGenres(connection);
 		List<Author> authors = authorDAO.getAuthors(connection);
 		List<Publisher> publishers = publisherDAO.getPublishers(connection);
 		Book book = bookDAO.getBook(connection, bookID);
-		System.out.println("book: " + book);
 		request.setAttribute("genres", genres);
 		request.setAttribute("authors", authors);
 		request.setAttribute("publishers", publishers);
@@ -71,12 +72,11 @@ public class EditBookServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String bookID = null;
-		
+
 		try (Connection connection = DBConnection.getConnection()) {
 			HttpServletRequestUploadWrapper requestWrapper = new HttpServletRequestUploadWrapper(request);
 
 			bookID = requestWrapper.getParameter("bookID");
-			System.out.println("bookID: " + bookID);
 			String title = requestWrapper.getParameter("title");
 			double price = Double.parseDouble(requestWrapper.getParameter("price"));
 			String author = requestWrapper.getParameter("author");
@@ -87,9 +87,20 @@ public class EditBookServlet extends HttpServlet {
 			String description = requestWrapper.getParameter("description");
 			String genreId = requestWrapper.getParameter("genre");
 			int sold = Integer.parseInt(requestWrapper.getParameter("sold"));
-			String image = requestWrapper.getBase64Parameter("image");
+			byte[] imageInByte = requestWrapper.getBytesParameter("image");
+
+			SimpleEntry<String, String> imageResult = imageInByte.length > 0 ? CloudinaryUtil.uploadImage(imageInByte) : null;
+			String imageURL = null;
+			String imagePublicID = null;
 			
-			int statusCode = bookDAO.updateBook(connection, bookID, title, price, author, publisher, quantity, pubDate, isbn, description, genreId, sold, image);
+			if (imageResult != null) {
+				imageURL = imageResult.getKey();
+				imagePublicID = imageResult.getValue();
+			}
+
+			
+			int statusCode = bookDAO.updateBook(connection, bookID, title, price, author, publisher, quantity, pubDate,
+					isbn, description, genreId, sold, imageURL, imagePublicID);
 			// Load data for page
 			loadData(request, connection, bookID);
 

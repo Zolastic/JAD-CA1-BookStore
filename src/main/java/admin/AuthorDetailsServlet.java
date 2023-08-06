@@ -37,7 +37,7 @@ public class AuthorDetailsServlet extends HttpServlet {
 			DispatchUtil.dispatch(request, response, "authorDetails.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			// redirect to error page
+			DispatchUtil.dispatch(request, response, "index.jsp?statusCode=500");
 		}
 	}
 	

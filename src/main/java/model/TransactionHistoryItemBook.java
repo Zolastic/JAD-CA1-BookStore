@@ -1,23 +1,34 @@
 package model;
 
-/**
- * Author(s): Soh Jian Min (P2238856)
- * Description: JAD CA1
- */
 
-public class TransactionHistoryItem {
+public class TransactionHistoryItemBook{
     private String transactionHistoryItemID;
     private String bookID;
     private int quantity;
     private int reviewed;
     private Book book;
+    private double price;
+    
 
-    public TransactionHistoryItem(String transactionHistoryItemID, String bookID, int quantity, int reviewed) {
+    public TransactionHistoryItemBook() {
+		super();
+	}
+
+	public TransactionHistoryItemBook(String transactionHistoryItemID, String bookID, int quantity, int reviewed, double price) {
         this.transactionHistoryItemID = transactionHistoryItemID;
         this.bookID = bookID;
         this.quantity = quantity;
         this.reviewed = reviewed;
+        this.price =price;
     }
+	
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
 
 	public String getTransactionHistoryItemID() {
 		return transactionHistoryItemID;

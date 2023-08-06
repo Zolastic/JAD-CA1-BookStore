@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import dao.UserDAO;
-import dao.UserOTPDAO;
 import model.User;
 import utils.DBConnection;
 import utils.DispatchUtil;
@@ -24,7 +23,6 @@ import utils.OTPManagement;
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserDAO userDAO = new UserDAO();
-	private UserOTPDAO userOTPDAO = new UserOTPDAO();
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -49,11 +47,6 @@ public class LoginServlet extends HttpServlet {
 	        session.setAttribute("otpUserID", userID);
 	        String otpImage = OTPManagement.generateBase64Image(secret, user.getEmail());
 	        request.setAttribute("otpImage", otpImage);
-			
-			if (!userOTPDAO.updateOTP(connection, userID, secret)) {
-				DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?statusCode=401");
-				return;
-			}
 			
 			DispatchUtil.dispatch(request, response, "publicAndCustomer/registrationPage.jsp?type=OTP");
 			
