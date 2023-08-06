@@ -73,6 +73,7 @@ public class CheckoutFromCart extends HttpServlet {
 			String encodedCheckoutItems = URLEncoder.encode(checkoutItems, "UTF-8");
 			Cookie checkoutItemsCookie = new Cookie("checkoutItems", encodedCheckoutItems);
 			checkoutItemsCookie.setMaxAge(5 * 60 * 60);
+			checkoutItemsCookie.setHttpOnly(true);
 			response.addCookie(checkoutItemsCookie);
 			response.sendRedirect("CheckoutPage?userIDAvailable=true");
 		}
