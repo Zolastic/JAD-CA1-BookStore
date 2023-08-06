@@ -25,7 +25,7 @@
 	%>
 
 	<%@include file="./navbar.jsp"%>
-	<div class="h-full m-full bg-slate-600 py-20 min-h-screen">
+	<div class="h-full w-full bg-slate-600 py-20 min-h-screen">
 		<div class="flex justify-end">
 			<div class="flex space-x-4 p-2 mr-5">
 				<a href="<%=request.getContextPath()%>/admin/SalesDashboardServlet"

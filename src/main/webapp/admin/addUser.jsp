@@ -17,7 +17,7 @@
 	%>
 
 	<h1 class="text-2xl font-bold tracking-wide mt-28 mb-8 p-0">Add
-		Author</h1>
+		User</h1>
 	<form class="mt-28"
 		action="<%=request.getContextPath()%>/admin/AddUser" method="post">
 
