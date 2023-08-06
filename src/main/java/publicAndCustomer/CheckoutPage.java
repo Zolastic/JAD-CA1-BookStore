@@ -1,30 +1,30 @@
 package publicAndCustomer;
 
 import java.io.IOException;
+import java.sql.*;
+import java.util.*;
 import java.net.URLDecoder;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.http.Cookie;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+import com.stripe.model.Refund;
+import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.RefundCreateParams;
+import model.Book;
+import model.Address;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import dao.AddressDAO;
-import dao.CheckoutDAO;
-import dao.VerifyUserDAO;
-import model.Address;
-import model.Book;
 import utils.DBConnection;
+import dao.VerifyUserDAO;
+import dao.CheckoutDAO;
+import dao.AddressDAO;
 
 /**
  * Servlet implementation class CheckoutPage
@@ -49,6 +49,7 @@ public class CheckoutPage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try (Connection connection = DBConnection.getConnection()) {
+			Cookie[] cookies = request.getCookies();
 			String userIDAvailable = request.getParameter("userIDAvailable");
 			String userID = null;
 			if (userIDAvailable != null) {
@@ -67,30 +68,30 @@ public class CheckoutPage extends HttpServlet {
 				dispatcher.forward(request, response);
 				return;
 			}
-			// Get the checkout items from the session
-			checkoutItemsString = (String) request.getSession().getAttribute("checkoutItems");
-			if (checkoutItemsString != null) {
-				checkoutItemsString = URLDecoder.decode(checkoutItemsString, "UTF-8");
-				JSONArray jsonArray = new JSONArray(checkoutItemsString);
-				for (int i = 0; i < jsonArray.length(); i++) {
-					JSONObject jsonObject = jsonArray.getJSONObject(i);
-					Map<String, Object> bookItem = new HashMap<>();
-					String bookID = jsonObject.getString("bookID");
-					int quantity = jsonObject.getInt("quantity");
-					bookItem.put("bookID", bookID);
-					bookItem.put("quantity", quantity);
-					checkoutItemsArrayString.add(bookItem);
+			// Get the checkout items from the cookies
+			if (cookies != null) {
+				for (Cookie cookie : cookies) {
+					if (cookie.getName().equals("checkoutItems")) {
+						checkoutItemsString = cookie.getValue();
+						String encodedCartItems = cookie.getValue();
+						checkoutItemsString = URLDecoder.decode(encodedCartItems, "UTF-8");
+						JSONArray jsonArray = new JSONArray(checkoutItemsString);
+						for (int i = 0; i < jsonArray.length(); i++) {
+							JSONObject jsonObject = jsonArray.getJSONObject(i);
+							Map<String, Object> bookItem = new HashMap<>();
+							String bookID = jsonObject.getString("bookID");
+							int quantity = jsonObject.getInt("quantity");
+							bookItem.put("bookID", bookID);
+							bookItem.put("quantity", quantity);
+							checkoutItemsArrayString.add(bookItem);
+						}
+						if (checkoutItemsString != null) {
+							break;
+						}
+					}
 				}
 			}
-			
-			System.out.println("checkoutItemsArrayString " + checkoutItemsArrayString);
 			checkoutItems = checkoutDAO.getCheckoutItems(connection, userID, checkoutItemsArrayString);
-			
-			checkoutItems.forEach(it -> {
-				System.out.println("checkout " + it.getTitle());
-			});
-			
-			
 			addresses = addressDAO.getAddressByUserId(connection, userID);
 			
 			connection.close();
@@ -114,7 +115,7 @@ public class CheckoutPage extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// Check action
-		doGet(request, response);
+			doGet(request, response);
 	}
 
 }
