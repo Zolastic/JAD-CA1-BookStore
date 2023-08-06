@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,9 +70,7 @@ public class CheckoutFromCart extends HttpServlet {
 			response.sendRedirect(referer + "?error=true");
 		} else {
 			String encodedCheckoutItems = URLEncoder.encode(checkoutItems, "UTF-8");
-			Cookie checkoutItemsCookie = new Cookie("checkoutItems", encodedCheckoutItems);
-			checkoutItemsCookie.setMaxAge(5 * 60 * 60);
-			response.addCookie(checkoutItemsCookie);
+			request.getSession().setAttribute("checkoutItems", encodedCheckoutItems);
 			response.sendRedirect("CheckoutPage?userIDAvailable=true");
 		}
 	}
