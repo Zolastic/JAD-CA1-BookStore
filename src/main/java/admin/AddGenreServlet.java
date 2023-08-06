@@ -61,7 +61,7 @@ public class AddGenreServlet extends HttpServlet {
 
 			DispatchUtil.dispatch(request, response, "addGenre.jsp?statusCode=" + statusCode);
 
-		} catch (SQLException | FileUploadException e) {
+		} catch (SQLException | FileUploadException | IOException e) {
 			e.printStackTrace();
 			DispatchUtil.dispatch(request, response, "addGenre.jsp?statusCode=500");
 		}
